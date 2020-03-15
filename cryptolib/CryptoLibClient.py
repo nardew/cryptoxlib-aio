@@ -7,9 +7,11 @@ import json
 import enum
 from abc import ABC, abstractmethod
 from multidict import CIMultiDictProxy
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from cryptolib.Timer import Timer
+from cryptolib.CryptoLibException import CryptoLibException
+from cryptolib.WebsocketMgr import Subscription, WebsocketMgr
 
 LOG = logging.getLogger(__name__)
 
@@ -26,6 +28,7 @@ class CryptoLibClient(ABC):
         self.api_trace_log = api_trace_log
 
         self.rest_session = None
+        self.subscription_sets = set()
 
         if ssl_context is not None:
             self.ssl_context = ssl_context
@@ -43,7 +46,11 @@ class CryptoLibClient(ABC):
         pass
 
     @abstractmethod
-    def _preprocess_response(self, status_code: int, headers: CIMultiDictProxy[str], body: Optional[dict]) -> None:
+    def _preprocess_rest_response(self, status_code: int, headers: CIMultiDictProxy[str], body: Optional[dict]) -> None:
+        pass
+
+    @abstractmethod
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
         pass
 
     async def close(self) -> None:
@@ -92,7 +99,7 @@ class CryptoLibClient(ABC):
                 if len(body) > 0:
                     body = json.loads(body)
 
-                self._preprocess_response(status_code, headers, body)
+                self._preprocess_rest_response(status_code, headers, body)
 
                 return {
                     "status_code": status_code,
@@ -138,3 +145,25 @@ class CryptoLibClient(ABC):
     @staticmethod
     def _get_current_timestamp_ms() -> int:
         return int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
+
+    def compose_subscriptions(self, subscriptions: List[Subscription]) -> None:
+        self.subscription_sets.append(subscriptions)
+
+    async def start_websockets(self) -> None:
+        if len(self.subscription_sets):
+            done, pending = await asyncio.wait(
+                [asyncio.create_task(self._get_websocket_mgr(subscriptions, self.ssl_context).run()) for
+                 subscriptions in self.subscription_sets],
+                return_when = asyncio.FIRST_EXCEPTION
+            )
+            for task in done:
+                try:
+                    task.result()
+                except Exception as e:
+                    LOG.exception(f"Unrecoverable exception occurred while processing messages: {e}")
+                    LOG.info("All websockets scheduled for shutdown")
+                    for task in pending:
+                        if not task.cancelled():
+                            task.cancel()
+        else:
+            raise CryptoLibException("ERROR: There are no subscriptions to be started.")

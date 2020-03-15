@@ -1,4 +1,4 @@
-from cryptolib.clients.CryptoLibClient import CryptoLibClient
+from cryptolib.CryptoLibClient import CryptoLibClient
 
 class LiquidClient(CryptoLibClient):
     pass
