@@ -5,6 +5,7 @@ import logging
 import datetime
 import json
 import enum
+import time
 from abc import ABC, abstractmethod
 from multidict import CIMultiDictProxy
 from typing import List, Optional
@@ -42,7 +43,7 @@ class CryptoLibClient(ABC):
         pass
 
     @abstractmethod
-    def _get_signature(self, resource: str, params: dict, data: dict) -> dict:
+    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         pass
 
     @abstractmethod
@@ -74,8 +75,7 @@ class CryptoLibClient(ABC):
         with Timer('RestCall'):
             # add signature into the parameters
             if signed:
-                params = {} if params is None else params
-                params.update(self._get_signature(resource, params, data))
+                self._sign_payload(resource, params, data, headers)
 
             if rest_call_type == RestCallType.GET:
                 rest_call = self._get_rest_session().get(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
@@ -145,6 +145,10 @@ class CryptoLibClient(ABC):
     @staticmethod
     def _get_current_timestamp_ms() -> int:
         return int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
+
+    @staticmethod
+    def _get_unix_timestamp_ns() -> int:
+        return int(time.time_ns() * 10**9)
 
     def compose_subscriptions(self, subscriptions: List[Subscription]) -> None:
         self.subscription_sets.append(subscriptions)

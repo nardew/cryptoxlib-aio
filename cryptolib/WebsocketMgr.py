@@ -18,6 +18,10 @@ class Subscription(ABC):
     def construct_subscription_id(self) -> Any:
         pass
 
+    @abstractmethod
+    def get_subscription_message(self, **kwargs) -> dict:
+        pass
+
     def get_subscription_id(self) -> Any:
         if self.subscription_id is None:
             self.subscription_id = self.construct_subscription_id()
@@ -52,12 +56,16 @@ class WebsocketMgr(ABC):
         self.ssl_context = ssl_context
 
     @abstractmethod
-    def _create_subscription_message(self) -> Union[List[dict], dict]:
-        pass
-
-    @abstractmethod
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, response: str) -> None:
         pass
+
+    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+        subscription_messages = []
+        for subscription in self.subscriptions:
+            subscription_messages.append(subscription.get_subscription_message())
+
+        LOG.debug(f"> {subscription_messages}")
+        await websocket.send(json.dumps(subscription_messages))
 
     async def run(self) -> None:
         for subscription in self.subscriptions:
@@ -69,9 +77,7 @@ class WebsocketMgr(ABC):
                 LOG.debug(f"Initiating websocket connection.")
                 async with websockets.connect(self.websocket_uri, ping_interval = self.builtin_ping_interval,
                                               max_size = self.max_message_size, ssl = self.ssl_context) as websocket:
-                    subscription_message = self._create_subscription_message()
-                    LOG.debug(f"> {subscription_message}")
-                    await websocket.send(json.dumps(subscription_message))
+                    await self._subscribe(websocket)
 
                     # start processing incoming messages
                     while True:
