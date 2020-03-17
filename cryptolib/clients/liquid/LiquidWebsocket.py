@@ -19,12 +19,9 @@ LOG = logging.getLogger(__name__)
 class LiquidWebsocket(WebsocketMgr):
     WEBSOCKET_URI = "wss://tap.liquid.com/app/LiquidTapClient"
 
-    PING_MSG = 'ping_p'
-    PONG_MSG = 'pong_p'
-
     def __init__(self, subscriptions: List[Subscription], api_key: str = None, sec_key: str = None, ssl_context = None) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
-                         builtin_ping_interval = None, ssl_context = ssl_context)
+                         builtin_ping_interval = None, periodic_timeout_sec = 10, ssl_context = ssl_context)
 
         self.api_key = api_key
         self.sec_key = sec_key
@@ -54,10 +51,21 @@ class LiquidWebsocket(WebsocketMgr):
         LOG.debug(f"> {authentication_request}")
         await websocket.send(json.dumps(authentication_request))
 
+    async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
+        if self.ping_checker.check():
+            ping_message = {
+                "event": "pusher:ping",
+                "data": ''
+            }
+            LOG.debug(f"> {ping_message}")
+            await websocket.send(json.dumps(ping_message))
+
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
         message = json.loads(message)
 
         if message['event'] == "pusher:connection_established":
+            pass
+        elif message['event'] == "pusher:pong":
             pass
         elif message['event'] == "quoine:auth_success":
             subscription_messages = []
