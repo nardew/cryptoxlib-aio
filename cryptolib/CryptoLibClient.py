@@ -36,8 +36,6 @@ class CryptoLibClient(ABC):
         else:
             self.ssl_context = ssl.create_default_context()
 
-        self.subscription_sets = []
-
     @abstractmethod
     def _get_rest_api_uri(self) -> str:
         pass
