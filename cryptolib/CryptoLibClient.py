@@ -75,7 +75,7 @@ class CryptoLibClient(ABC):
         with Timer('RestCall'):
             # add signature into the parameters
             if signed:
-                self._sign_payload(resource, params, data, headers)
+                self._sign_payload(resource, data, params, headers)
 
             if rest_call_type == RestCallType.GET:
                 rest_call = self._get_rest_session().get(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)

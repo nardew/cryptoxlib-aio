@@ -25,7 +25,7 @@ class Subscription(ABC):
     def get_subscription_id(self) -> Any:
         if self.subscription_id is None:
             self.subscription_id = self.construct_subscription_id()
-            LOG.info(f"New subscription id constructed: {self.subscription_id}")
+            LOG.debug(f"New subscription id constructed: {self.subscription_id}")
 
         return self.subscription_id
 

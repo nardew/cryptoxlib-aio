@@ -30,7 +30,7 @@ class BitforexClient(CryptoLibClient):
     def _get_rest_api_uri(self) -> str:
         return BitforexClient.REST_API_URI
 
-    def _get_signature(self, resource: str, params: dict, data: dict) -> dict:
+    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         params['accessKey'] = self.api_key
 
         params_string = ""
@@ -43,11 +43,9 @@ class BitforexClient(CryptoLibClient):
         if data is not None:
             data_string = '&'.join(["{}={}".format(param[0], param[1]) for param in data])
 
-        m = hmac.new(self.sec_key.encode('utf-8'), (params_string+data_string).encode('utf-8'), hashlib.sha256)
+        m = hmac.new(self.sec_key.encode('utf-8'), (params_string + data_string).encode('utf-8'), hashlib.sha256)
 
         params['signData'] = m.hexdigest()
-
-        return params
 
     def _preprocess_rest_response(self, status_code: int, headers: CIMultiDictProxy[str], body: Optional[dict]) -> None:
         if body['success'] is False:
