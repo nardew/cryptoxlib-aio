@@ -36,17 +36,6 @@ class BitforexWebsocket(WebsocketMgr):
             LOG.debug(f"> {BitforexWebsocket.PING_MSG}")
             await websocket.send(BitforexWebsocket.PING_MSG)
 
-    def _create_subscription_message(self) -> Union[List[dict], dict]:
-        subscription_message = []
-        for subscription in self.subscriptions:
-            subscription_message.append({
-                "type": "subHq",
-                "event": subscription.get_channel_name(),
-                "param": subscription.get_params(),
-            })
-
-        return subscription_message
-
 
 class BitforexSubscription(Subscription):
     def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
@@ -80,6 +69,13 @@ class BitforexSubscription(Subscription):
 
     def construct_subscription_id(self) -> Any:
         return BitforexSubscription.make_subscription_id(self.get_channel_name(), self.get_params())
+
+    def get_subscription_message(self, **kwargs) -> dict:
+        return {
+                "type": "subHq",
+                "event": self.get_channel_name(),
+                "param": self.get_params(),
+            }
 
 
 class OrderBookSubscription(BitforexSubscription):
