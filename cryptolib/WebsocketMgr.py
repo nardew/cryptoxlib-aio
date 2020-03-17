@@ -48,15 +48,19 @@ class WebsocketMessage(object):
 
 class WebsocketMgr(ABC):
     def __init__(self, websocket_uri: str, subscriptions: List[Subscription], builtin_ping_interval: Optional[float] = 20,
-                 max_message_size: int = 2**20, ssl_context = None) -> None:
+                 max_message_size: int = 2**20, periodic_timeout_sec: int = None, ssl_context = None) -> None:
         self.websocket_uri = websocket_uri
         self.subscriptions = subscriptions
         self.builtin_ping_interval = builtin_ping_interval
         self.max_message_size = max_message_size
+        self.periodic_timeout_sec = periodic_timeout_sec
         self.ssl_context = ssl_context
 
     @abstractmethod
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, response: str) -> None:
+        pass
+
+    async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
         pass
 
     async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
@@ -66,6 +70,22 @@ class WebsocketMgr(ABC):
 
         LOG.debug(f"> {subscription_messages}")
         await websocket.send(json.dumps(subscription_messages))
+
+    async def main_loop(self, websocket: websockets.WebSocketClientProtocol):
+        await self._subscribe(websocket)
+
+        # start processing incoming messages
+        while True:
+            message = await websocket.recv()
+            LOG.debug(f"< {message}")
+
+            await self._process_message(websocket, message)
+
+    async def periodic_loop(self, websocket: websockets.WebSocketClientProtocol):
+        if self.periodic_timeout_sec is not None:
+            while True:
+                await self._process_periodic(websocket)
+                await asyncio.sleep(self.periodic_timeout_sec)
 
     async def run(self) -> None:
         for subscription in self.subscriptions:
@@ -77,14 +97,19 @@ class WebsocketMgr(ABC):
                 LOG.debug(f"Initiating websocket connection.")
                 async with websockets.connect(self.websocket_uri, ping_interval = self.builtin_ping_interval,
                                               max_size = self.max_message_size, ssl = self.ssl_context) as websocket:
-                    await self._subscribe(websocket)
-
-                    # start processing incoming messages
-                    while True:
-                        message = await websocket.recv()
-                        LOG.debug(f"< {message}")
-
-                        await self._process_message(websocket, message)
+                    done, pending = await asyncio.wait(
+                        [asyncio.create_task(self.main_loop(websocket)),
+                         asyncio.create_task(self.periodic_loop(websocket))],
+                        return_when = asyncio.FIRST_EXCEPTION
+                    )
+                    for task in done:
+                        try:
+                            task.result()
+                        except Exception:
+                            for task in pending:
+                                if not task.cancelled():
+                                    task.cancel()
+                            raise
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:

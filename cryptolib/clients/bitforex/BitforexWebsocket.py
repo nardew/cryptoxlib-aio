@@ -22,19 +22,20 @@ class BitforexWebsocket(WebsocketMgr):
 
     def __init__(self, subscriptions: List[Subscription], ssl_context = None) -> None:
         super().__init__(websocket_uri = BitforexWebsocket.WEBSOCKET_URI, subscriptions = subscriptions,
-                         builtin_ping_interval = None, ssl_context = ssl_context)
+                         builtin_ping_interval = None, periodic_timeout_sec = 10, ssl_context = ssl_context)
 
         self.ping_checker = PeriodicChecker(period_ms = 30 * 1000)
+
+    async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
+        if self.ping_checker.check():
+            LOG.debug(f"> {BitforexWebsocket.PING_MSG}")
+            await websocket.send(BitforexWebsocket.PING_MSG)
 
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
         if message != BitforexWebsocket.PONG_MSG:
             message = json.loads(message)
             subscription_id = BitforexSubscription.make_subscription_id(message['event'], message['param'])
             await self.publish_message(WebsocketMessage(subscription_id = subscription_id, message = message))
-
-        if self.ping_checker.check():
-            LOG.debug(f"> {BitforexWebsocket.PING_MSG}")
-            await websocket.send(BitforexWebsocket.PING_MSG)
 
 
 class BitforexSubscription(Subscription):
