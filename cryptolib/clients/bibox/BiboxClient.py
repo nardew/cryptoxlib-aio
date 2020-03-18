@@ -1,6 +1,5 @@
 import ssl
 import logging
-import jwt
 import json
 import hmac
 import hashlib
@@ -13,7 +12,7 @@ from cryptolib.clients.bibox.exceptions import BiboxException
 from cryptolib.clients.bibox.functions import map_pair
 from cryptolib.Pair import Pair
 from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.bibox.LiquidWebsocket import LiquidWebsocket
+from cryptolib.clients.bibox.BiboxWebsocket import BiboxWebsocket
 
 
 LOG = logging.getLogger(__name__)
@@ -47,7 +46,7 @@ class BiboxClient(CryptoLibClient):
             raise BiboxException(f"BiboxException: status [{status_code}], response [{body}]")
 
     def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
-        return LiquidWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
+        return BiboxWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
 
     async def get_ping(self) -> dict:
         data = {

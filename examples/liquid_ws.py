@@ -39,9 +39,9 @@ async def run():
     # Bundle several subscriptions into a single websocket
     liquid.compose_subscriptions([
         OrderBookSideSubscription(pair = Pair('BTC', 'USD'), order_side = enums.OrderSide.BUY, callbacks = [order_book_update]),
-        #OrderBookSubscription(pair = Pair('ETH', 'USD'), callbacks = [order_book_update2]),
-        #OrderBookSubscription(pair = Pair('XRP', 'USD'), callbacks = [order_book_update3]),
-        #OrderSubscription(quote = "USD", callbacks = [order_update])
+        OrderBookSubscription(pair = Pair('ETH', 'USD'), callbacks = [order_book_update2]),
+        OrderBookSubscription(pair = Pair('XRP', 'USD'), callbacks = [order_book_update3]),
+        OrderSubscription(quote = "USD", callbacks = [order_update])
     ])
 
     # Execute all websockets asynchronously
