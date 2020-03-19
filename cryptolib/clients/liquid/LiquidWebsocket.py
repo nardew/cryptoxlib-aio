@@ -132,4 +132,22 @@ class OrderSubscription(LiquidSubscription):
         self.quote = quote
 
     def get_channel_name(self):
-        return f"user_account_{self.quote}_orders"
+        return f"user_account_{self.quote.lower()}_orders"
+
+class TradeSubscription(LiquidSubscription):
+    def __init__(self, currency: str, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+        super().__init__(callbacks)
+
+        self.currency = currency
+
+    def get_channel_name(self):
+        return f"user_account_{self.currency.lower()}_trades"
+
+class ExecutionsSubscription(LiquidSubscription):
+    def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+        super().__init__(callbacks)
+
+        self.pair = pair
+
+    def get_channel_name(self):
+        return f"user_executions_cash_{map_pair(self.pair)}"

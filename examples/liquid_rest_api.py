@@ -46,6 +46,15 @@ async def run():
     except LiquidException as e:
         print(e)
 
+    print("Crypto accounts:")
+    await liquid.get_crypto_accounts()
+
+    print("Fiat accounts:")
+    await liquid.get_fiat_accounts()
+
+    print("Account details:")
+    await liquid.get_account_details(currency = "BTC")
+
     await liquid.close()
 
 if __name__ == "__main__":

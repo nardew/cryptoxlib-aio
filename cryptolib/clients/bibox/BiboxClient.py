@@ -41,7 +41,7 @@ class BiboxClient(CryptoLibClient):
 
         LOG.debug(f"Signed data: {data}")
 
-    def _preprocess_rest_response(self, status_code: int, headers: CIMultiDictProxy[str], body: Optional[dict]) -> None:
+    def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         if body is not None and 'error' in body:
             raise BiboxException(f"BiboxException: status [{status_code}], response [{body}]")
 

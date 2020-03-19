@@ -47,7 +47,7 @@ class CryptoLibClient(ABC):
         pass
 
     @abstractmethod
-    def _preprocess_rest_response(self, status_code: int, headers: CIMultiDictProxy[str], body: Optional[dict]) -> None:
+    def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         pass
 
     @abstractmethod

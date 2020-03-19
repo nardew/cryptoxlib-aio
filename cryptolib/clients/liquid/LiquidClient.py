@@ -38,7 +38,7 @@ class LiquidClient(CryptoLibClient):
         signature = jwt.encode(authentication_payload, self.sec_key, 'HS256')
         headers["X-Quoine-Auth"] = signature.decode('utf-8')
 
-    def _preprocess_rest_response(self, status_code: int, headers: CIMultiDictProxy[str], body: Optional[dict]) -> None:
+    def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         if str(status_code)[0] != '2':
             raise LiquidException(f"LiquidException: status [{status_code}], response [{body}]")
 
@@ -74,7 +74,7 @@ class LiquidClient(CryptoLibClient):
         data = CryptoLibClient._clean_request_params({
             "product_id": int(product_id),
             "price": price,
-            "amount": quantity,
+            "quantity": quantity,
             "order_type": order_type.value,
             "side": order_side.value,
             "client_order_id": client_order_id
@@ -84,3 +84,12 @@ class LiquidClient(CryptoLibClient):
 
     async def cancel_order(self, order_id: str) -> dict:
         return await self._create_put("orders/" + order_id + "/cancel", headers = self._get_headers(), signed = True)
+
+    async def get_crypto_accounts(self) -> dict:
+        return await self._create_get("crypto_accounts", headers = self._get_headers(), signed = True)
+
+    async def get_fiat_accounts(self) -> dict:
+        return await self._create_get("fiat_accounts", headers = self._get_headers(), signed = True)
+
+    async def get_account_details(self, currency: str):
+        return await self._create_get(f"accounts/{currency}", headers = self._get_headers(), signed = True)
