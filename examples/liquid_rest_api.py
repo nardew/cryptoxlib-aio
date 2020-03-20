@@ -21,6 +21,12 @@ async def run():
     liquid = CryptoLib.create_liquid_client(api_key, sec_key)
 
     print("Products:")
+    products = await liquid.get_products()
+    for product in products['response']:
+        if product['currency_pair_code'] == 'ETHBTC':
+            print(json.dumps(product, indent = 4, sort_keys = True))
+
+    print("Product:")
     product = await liquid.get_product(product_id = "1")
     print(json.dumps(product['response'], indent = 4, sort_keys = True))
 
@@ -54,6 +60,12 @@ async def run():
 
     print("Account details:")
     await liquid.get_account_details(currency = "BTC")
+
+    print("Currencies:")
+    currencies = await liquid.get_currencies()
+    for currency in currencies['response']:
+        if currency['currency'] in ['BTC', 'ETH', 'USD', 'QASH']:
+            print(json.dumps(currency, indent = 4))
 
     await liquid.close()
 

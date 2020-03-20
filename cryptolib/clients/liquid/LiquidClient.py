@@ -93,3 +93,6 @@ class LiquidClient(CryptoLibClient):
 
     async def get_account_details(self, currency: str):
         return await self._create_get(f"accounts/{currency}", headers = self._get_headers(), signed = True)
+
+    async def get_currencies(self) -> dict:
+        return await self._create_get("currencies", headers = self._get_headers())
