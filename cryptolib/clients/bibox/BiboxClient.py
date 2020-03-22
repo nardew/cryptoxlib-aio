@@ -58,6 +58,9 @@ class BiboxClient(CryptoLibClient):
 
         return await self._create_post("mdata", data = data)
 
+    async def get_pairs(self) -> dict:
+        return await self._create_get("mdata?cmd=pairList")
+
     async def get_exchange_info(self) -> dict:
         params = {
             "cmd": "tradeLimit"
@@ -108,3 +111,4 @@ class BiboxClient(CryptoLibClient):
         }
 
         return await self._create_post("orderpending", data = data, signed = True)
+

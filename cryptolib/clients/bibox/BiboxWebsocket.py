@@ -24,7 +24,8 @@ class BiboxWebsocket(WebsocketMgr):
 
     def __init__(self, subscriptions: List[Subscription], api_key: str = None, sec_key: str = None, ssl_context = None) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
-                         builtin_ping_interval = None, periodic_timeout_sec = 10, ssl_context = ssl_context)
+                         builtin_ping_interval = None, periodic_timeout_sec = 10, ssl_context = ssl_context,
+                         auto_reconnect = True)
 
         self.api_key = api_key
         self.sec_key = sec_key
@@ -35,6 +36,14 @@ class BiboxWebsocket(WebsocketMgr):
             LOG.debug(f"> {subscription_message}")
             await websocket.send(json.dumps(subscription_message))
             return
+
+    async def _subscribe2(self, websocket: websockets.WebSocketClientProtocol):
+        subscription_messages = []
+        for subscription in self.subscriptions:
+            subscription_messages.append(subscription.get_subscription_message(api_key = self.api_key, sec_key = self.sec_key))
+
+        LOG.debug(f"> {json.dumps(subscription_messages)}")
+        await websocket.send(json.dumps(subscription_messages))
 
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
         messages = json.loads(message)
@@ -53,7 +62,7 @@ class BiboxWebsocket(WebsocketMgr):
                     data = message['data']
                     if 'binary' in message and message['binary'] == '1':
                         data = zlib.decompress(base64.b64decode(data), zlib.MAX_WBITS | 32)
-                        message['data'] = data
+                        message['data'] = json.loads(data.decode("utf-8"))
                     await self.publish_message(WebsocketMessage(subscription_id = message['channel'], message = message))
                 else:
                     LOG.warning(f"No data element received: {message}")

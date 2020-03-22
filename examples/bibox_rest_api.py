@@ -24,6 +24,9 @@ async def run():
     print("Ping:")
     await bibox.get_ping()
 
+    print("Pair list:")
+    await bibox.get_pairs()
+
     print("Exchange info:")
     await bibox.get_exchange_info()
 

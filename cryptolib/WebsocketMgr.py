@@ -48,13 +48,15 @@ class WebsocketMessage(object):
 
 class WebsocketMgr(ABC):
     def __init__(self, websocket_uri: str, subscriptions: List[Subscription], builtin_ping_interval: Optional[float] = 20,
-                 max_message_size: int = 2**20, periodic_timeout_sec: int = None, ssl_context = None) -> None:
+                 max_message_size: int = 2**20, periodic_timeout_sec: int = None, ssl_context = None,
+                 auto_reconnect: bool = False) -> None:
         self.websocket_uri = websocket_uri
         self.subscriptions = subscriptions
         self.builtin_ping_interval = builtin_ping_interval
         self.max_message_size = max_message_size
         self.periodic_timeout_sec = periodic_timeout_sec
         self.ssl_context = ssl_context
+        self.auto_reconnect = auto_reconnect
 
     @abstractmethod
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, response: str) -> None:
@@ -92,28 +94,36 @@ class WebsocketMgr(ABC):
             await subscription.initialize()
 
         try:
-            # main loop ensuring proper reconnection after a graceful connection termination by the remote server
+            # main loop ensuring proper reconnection if required
             while True:
                 LOG.debug(f"Initiating websocket connection.")
-                async with websockets.connect(self.websocket_uri, ping_interval = self.builtin_ping_interval,
-                                              max_size = self.max_message_size, ssl = self.ssl_context) as websocket:
-                    done, pending = await asyncio.wait(
-                        [asyncio.create_task(self.main_loop(websocket)),
-                         asyncio.create_task(self.periodic_loop(websocket))],
-                        return_when = asyncio.FIRST_EXCEPTION
-                    )
-                    for task in done:
-                        try:
-                            task.result()
-                        except Exception:
-                            for task in pending:
-                                if not task.cancelled():
-                                    task.cancel()
-                            raise
+                try:
+                    async with websockets.connect(self.websocket_uri, ping_interval = self.builtin_ping_interval,
+                                                  max_size = self.max_message_size, ssl = self.ssl_context) as websocket:
+                        done, pending = await asyncio.wait(
+                            [asyncio.create_task(self.main_loop(websocket)),
+                             asyncio.create_task(self.periodic_loop(websocket))],
+                            return_when = asyncio.FIRST_EXCEPTION
+                        )
+                        for task in done:
+                            try:
+                                task.result()
+                            except Exception:
+                                for task in pending:
+                                    if not task.cancelled():
+                                        task.cancel()
+                                raise
+                except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK, ConnectionResetError) as e:
+                    if self.auto_reconnect:
+                        LOG.exception(e)
+                        self._print_subscriptions()
+                    else:
+                        raise
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:
             LOG.error(f"An exception occurred. The websocket will be closed.")
+            self._print_subscriptions()
             raise
 
     async def publish_message(self, message: WebsocketMessage) -> None:
@@ -123,3 +133,9 @@ class WebsocketMgr(ABC):
                 return
 
         LOG.warning(f"Websocket message with subscription id {message.subscription_id} did not identify any subscription!")
+
+    def _print_subscriptions(self):
+        subscription_messages = []
+        for subscription in self.subscriptions:
+            subscription_messages.append(subscription.get_subscription_id())
+        LOG.info(f"Subscriptions: {subscription_messages}")
