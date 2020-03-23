@@ -113,7 +113,7 @@ class WebsocketMgr(ABC):
                                     if not task.cancelled():
                                         task.cancel()
                                 raise
-                except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK, ConnectionResetError) as e:
+                except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK, websockets.InvalidStatusCode, ConnectionResetError) as e:
                     if self.auto_reconnect:
                         LOG.exception(e)
                         self._print_subscriptions()
