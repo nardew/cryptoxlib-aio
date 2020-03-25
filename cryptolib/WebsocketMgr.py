@@ -109,14 +109,27 @@ class WebsocketMgr(ABC):
                             try:
                                 task.result()
                             except Exception:
+                                LOG.debug("Websocket processing has led to an exception, all pending tasks will be cancelled.")
                                 for task in pending:
                                     if not task.cancelled():
                                         task.cancel()
+                                if len(pending) > 0:
+                                    try:
+                                        await asyncio.wait(pending, return_when = asyncio.ALL_COMPLETED)
+                                    except asyncio.CancelledError:
+                                        await asyncio.wait(pending, return_when = asyncio.ALL_COMPLETED)
+                                        raise
+                                    finally:
+                                        LOG.debug("All pending tasks cancelled successfully.")
                                 raise
-                except (websockets.ConnectionClosedError, websockets.ConnectionClosedOK, websockets.InvalidStatusCode, ConnectionResetError) as e:
+                except (websockets.ConnectionClosedError,
+                        websockets.ConnectionClosedOK,
+                        websockets.InvalidStatusCode,
+                        ConnectionResetError) as e:
                     if self.auto_reconnect:
-                        LOG.exception(e)
+                        LOG.info("A recoverable exception has occurred, the websocket will be restarted automatically.")
                         self._print_subscriptions()
+                        LOG.exception(e)
                     else:
                         raise
         except asyncio.CancelledError:
