@@ -1,5 +1,5 @@
 from cryptolib.exceptions import CryptoLibException
 
 
-class BitforexException(CryptoLibException):
+class BiboxEuropeException(CryptoLibException):
 	pass

@@ -1,2 +1,0 @@
-class CryptoLibException(Exception):
-    pass
