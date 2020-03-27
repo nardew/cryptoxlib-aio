@@ -19,21 +19,19 @@ from cryptolib.clients.bibox.exceptions import BiboxException
 LOG = logging.getLogger(__name__)
 
 
-class BiboxWebsocket(WebsocketMgr):
-    WEBSOCKET_URI = "wss://push.bibox.com/"
+class BiboxEuropeWebsocket(WebsocketMgr):
+    WEBSOCKET_URI = "wss://push.bibox.cc/"
 
     def __init__(self, subscriptions: List[Subscription], api_key: str = None, sec_key: str = None, ssl_context = None) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
-                         builtin_ping_interval = None, periodic_timeout_sec = 10, ssl_context = ssl_context,
+                         builtin_ping_interval = None, ssl_context = ssl_context,
                          auto_reconnect = True)
-
         self.api_key = api_key
         self.sec_key = sec_key
 
     async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
         for subscription in self.subscriptions:
-            subscription_message = json.dumps(
-                subscription.get_subscription_message(api_key = self.api_key, sec_key = self.sec_key))
+            subscription_message = json.dumps(subscription.get_subscription_message(api_key = self.api_key, sec_key = self.sec_key))
 
             LOG.debug(f"> {subscription_message}")
             await websocket.send(subscription_message)
@@ -61,7 +59,7 @@ class BiboxWebsocket(WebsocketMgr):
                     LOG.warning(f"No data element received: {message}")
 
 
-class BiboxSubscription(Subscription):
+class BiboxEuropeSubscription(Subscription):
     def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
 
@@ -80,7 +78,7 @@ class BiboxSubscription(Subscription):
         }
 
 
-class OrderBookSubscription(BiboxSubscription):
+class OrderBookSubscription(BiboxEuropeSubscription):
     def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
 
@@ -90,7 +88,7 @@ class OrderBookSubscription(BiboxSubscription):
         return f"bibox_sub_spot_{map_pair(self.pair)}_depth"
 
 
-class MarketSubscription(BiboxSubscription):
+class MarketSubscription(BiboxEuropeSubscription):
     def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
 
@@ -99,7 +97,7 @@ class MarketSubscription(BiboxSubscription):
     def get_channel_name(self):
         return "bibox_sub_spot_ALL_ALL_market"
 
-class TradeSubscription(BiboxSubscription):
+class TradeSubscription(BiboxEuropeSubscription):
     def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
 
@@ -108,7 +106,7 @@ class TradeSubscription(BiboxSubscription):
     def get_channel_name(self):
         return f"bibox_sub_spot_{map_pair(self.pair)}_deals"
 
-class UserDataSubscription(BiboxSubscription):
+class UserDataSubscription(BiboxEuropeSubscription):
     def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
 

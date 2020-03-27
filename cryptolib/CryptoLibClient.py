@@ -11,7 +11,7 @@ from multidict import CIMultiDictProxy
 from typing import List, Optional
 
 from cryptolib.Timer import Timer
-from cryptolib.CryptoLibException import CryptoLibException
+from cryptolib.exceptions import CryptoLibException
 from cryptolib.WebsocketMgr import Subscription, WebsocketMgr
 
 LOG = logging.getLogger(__name__)

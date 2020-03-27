@@ -3,7 +3,9 @@ import json
 import logging
 import asyncio
 from abc import ABC, abstractmethod
-from typing import List, Callable, Any, Union, Optional
+from typing import List, Callable, Any, Optional
+
+from cryptolib.exceptions import WebsocketReconnectionException
 
 LOG = logging.getLogger(__name__)
 
@@ -125,7 +127,8 @@ class WebsocketMgr(ABC):
                 except (websockets.ConnectionClosedError,
                         websockets.ConnectionClosedOK,
                         websockets.InvalidStatusCode,
-                        ConnectionResetError) as e:
+                        ConnectionResetError,
+                        WebsocketReconnectionException) as e:
                     if self.auto_reconnect:
                         LOG.info("A recoverable exception has occurred, the websocket will be restarted automatically.")
                         self._print_subscriptions()
