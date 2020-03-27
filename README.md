@@ -39,7 +39,7 @@ As mentioned earlier, all exchanges found below include full support for websock
 
 
 | Name | Docs | Comments |
-| ----------------------------------------------------------- |: --- :| ---------------- |
+| --- |: --- :| --- |
 | ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
 | ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bibox_europe.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
 | ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  | 
