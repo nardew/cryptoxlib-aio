@@ -18,10 +18,10 @@ print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}"
 
 async def order_book_update(response : dict) -> None:
     print(f"Callback order_book_update: [{response}]")
-    data = response['data']
-    server_timestamp = int(Decimal(data['update_time']))
-    local_tmstmp_ms = int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
-    LOG.debug(f"Timestamp diff: {local_tmstmp_ms - server_timestamp} ms")
+    #data = response['data']
+    #server_timestamp = int(Decimal(data['update_time']))
+    #local_tmstmp_ms = int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
+    #LOG.debug(f"Timestamp diff: {local_tmstmp_ms - server_timestamp} ms")
 
 async def order_book_update2(response : dict) -> None:
     print(f"Callback order_book_update2: [{response}]")
@@ -41,11 +41,11 @@ async def run():
     api_key = ""
     sec_key = ""
 
-    bibox = CryptoLib.create_bibox_client(api_key, sec_key)
+    bibox = CryptoLib.create_bibox_europe_client(api_key, sec_key)
 
     bibox.compose_subscriptions([
         OrderBookSubscription(pair = Pair('ETH', 'BTC'), callbacks = [order_book_update]),
-        #OrderBookSubscription(pair = Pair('XRP', 'BTC'), callbacks = [order_book_update]),
+        OrderBookSubscription(pair = Pair('BTC', 'EUR'), callbacks = [order_book_update]),
     ])
 
 
