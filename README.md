@@ -21,30 +21,30 @@ You will also find out that our subject of interest are often smaller exchanges 
 Disclaimer: By no means we are suggesting that existing libraries are inferior to `cryptolib-aio`, they just appeal to different endusers.
 
 ### Features
-- access to REST API as well as full support of websockets for included exchanges (given websockets are provided by the exchange)
+- access to REST API as well as full support of websockets for selected exchanges (given websockets are provided by the exchange)
 - automatic connection management (reconnecting after remote termination, ...)
 - bundling of channels 
-- lean architecture making it straightforward to implement API of new exchange
+- lean architecture making it straightforward to implement API of a new exchange
 - fully asynchronous design aiming for the best performance
 
-For history of changes see [CHANGELOG](https://github.com/nardew/bitpanda-aio/blob/master/CHANGELOG.md).
+For the history of changes see [CHANGELOG](https://github.com/nardew/bitpanda-aio/blob/master/CHANGELOG.md).
 
 ### List of supported exchanges
 
-As mentioned earlier, all exchanges found below include full support for websockets.
+As mentioned earlier, all exchanges listed below include full support for websockets.
 
-| Name | Docs | Comments |
-| --- | --- | --- |
-| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
-| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bibox_europe.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
-| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  | 
-| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
-| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitpanda.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
-| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |  |
+| Name | Docs |
+| --- | --- |
+| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
+| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bibox_europe.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
+| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
+| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
+| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitpanda.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
+| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
 
 Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptolib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
 
-The list of supported exchanges will grow without any special pattern, usually driven by personal needs. If there is a high demand for a new exchange to be added, there is a high chance for it to happen (but not guranteed). For business related inquiries concerning customized changes tailored for the client please reach out via e-mail mentioned in the contacts.
+The list of supported exchanges will grow without any specific pattern, usually driven by personal needs. If there is a high demand for a new exchange to be added, there is a high chance for it to happen (but not guranteed). For business related inquiries concerning customized changes tailored for the client please reach out via e-mail mentioned in the contacts.
 
 ### Installation
 ```bash
@@ -66,7 +66,7 @@ If you like the library and you feel like you want to support its further develo
 - file bugs, proposals, pull requests, ...
 - spread the word
 - donate an arbitrary tip
-  * BTC: 15JUgVq3YFoPedEj5wgQgvkZRx5HQoKJC4
-  * ETH: 0xf29304b6af5831030ba99aceb290a3a2129b993d
-  * ADA: DdzFFzCqrhshyLV3wktXFvConETEr9mCfrMo9V3dYz4pz6yNq9PjJusfnn4kzWKQR91pWecEbKoHodPaJzgBHdV2AKeDSfR4sckrEk79
-  * XRP: rhVWrjB9EGDeK4zuJ1x2KXSjjSpsDQSaU6 **+ tag** 599790141
+  * `BTC`: `15JUgVq3YFoPedEj5wgQgvkZRx5HQoKJC4`
+  * `ETH`: `0xf29304b6af5831030ba99aceb290a3a2129b993d`
+  * `ADA`: `DdzFFzCqrhshyLV3wktXFvConETEr9mCfrMo9V3dYz4pz6yNq9PjJusfnn4kzWKQR91pWecEbKoHodPaJzgBHdV2AKeDSfR4sckrEk79`
+  * `XRP`: `rhVWrjB9EGDeK4zuJ1x2KXSjjSpsDQSaU6` **+ tag** `599790141`
