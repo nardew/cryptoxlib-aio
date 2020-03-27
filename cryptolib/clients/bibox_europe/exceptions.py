@@ -1,4 +1,4 @@
-from cryptolib.CryptoLibException import CryptoLibException
+from cryptolib.exceptions import CryptoLibException
 
 
 class BiboxEuropeException(CryptoLibException):
