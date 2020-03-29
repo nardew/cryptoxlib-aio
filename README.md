@@ -53,6 +53,62 @@ pip install cryptolib-aio
 ```
 
 ### Examples
+##### BITPANDA
+```python
+bitpanda = CryptoLib.create_bitpanda_client(api_key)
+
+print("Account balance:")
+await bitpanda.get_account_balances()
+
+print("Order book:")
+await bitpanda.get_order_book(Pair("BTC", "EUR"))
+
+print("Create limit order:")
+await bitpanda.create_limit_order(Pair("BTC", "EUR"), OrderSide.BUY, "10000", "1")
+
+# Create first bundle of subscriptions
+bitpanda.compose_subscriptions([
+    AccountSubscription(),
+    PricesSubscription([Pair("BTC", "EUR")]),
+    OrderbookSubscription([Pair("BTC", "EUR")], "50", callbacks = [order_book_update]),
+    CandlesticksSubscription([CandlesticksSubscriptionParams(Pair("BTC", "EUR"), TimeUnit.MINUTES, 1)]),
+    MarketTickerSubscription([Pair("BTC", "EUR")])
+])
+
+# Bundle another subscriptions into a separate websocket
+bitpanda.compose_subscriptions([
+    OrderbookSubscription([Pair("ETH", "EUR")], "3", callbacks = [order_book_update]),
+])
+
+# Execute all websockets asynchronously
+await bitpanda.start_websockets()
+```
+
+##### BITFOREX
+```python
+bitforex = CryptoLib.create_bitforex_client(api_key, sec_key)
+
+print("Order book:")
+await bitforex.get_order_book(pair = Pair('ETH', 'BTC'), depth = "1")
+
+print("Create order:")
+await bitforex.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.SELL, quantity = "1", price = "1")
+
+# First bundle of subscriptions
+bitforex.compose_subscriptions([
+    OrderBookSubscription(pair = Pair('ETH', 'BTC'), depth = "0", callbacks = [order_book_update]),
+    TradeSubscription(pair = Pair('ETH', 'BTC'), size = "2", callbacks = [trade_update]),
+])
+
+# Another bundle of subscriptions
+bitforex.compose_subscriptions([
+    TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.CandelstickInterval.I_1MIN, callbacks = [ticker_update]),
+    Ticker24hSubscription(pair = Pair('BTC', 'USDT'), callbacks = [ticker24_update])
+])
+
+# Execute all websockets asynchronously
+await bitforex.start_websockets()
+```
 
 Examples for every exchange can be found in the folder `examples`.
 

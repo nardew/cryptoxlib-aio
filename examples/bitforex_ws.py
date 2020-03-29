@@ -42,7 +42,7 @@ async def run():
 
     bitforex = CryptoLib.create_bitforex_client(api_key, sec_key)
 
-     # Bundle several subscriptions into a single websocket
+    # Bundle several subscriptions into a single websocket
     bitforex.compose_subscriptions([
         OrderBookSubscription(pair = Pair('ETH', 'BTC'), depth = "0", callbacks = [order_book_update]),
         OrderBookSubscription(pair = Pair('ETH', 'USDT'), depth = "0", callbacks = [order_book_update2]),
