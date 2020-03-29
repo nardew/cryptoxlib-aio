@@ -116,7 +116,7 @@ class UserDataSubscription(BiboxSubscription):
         return "bibox_sub_spot_ALL_ALL_login"
 
     def get_subscription_message(self, **kwargs) -> dict:
-        subscription =  {
+        subscription = {
             "apikey": kwargs['api_key'],
             'binary': 0,
             "channel": self.get_channel_name(),

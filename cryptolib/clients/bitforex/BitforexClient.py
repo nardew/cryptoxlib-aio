@@ -5,7 +5,7 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Tuple, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient
+from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
 from cryptolib.clients.bitforex import enums
 from cryptolib.Pair import Pair
 from cryptolib.clients.bitforex.exceptions import BitforexException
@@ -30,7 +30,7 @@ class BitforexClient(CryptoLibClient):
     def _get_rest_api_uri(self) -> str:
         return BitforexClient.REST_API_URI
 
-    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
+    def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         params['accessKey'] = self.api_key
 
         params_string = ""
