@@ -3,6 +3,7 @@ from cryptolib.clients.liquid.LiquidClient import LiquidClient
 from cryptolib.clients.bibox.BiboxClient import BiboxClient
 from cryptolib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
 from cryptolib.clients.bitpanda.BitpandaClient import BitpandaClient
+from cryptolib.clients.binance.BinanceClient import BinanceClient
 
 
 class CryptoLib(object):
@@ -25,3 +26,7 @@ class CryptoLib(object):
     @staticmethod
     def create_bitpanda_client(api_key: str) -> BitpandaClient:
         return BitpandaClient(api_key)
+
+    @staticmethod
+    def create_binance_client(api_key: str, sec_key: str) -> BinanceClient:
+        return BinanceClient(api_key, sec_key)
