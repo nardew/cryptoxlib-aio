@@ -35,16 +35,16 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 
 | Name | Docs |
 | --- | --- |
-| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
-| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bibox_europe.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
+| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
+| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bibox_europe.png) | [API](https://github.com/BiboxEurope/API_Docs_en) |
 | ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
-| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
-| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitpanda.png) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
-| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) |
+| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
+| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitpanda.png) | [API](https://developers.bitpanda.com/exchange/) |
+| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://developers.liquid.com) |
 
 Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptolib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
 
-The list of supported exchanges will grow without any specific pattern, usually driven by personal needs. If there is a high demand for a new exchange to be added, there is a high chance for it to happen (but not guranteed). For business related inquiries concerning customized changes tailored for the client please reach out via e-mail mentioned in the contacts.
+The list of supported exchanges will grow without any specific pattern, usually driven by personal needs. If there is a high demand for a new exchange/feature to be added, there is a high chance for it to happen (but not guranteed). For business related inquiries concerning customized changes tailored for the client please reach out via e-mail mentioned in the contacts.
 
 ### Installation
 ```bash
