@@ -1,8 +1,8 @@
-# cryptolib-aio 1.1.0
+# cryptolib-aio 2.0.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
-`cryptolib-aio` is a compact Python library providing access to API of selected crypto exchanges.
+`cryptolib-aio` is a compact Python library providing access to REST and WEBSOCKET API of selected crypto exchanges.
 
 `cryptolib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [async websockets](https://websockets.readthedocs.io/en/stable/) and [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
 
@@ -12,7 +12,7 @@ Today there are numerous existing libraries targeting similar audience as `crypt
 The mission of `cryptolib-aio` is to:
 
 - serve as a single entry point for various crypto exchanges
-- provide full REST API as well as full implementation of exchange's _**websockets**_
+- provide full REST API as well as full implementation of exchange's _**websockets**_. For free and without subscription plans.
 
 Full support of websockets is the corner stone of `cryptolib-aio` which attempts to set `cryptolib-aio` apart from existing solutions which either do not provide websocket support or do not provide it for free.
 
