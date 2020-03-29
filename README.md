@@ -40,7 +40,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
 | ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
 | ![bitpanda](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitpanda.png) | [API](https://developers.bitpanda.com/exchange/) |
-| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitpanda.png) | [API](https://docs.bitvavo.com/#section/Introduction) |
+| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptolib-aio/docu/images/bitvavo.png) | [API](https://docs.bitvavo.com/#section/Introduction) |
 | ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://developers.liquid.com) |
 
 Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptolib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
