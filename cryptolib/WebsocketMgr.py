@@ -31,7 +31,7 @@ class Subscription(ABC):
 
         return self.subscription_id
 
-    async def initialize(self) -> None:
+    async def initialize(self, **kwargs) -> None:
         pass
 
     async def process_message(self, response: dict) -> None:
@@ -67,6 +67,13 @@ class WebsocketMgr(ABC):
     async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
         pass
 
+    def get_websocket_uri_variable_part(self):
+        return ""
+
+    async def initialize_subscriptions(self) -> None:
+        for subscription in self.subscriptions:
+            await subscription.initialize()
+
     async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
         subscription_messages = []
         for subscription in self.subscriptions:
@@ -92,15 +99,15 @@ class WebsocketMgr(ABC):
                 await asyncio.sleep(self.periodic_timeout_sec)
 
     async def run(self) -> None:
-        for subscription in self.subscriptions:
-            await subscription.initialize()
+        await self.initialize_subscriptions()
 
         try:
             # main loop ensuring proper reconnection if required
             while True:
                 LOG.debug(f"Initiating websocket connection.")
                 try:
-                    async with websockets.connect(self.websocket_uri, ping_interval = self.builtin_ping_interval,
+                    async with websockets.connect(self.websocket_uri + self.get_websocket_uri_variable_part(),
+                                                  ping_interval = self.builtin_ping_interval,
                                                   max_size = self.max_message_size, ssl = self.ssl_context) as websocket:
                         done, pending = await asyncio.wait(
                             [asyncio.create_task(self.main_loop(websocket)),
