@@ -30,9 +30,6 @@ async def run():
     print("Account balance:")
     await client.get_account_balances()
 
-    print("Account fees:")
-    await client.get_account_fees()
-
     print("Account orders:")
     await client.get_account_orders()
 
