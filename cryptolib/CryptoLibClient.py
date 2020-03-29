@@ -18,10 +18,10 @@ LOG = logging.getLogger(__name__)
 
 
 class RestCallType(enum.Enum):
-    GET = enum.auto()
-    POST = enum.auto()
-    DELETE = enum.auto()
-    PUT = enum.auto()
+    GET = "GET"
+    POST = "POST"
+    DELETE = "DELETE"
+    PUT = "PUT"
 
 
 class CryptoLibClient(ABC):
@@ -43,7 +43,7 @@ class CryptoLibClient(ABC):
         pass
 
     @abstractmethod
-    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
+    def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         pass
 
     @abstractmethod
@@ -73,9 +73,13 @@ class CryptoLibClient(ABC):
 
     async def _create_rest_call(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
         with Timer('RestCall'):
+            # ensure headers is always a valid object
+            if headers is None:
+                headers = {}
+
             # add signature into the parameters
             if signed:
-                self._sign_payload(resource, data, params, headers)
+                self._sign_payload(rest_call_type, resource, data, params, headers)
 
             if rest_call_type == RestCallType.GET:
                 rest_call = self._get_rest_session().get(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)

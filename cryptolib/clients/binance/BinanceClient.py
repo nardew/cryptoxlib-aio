@@ -5,7 +5,7 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient
+from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
 from cryptolib.clients.binance import enums
 from cryptolib.clients.binance.exceptions import BinanceException
 from cryptolib.clients.binance.functions import map_pair
@@ -30,7 +30,7 @@ class BinanceClient(CryptoLibClient):
     def _get_rest_api_uri(self) -> str:
         return self.REST_API_URI
 
-    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
+    def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         params_string = ""
         data_string = ""
 

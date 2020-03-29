@@ -74,6 +74,9 @@ class WebsocketMgr(ABC):
         for subscription in self.subscriptions:
             await subscription.initialize()
 
+    async def _authenticate(self, websocket: websockets.WebSocketClientProtocol):
+        pass
+
     async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
         subscription_messages = []
         for subscription in self.subscriptions:
@@ -83,6 +86,7 @@ class WebsocketMgr(ABC):
         await websocket.send(json.dumps(subscription_messages))
 
     async def main_loop(self, websocket: websockets.WebSocketClientProtocol):
+        await self._authenticate(websocket)
         await self._subscribe(websocket)
 
         # start processing incoming messages
