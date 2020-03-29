@@ -4,7 +4,7 @@ import jwt
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient
+from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
 from cryptolib.clients.liquid import enums
 from cryptolib.clients.liquid.exceptions import LiquidException
 from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
@@ -26,7 +26,7 @@ class LiquidClient(CryptoLibClient):
     def _get_rest_api_uri(self) -> str:
         return self.REST_API_URI
 
-    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
+    def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         authentication_payload = {
             "path": "/" + resource,
             "nonce": self._get_unix_timestamp_ns(),

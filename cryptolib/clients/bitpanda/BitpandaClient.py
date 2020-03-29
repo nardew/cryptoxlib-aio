@@ -5,7 +5,7 @@ import pytz
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient
+from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
 from cryptolib.clients.bitpanda import enums
 from cryptolib.clients.bitpanda.exceptions import BitpandaException
 from cryptolib.clients.bitpanda.functions import map_pair
@@ -29,7 +29,7 @@ class BitpandaClient(CryptoLibClient):
     def _get_rest_api_uri(self) -> str:
         return self.REST_API_URI
 
-    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
+    def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         pass
 
     def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:

@@ -6,7 +6,7 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient
+from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
 from cryptolib.clients.bibox import enums
 from cryptolib.clients.bibox.exceptions import BiboxException
 from cryptolib.clients.bibox.functions import map_pair
@@ -31,7 +31,7 @@ class BiboxClient(CryptoLibClient):
     def _get_rest_api_uri(self) -> str:
         return self.REST_API_URI
 
-    def _sign_payload(self, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
+    def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
         cmds = data['cmds']
 
         signature = hmac.new(self.sec_key.encode('utf-8'), cmds.encode('utf-8'), hashlib.md5).hexdigest()
