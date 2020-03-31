@@ -27,7 +27,7 @@ Disclaimer: By no means we are suggesting that existing libraries are inferior t
 - lean architecture making it straightforward to implement API of a new exchange
 - fully asynchronous design aiming for the best performance
 
-For the history of changes see [CHANGELOG](https://github.com/nardew/bitpanda-aio/blob/master/CHANGELOG.md).
+For the history of changes see [CHANGELOG](https://github.com/nardew/cryptolib-aio/blob/master/CHANGELOG.md).
 
 ### List of supported exchanges
 

@@ -90,6 +90,16 @@ class OrderBookSubscription(BiboxSubscription):
         return f"bibox_sub_spot_{map_pair(self.pair)}_depth"
 
 
+class TickerSubscription(BiboxSubscription):
+    def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+        super().__init__(callbacks)
+
+        self.pair = pair
+
+    def get_channel_name(self):
+        return f"bibox_sub_spot_{map_pair(self.pair)}_ticker"
+
+
 class MarketSubscription(BiboxSubscription):
     def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
