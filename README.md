@@ -115,7 +115,7 @@ Examples for every exchange can be found in the folder `examples`.
 ### Contact
 
 - to report issues, bugs, docu corrections or to propose new features use preferably Github Issues
-- for topics requiring more personal approach feel free to send an e-mail to <img src="http://safemail.justlikeed.net/e/8701dfa9bd62d1de196684aa746f9d32.png" border="0" align="absbottom">
+- for topics requiring more personal approach feel free to send an e-mail to <img src="http://safemail.justlikeed.net/e/92d5165877de84f44e7731e4a1b60ba1.png" border="0" align="absbottom">
 
 ### Support
 
