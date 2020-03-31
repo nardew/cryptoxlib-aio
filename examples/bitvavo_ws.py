@@ -2,13 +2,13 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitvavo import enums
-from cryptolib.clients.bitvavo.BitvavoWebsocket import AccountSubscription, \
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitvavo import enums
+from cryptoxlib.clients.bitvavo.BitvavoWebsocket import AccountSubscription, \
     OrderbookSubscription, CandlesticksSubscription, TickerSubscription, Ticker24Subscription
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -31,7 +31,7 @@ async def run():
     api_key = os.environ['BITVAVOAPIKEY']
     sec_key = os.environ['BITVAVOSECKEY']
 
-    client = CryptoLib.create_bitvavo_client(api_key, sec_key)
+    client = CryptoXLib.create_bitvavo_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([

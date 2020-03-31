@@ -10,11 +10,11 @@ import websockets
 from abc import abstractmethod
 from typing import List, Callable, Any, Optional
 
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
-from cryptolib.Pair import Pair
-from cryptolib.clients.bibox.functions import map_pair
-from cryptolib.clients.bibox import enums
-from cryptolib.clients.bibox.exceptions import BiboxException
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bibox.functions import map_pair
+from cryptoxlib.clients.bibox import enums
+from cryptoxlib.clients.bibox.exceptions import BiboxException
 
 LOG = logging.getLogger(__name__)
 

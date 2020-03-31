@@ -1,4 +1,4 @@
-from cryptolib.Pair import Pair
+from cryptoxlib.Pair import Pair
 
 
 def map_pair(pair: Pair) -> str:

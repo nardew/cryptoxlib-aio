@@ -1,5 +1,5 @@
-from cryptolib.exceptions import CryptoLibException
+from cryptoxlib.exceptions import CryptoXLibException
 
 
-class BitvavoException(CryptoLibException):
+class BitvavoException(CryptoXLibException):
 	pass

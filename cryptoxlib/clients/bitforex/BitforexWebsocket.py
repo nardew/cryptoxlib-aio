@@ -4,12 +4,12 @@ import websockets
 from abc import abstractmethod
 from typing import List, Callable, Any, Union, Optional
 
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitforex import enums
-from cryptolib.clients.bitforex.exceptions import BitforexException
-from cryptolib.clients.bitforex.functions import map_pair
-from cryptolib.PeriodicChecker import PeriodicChecker
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitforex import enums
+from cryptoxlib.clients.bitforex.exceptions import BitforexException
+from cryptoxlib.clients.bitforex.functions import map_pair
+from cryptoxlib.PeriodicChecker import PeriodicChecker
 
 LOG = logging.getLogger(__name__)
 

@@ -6,12 +6,12 @@ import websockets
 from abc import abstractmethod
 from typing import List, Callable, Any, Optional
 
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
-from cryptolib.Pair import Pair
-from cryptolib.clients.liquid.functions import map_pair
-from cryptolib.clients.liquid import enums
-from cryptolib.clients.liquid.exceptions import LiquidException
-from cryptolib.PeriodicChecker import PeriodicChecker
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.liquid.functions import map_pair
+from cryptoxlib.clients.liquid import enums
+from cryptoxlib.clients.liquid.exceptions import LiquidException
+from cryptoxlib.PeriodicChecker import PeriodicChecker
 
 LOG = logging.getLogger(__name__)
 

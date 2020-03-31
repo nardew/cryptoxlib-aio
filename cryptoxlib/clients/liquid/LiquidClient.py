@@ -4,16 +4,16 @@ import jwt
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.liquid import enums
-from cryptolib.clients.liquid.exceptions import LiquidException
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.liquid.LiquidWebsocket import LiquidWebsocket
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.liquid import enums
+from cryptoxlib.clients.liquid.exceptions import LiquidException
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.liquid.LiquidWebsocket import LiquidWebsocket
 
 LOG = logging.getLogger(__name__)
 
 
-class LiquidClient(CryptoLibClient):
+class LiquidClient(CryptoXLibClient):
     REST_API_URI = "https://api.liquid.com/"
 
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,
@@ -71,7 +71,7 @@ class LiquidClient(CryptoLibClient):
 
     async def create_order(self, product_id: str, order_type: enums.OrderType, order_side: enums.OrderSide,
                            quantity: str, price: str, client_order_id: str = None) -> dict:
-        data = CryptoLibClient._clean_request_params({
+        data = CryptoXLibClient._clean_request_params({
             "product_id": int(product_id),
             "price": price,
             "quantity": quantity,

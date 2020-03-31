@@ -3,9 +3,9 @@ import logging
 import websockets
 from typing import List, Callable, Any, Optional
 
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
-from cryptolib.Pair import Pair
-from cryptolib.clients.binance.functions import map_ws_pair
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.binance.functions import map_ws_pair
 
 LOG = logging.getLogger(__name__)
 

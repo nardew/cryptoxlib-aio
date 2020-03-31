@@ -3,12 +3,12 @@ import logging
 import os
 from datetime import datetime
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.clients.binance.BinanceWebsocket import AccountSubscription, BestOrderBookTickerSubscription, \
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.clients.binance.BinanceWebsocket import AccountSubscription, BestOrderBookTickerSubscription, \
     TradeSubscription, BestOrderBookSymbolTickerSubscription
-from cryptolib.Pair import Pair
+from cryptoxlib.Pair import Pair
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -33,7 +33,7 @@ async def run():
     api_key = os.environ['APIKEY']
     sec_key = os.environ['SECKEY']
 
-    client = CryptoLib.create_binance_client(api_key, sec_key)
+    client = CryptoXLib.create_binance_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([

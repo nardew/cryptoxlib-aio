@@ -6,19 +6,19 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.bibox import enums
-from cryptolib.clients.bibox.exceptions import BiboxException
-from cryptolib.clients.bibox.functions import map_pair
-from cryptolib.Pair import Pair
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.bibox.BiboxWebsocket import BiboxWebsocket
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.bibox import enums
+from cryptoxlib.clients.bibox.exceptions import BiboxException
+from cryptoxlib.clients.bibox.functions import map_pair
+from cryptoxlib.Pair import Pair
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.bibox.BiboxWebsocket import BiboxWebsocket
 
 
 LOG = logging.getLogger(__name__)
 
 
-class BiboxClient(CryptoLibClient):
+class BiboxClient(CryptoXLibClient):
     REST_API_URI = "https://api.bibox.com/v1/"
 
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,

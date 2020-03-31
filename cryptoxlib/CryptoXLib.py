@@ -1,13 +1,13 @@
-from cryptolib.clients.bitforex.BitforexClient import BitforexClient
-from cryptolib.clients.liquid.LiquidClient import LiquidClient
-from cryptolib.clients.bibox.BiboxClient import BiboxClient
-from cryptolib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
-from cryptolib.clients.bitpanda.BitpandaClient import BitpandaClient
-from cryptolib.clients.binance.BinanceClient import BinanceClient
-from cryptolib.clients.bitvavo.BitvavoClient import BitvavoClient
+from cryptoxlib.clients.bitforex.BitforexClient import BitforexClient
+from cryptoxlib.clients.liquid.LiquidClient import LiquidClient
+from cryptoxlib.clients.bibox.BiboxClient import BiboxClient
+from cryptoxlib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
+from cryptoxlib.clients.bitpanda.BitpandaClient import BitpandaClient
+from cryptoxlib.clients.binance.BinanceClient import BinanceClient
+from cryptoxlib.clients.bitvavo.BitvavoClient import BitvavoClient
 
 
-class CryptoLib(object):
+class CryptoXLib(object):
     @staticmethod
     def create_bitforex_client(api_key: str, sec_key: str) -> BitforexClient:
         return BitforexClient(api_key, sec_key)

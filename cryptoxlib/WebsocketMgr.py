@@ -5,7 +5,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import List, Callable, Any, Optional
 
-from cryptolib.exceptions import WebsocketReconnectionException
+from cryptoxlib.exceptions import WebsocketReconnectionException
 
 LOG = logging.getLogger(__name__)
 

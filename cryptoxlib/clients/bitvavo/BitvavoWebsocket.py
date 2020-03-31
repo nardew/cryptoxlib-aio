@@ -6,11 +6,11 @@ import hashlib
 import datetime
 from typing import List, Callable, Any, Optional
 
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitvavo.functions import map_pair
-from cryptolib.clients.bitvavo import enums
-from cryptolib.clients.bitvavo.exceptions import BitvavoException
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitvavo.functions import map_pair
+from cryptoxlib.clients.bitvavo import enums
+from cryptoxlib.clients.bitvavo.exceptions import BitvavoException
 
 LOG = logging.getLogger(__name__)
 

@@ -5,19 +5,19 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.binance import enums
-from cryptolib.clients.binance.exceptions import BinanceException
-from cryptolib.clients.binance.functions import map_pair
-from cryptolib.Pair import Pair
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.binance.BinanceWebsocket import BinanceWebsocket
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.binance import enums
+from cryptoxlib.clients.binance.exceptions import BinanceException
+from cryptoxlib.clients.binance.functions import map_pair
+from cryptoxlib.Pair import Pair
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.binance.BinanceWebsocket import BinanceWebsocket
 
 
 LOG = logging.getLogger(__name__)
 
 
-class BinanceClient(CryptoLibClient):
+class BinanceClient(CryptoXLibClient):
     REST_API_URI = "https://api.binance.com/api/v3/"
 
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,

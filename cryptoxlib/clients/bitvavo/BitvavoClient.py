@@ -6,19 +6,19 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.bitvavo import enums
-from cryptolib.clients.bitvavo.exceptions import BitvavoException
-from cryptolib.clients.bitvavo.functions import map_pair
-from cryptolib.Pair import Pair
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.bitvavo.BitvavoWebsocket import BitvavoWebsocket
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.bitvavo import enums
+from cryptoxlib.clients.bitvavo.exceptions import BitvavoException
+from cryptoxlib.clients.bitvavo.functions import map_pair
+from cryptoxlib.Pair import Pair
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.bitvavo.BitvavoWebsocket import BitvavoWebsocket
 
 
 LOG = logging.getLogger(__name__)
 
 
-class BitvavoClient(CryptoLibClient):
+class BitvavoClient(CryptoXLibClient):
     REST_API_URI = "https://api.bitvavo.com/v2/"
     VALIDITY_WINDOW_MS = 5000
 

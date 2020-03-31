@@ -2,12 +2,12 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.clients.bitforex import enums
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitforex.exceptions import BitforexException
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.clients.bitforex import enums
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitforex.exceptions import BitforexException
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -20,7 +20,7 @@ async def run():
     api_key = os.environ['BITFOREXAPIKEY']
     sec_key = os.environ['BITFOREXSECKEY']
 
-    bitforex = CryptoLib.create_bitforex_client(api_key, sec_key)
+    bitforex = CryptoXLib.create_bitforex_client(api_key, sec_key)
 
     print("Exchange info:")
     await bitforex.get_exchange_info()

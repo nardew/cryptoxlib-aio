@@ -5,19 +5,19 @@ import pytz
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.bitpanda import enums
-from cryptolib.clients.bitpanda.exceptions import BitpandaException
-from cryptolib.clients.bitpanda.functions import map_pair
-from cryptolib.Pair import Pair
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.bitpanda.BitpandaWebsocket import BitpandaWebsocket
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.bitpanda import enums
+from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
+from cryptoxlib.clients.bitpanda.functions import map_pair
+from cryptoxlib.Pair import Pair
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.bitpanda.BitpandaWebsocket import BitpandaWebsocket
 
 
 LOG = logging.getLogger(__name__)
 
 
-class BitpandaClient(CryptoLibClient):
+class BitpandaClient(CryptoXLibClient):
     REST_API_URI = "https://api.exchange.bitpanda.com/public/v1/"
 
     def __init__(self, api_key: str = None, api_trace_log: bool = False,

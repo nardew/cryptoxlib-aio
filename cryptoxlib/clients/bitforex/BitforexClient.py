@@ -5,18 +5,18 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Tuple, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.bitforex import enums
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitforex.exceptions import BitforexException
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.bitforex.BitforexWebsocket import BitforexWebsocket
-from cryptolib.clients.bitforex.functions import map_pair
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.bitforex import enums
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitforex.exceptions import BitforexException
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.bitforex.BitforexWebsocket import BitforexWebsocket
+from cryptoxlib.clients.bitforex.functions import map_pair
 
 LOG = logging.getLogger(__name__)
 
 
-class BitforexClient(CryptoLibClient):
+class BitforexClient(CryptoXLibClient):
     REST_API_VERSION_URI = "/api/v1/"
     REST_API_URI = "https://api.bitforex.com" + REST_API_VERSION_URI
 
@@ -58,7 +58,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_get("market/symbols")
 
     async def get_order_book(self, pair: Pair, depth: str = None) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "size": depth,
         })
@@ -66,14 +66,14 @@ class BitforexClient(CryptoLibClient):
         return await self._create_get("market/depth", params = params)
 
     async def get_ticker(self, pair: Pair) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair)
         })
 
         return await self._create_get("market/ticker", params = params, signed = True)
 
     async def get_candlesticks(self, pair: Pair, interval: enums.CandelstickInterval, size: str = None) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "ktype": interval.value,
             "size": size
@@ -82,7 +82,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_get("market/kline", params = params, signed = True)
 
     async def get_trades(self, pair: Pair, size: str = None) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "size": size
         })
@@ -90,7 +90,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_get("market/trades", params = params, signed = True)
 
     async def get_single_fund(self, currency: str) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "currency": currency.lower(),
             "nonce": self._get_current_timestamp_ms()
         })
@@ -98,14 +98,14 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("fund/mainAccount", params = params, signed = True)
 
     async def get_funds(self) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "nonce": self._get_current_timestamp_ms()
         })
 
         return await self._create_post("fund/allAccount", params = params, signed = True)
 
     async def create_order(self, pair: Pair, price: str, quantity: str, side: enums.OrderSide) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "price": price,
             "amount": quantity,
@@ -126,7 +126,7 @@ class BitforexClient(CryptoLibClient):
                 "tradeType": order[2].value,
             })
 
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "ordersData": orders_data,
             "nonce": self._get_current_timestamp_ms()
@@ -135,7 +135,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("trade/placeMultiOrder", params = params, signed = True)
 
     async def cancel_order(self, pair: Pair, order_id: str) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "orderId": order_id,
             "nonce": self._get_current_timestamp_ms()
@@ -144,7 +144,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("trade/cancelOrder", params = params, signed = True)
 
     async def cancel_multi_order(self, pair: Pair, order_ids: List[str]) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "orderIds": ",".join(order_ids),
             "nonce": self._get_current_timestamp_ms()
@@ -153,7 +153,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("trade/cancelMultiOrder", params = params, signed = True)
 
     async def cancel_all_orders(self, pair: Pair) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "nonce": self._get_current_timestamp_ms()
         })
@@ -161,7 +161,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("trade/cancelAllOrder", params = params, signed = True)
 
     async def get_order(self, pair: Pair, order_id: str) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "orderId": order_id,
             "nonce": self._get_current_timestamp_ms()
@@ -170,7 +170,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("trade/orderInfo", params = params, signed = True)
 
     async def find_order(self, pair: Pair, state: enums.OrderState, side: enums.OrderSide = None) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "state": state.value,
             "nonce": self._get_current_timestamp_ms()
@@ -182,7 +182,7 @@ class BitforexClient(CryptoLibClient):
         return await self._create_post("trade/orderInfos", params = params, signed = True)
 
     async def get_orders(self, pair: Pair, order_ids: List[str]) -> dict:
-        params = CryptoLibClient._clean_request_params({
+        params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "orderIds": ",".join(order_ids),
             "nonce": self._get_current_timestamp_ms()

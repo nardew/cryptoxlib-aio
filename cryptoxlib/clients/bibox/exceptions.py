@@ -1,5 +1,5 @@
-from cryptolib.exceptions import CryptoLibException
+from cryptoxlib.exceptions import CryptoXLibException
 
 
-class BiboxException(CryptoLibException):
+class BiboxException(CryptoXLibException):
 	pass

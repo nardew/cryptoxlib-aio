@@ -1,5 +1,5 @@
-class CryptoLibException(Exception):
+class CryptoXLibException(Exception):
     pass
 
-class WebsocketReconnectionException(CryptoLibException):
+class WebsocketReconnectionException(CryptoXLibException):
     pass

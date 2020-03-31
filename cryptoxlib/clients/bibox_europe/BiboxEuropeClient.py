@@ -6,18 +6,18 @@ import hashlib
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.CryptoLibClient import CryptoLibClient, RestCallType
-from cryptolib.clients.bibox_europe import enums
-from cryptolib.clients.bibox_europe.exceptions import BiboxEuropeException
-from cryptolib.clients.bibox_europe.functions import map_pair
-from cryptolib.Pair import Pair
-from cryptolib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptolib.clients.bibox_europe.BiboxEuropeWebsocket import BiboxEuropeWebsocket
+from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
+from cryptoxlib.clients.bibox_europe import enums
+from cryptoxlib.clients.bibox_europe.exceptions import BiboxEuropeException
+from cryptoxlib.clients.bibox_europe.functions import map_pair
+from cryptoxlib.Pair import Pair
+from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
+from cryptoxlib.clients.bibox_europe.BiboxEuropeWebsocket import BiboxEuropeWebsocket
 
 LOG = logging.getLogger(__name__)
 
 
-class BiboxEuropeClient(CryptoLibClient):
+class BiboxEuropeClient(CryptoXLibClient):
     REST_API_URI = "https://api.bibox.cc/v1/"
 
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,
@@ -43,7 +43,7 @@ class BiboxEuropeClient(CryptoLibClient):
     @staticmethod
     def _get_headers():
         return {
-            'X-Ca-Nonce': str(CryptoLibClient._get_current_timestamp_ms()),
+            'X-Ca-Nonce': str(CryptoXLibClient._get_current_timestamp_ms()),
             'Content-Type': 'application/json'
         }
 

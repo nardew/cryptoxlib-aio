@@ -3,12 +3,12 @@ import logging
 import websockets
 from typing import List, Callable, Any, Optional
 
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitpanda.functions import map_pair, map_multiple_pairs
-from cryptolib.clients.bitpanda import enums
-from cryptolib.clients.bitpanda.exceptions import BitpandaException
-from cryptolib.exceptions import WebsocketReconnectionException
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitpanda.functions import map_pair, map_multiple_pairs
+from cryptoxlib.clients.bitpanda import enums
+from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
+from cryptoxlib.exceptions import WebsocketReconnectionException
 
 LOG = logging.getLogger(__name__)
 

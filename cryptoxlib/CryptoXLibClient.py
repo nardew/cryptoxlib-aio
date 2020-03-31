@@ -10,9 +10,9 @@ from abc import ABC, abstractmethod
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptolib.Timer import Timer
-from cryptolib.exceptions import CryptoLibException
-from cryptolib.WebsocketMgr import Subscription, WebsocketMgr
+from cryptoxlib.Timer import Timer
+from cryptoxlib.exceptions import CryptoXLibException
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr
 
 LOG = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ class RestCallType(enum.Enum):
     PUT = "PUT"
 
 
-class CryptoLibClient(ABC):
+class CryptoXLibClient(ABC):
     def __init__(self, api_trace_log: bool = False, ssl_context: ssl.SSLContext = None) -> None:
         self.api_trace_log = api_trace_log
 
@@ -117,8 +117,8 @@ class CryptoLibClient(ABC):
 
         if self.api_trace_log:
             trace_config = aiohttp.TraceConfig()
-            trace_config.on_request_start.append(CryptoLibClient._on_request_start)
-            trace_config.on_request_end.append(CryptoLibClient._on_request_end)
+            trace_config.on_request_start.append(CryptoXLibClient._on_request_start)
+            trace_config.on_request_end.append(CryptoXLibClient._on_request_end)
             trace_configs = [trace_config]
         else:
             trace_configs = None
@@ -180,4 +180,4 @@ class CryptoLibClient(ABC):
                     LOG.info("All websockets closed.")
                     raise
         else:
-            raise CryptoLibException("ERROR: There are no subscriptions to be started.")
+            raise CryptoXLibException("ERROR: There are no subscriptions to be started.")

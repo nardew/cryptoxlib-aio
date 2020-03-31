@@ -1,5 +1,5 @@
-from cryptolib.exceptions import CryptoLibException
+from cryptoxlib.exceptions import CryptoXLibException
 
 
-class BitpandaException(CryptoLibException):
+class BitpandaException(CryptoXLibException):
 	pass
