@@ -3,12 +3,12 @@ import logging
 import datetime
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitpanda.exceptions import BitpandaException
-from cryptolib.clients.bitpanda.enums import OrderSide, TimeUnit
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
+from cryptoxlib.clients.bitpanda.enums import OrderSide, TimeUnit
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -21,7 +21,7 @@ async def order_book_update(response: dict) -> None:
 async def run():
     api_key = os.environ['BITPANDAAPIKEY']
 
-    client = CryptoLib.create_bitpanda_client(api_key)
+    client = CryptoXLib.create_bitpanda_client(api_key)
 
     print("Time:")
     response = await client.get_time()

@@ -1,24 +1,24 @@
-# cryptolib-aio 2.0.0
+# cryptoxlib-aio 3.0.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
-`cryptolib-aio` is a compact Python library providing access to REST and WEBSOCKET API of selected crypto exchanges.
+`cryptoxlib-aio` is a compact Python library providing access to REST and WEBSOCKET API of selected crypto exchanges.
 
-`cryptolib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [async websockets](https://websockets.readthedocs.io/en/stable/) and [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
+`cryptoxlib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [async websockets](https://websockets.readthedocs.io/en/stable/) and [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
 
 ### Main mission
-Today there are numerous existing libraries targeting similar audience as `cryptolib-aio`. In order to achieve the broadest coverage of exchanges the supported API is often limited, the most apparent example being lack of _websockets_.  
+Today there are numerous existing libraries targeting similar audience as `cryptoxlib-aio`. In order to achieve the broadest coverage of exchanges the supported API is often limited, the most apparent example being lack of _websockets_.  
 
-The mission of `cryptolib-aio` is to:
+The mission of `cryptoxlib-aio` is to:
 
 - serve as a single entry point for various crypto exchanges
 - provide full REST API as well as full implementation of exchange's _**websockets**_. For free and without subscription plans.
 
-Full support of websockets is the corner stone of `cryptolib-aio` which attempts to set `cryptolib-aio` apart from existing solutions which either do not provide websocket support or do not provide it for free.
+Full support of websockets is the corner stone of `cryptoxlib-aio` which attempts to set `cryptoxlib-aio` apart from existing solutions which either do not provide websocket support or do not provide it for free.
 
 You will also find out that our subject of interest are often smaller exchanges (by world standards) not enjoying a seat in the mainstream crypto libraries.
 
-Disclaimer: By no means we are suggesting that existing libraries are inferior to `cryptolib-aio`, they just appeal to different endusers.
+Disclaimer: By no means we are suggesting that existing libraries are inferior to `cryptoxlib-aio`, they just appeal to different endusers.
 
 ### Features
 - access to REST API as well as full support of websockets for selected exchanges (given websockets are provided by the exchange)
@@ -27,7 +27,7 @@ Disclaimer: By no means we are suggesting that existing libraries are inferior t
 - lean architecture making it straightforward to implement API of a new exchange
 - fully asynchronous design aiming for the best performance
 
-For the history of changes see [CHANGELOG](https://github.com/nardew/cryptolib-aio/blob/master/CHANGELOG.md).
+For the history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
 ### List of supported exchanges
 
@@ -36,26 +36,26 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | Name | Docs |
 | --- | --- |
 | ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
-| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptolib-aio/master/images/bibox_europe.png) | [API](https://github.com/BiboxEurope/API_Docs_en) |
+| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | [API](https://github.com/BiboxEurope/API_Docs_en) |
 | ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
 | ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
-| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptolib-aio/master/images/bitpanda.png) | [API](https://developers.bitpanda.com/exchange/) |
-| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptolib-aio/master/images/bitvavo.png) | [API](https://docs.bitvavo.com/#section/Introduction) |
+| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | [API](https://developers.bitpanda.com/exchange/) |
+| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | [API](https://docs.bitvavo.com/#section/Introduction) |
 | ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://developers.liquid.com) |
 
-Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptolib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
+Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptoxlib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
 
 The list of supported exchanges will grow without any specific pattern, usually driven by personal needs. If there is a high demand for a new exchange/feature to be added, there is a high chance for it to happen (but not guranteed). For business related inquiries concerning customized changes tailored for the client please reach out via e-mail mentioned in the contacts.
 
 ### Installation
 ```bash
-pip install cryptolib-aio
+pip install cryptoxlib-aio
 ```
 
 ### Examples
 ##### BITPANDA
 ```python
-bitpanda = CryptoLib.create_bitpanda_client(api_key)
+bitpanda = CryptoXLib.create_bitpanda_client(api_key)
 
 print("Account balance:")
 await bitpanda.get_account_balances()
@@ -86,7 +86,7 @@ await bitpanda.start_websockets()
 
 ##### BITFOREX
 ```python
-bitforex = CryptoLib.create_bitforex_client(api_key, sec_key)
+bitforex = CryptoXLib.create_bitforex_client(api_key, sec_key)
 
 print("Order book:")
 await bitforex.get_order_book(pair = Pair('ETH', 'BTC'), depth = "1")

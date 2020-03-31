@@ -2,12 +2,12 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.clients.binance import enums
-from cryptolib.Pair import Pair
-from cryptolib.clients.binance.exceptions import BinanceException
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.clients.binance import enums
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.binance.exceptions import BinanceException
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -17,7 +17,7 @@ async def run():
     api_key = os.environ['APIKEY']
     sec_key = os.environ['SECKEY']
 
-    client = CryptoLib.create_binance_client(api_key, sec_key)
+    client = CryptoXLib.create_binance_client(api_key, sec_key)
 
     print("Ping:")
     await client.ping()

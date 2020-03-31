@@ -3,12 +3,12 @@ import logging
 import os
 import json
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bibox_europe import enums
-from cryptolib.clients.bibox_europe.exceptions import BiboxEuropeException
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bibox_europe import enums
+from cryptoxlib.clients.bibox_europe.exceptions import BiboxEuropeException
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -21,7 +21,7 @@ async def run():
     api_key = ""
     sec_key = ""
 
-    bibox_europe = CryptoLib.create_bibox_europe_client(api_key, sec_key)
+    bibox_europe = CryptoXLib.create_bibox_europe_client(api_key, sec_key)
 
     print("Ping:")
     await bibox_europe.get_ping()

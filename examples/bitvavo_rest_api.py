@@ -2,12 +2,12 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitvavo import enums
-from cryptolib.clients.bitvavo.exceptions import BitvavoException
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitvavo import enums
+from cryptoxlib.clients.bitvavo.exceptions import BitvavoException
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -21,7 +21,7 @@ async def run():
     api_key = os.environ['BITVAVOAPIKEY']
     sec_key = os.environ['BITVAVOSECKEY']
 
-    client = CryptoLib.create_bitvavo_client(api_key, sec_key)
+    client = CryptoXLib.create_bitvavo_client(api_key, sec_key)
 
     print("Time:")
     await client.get_time()

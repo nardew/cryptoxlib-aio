@@ -2,13 +2,13 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitpanda.enums import TimeUnit
-from cryptolib.clients.bitpanda.BitpandaWebsocket import AccountSubscription, PricesSubscription, \
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitpanda.enums import TimeUnit
+from cryptoxlib.clients.bitpanda.BitpandaWebsocket import AccountSubscription, PricesSubscription, \
     OrderbookSubscription, CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -22,7 +22,7 @@ async def order_book_update(response: dict) -> None:
 async def run():
     api_key = os.environ['BITPANDAAPIKEY']
 
-    client = CryptoLib.create_bitpanda_client(api_key)
+    client = CryptoXLib.create_bitpanda_client(api_key)
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([

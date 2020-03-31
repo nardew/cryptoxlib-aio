@@ -1,14 +1,13 @@
 import asyncio
 import logging
 import os
-import json
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bibox import enums
-from cryptolib.clients.bibox.exceptions import BiboxException
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bibox import enums
+from cryptoxlib.clients.bibox.exceptions import BiboxException
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -19,7 +18,7 @@ async def run():
     api_key = os.environ['BIBOXAPIKEY']
     sec_key = os.environ['BIBOXSECKEY']
 
-    bibox = CryptoLib.create_bibox_client(api_key, sec_key)
+    bibox = CryptoXLib.create_bibox_client(api_key, sec_key)
 
     print("Ping:")
     await bibox.get_ping()

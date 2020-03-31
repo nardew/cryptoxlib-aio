@@ -5,11 +5,11 @@ import json
 import datetime
 from decimal import Decimal
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.Pair import Pair
-from cryptolib.clients.bibox_europe.BiboxEuropeWebsocket import OrderBookSubscription, UserDataSubscription
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bibox_europe.BiboxEuropeWebsocket import OrderBookSubscription, UserDataSubscription
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -41,7 +41,7 @@ async def run():
     api_key = ""
     sec_key = ""
 
-    bibox = CryptoLib.create_bibox_europe_client(api_key, sec_key)
+    bibox = CryptoXLib.create_bibox_europe_client(api_key, sec_key)
 
     bibox.compose_subscriptions([
         OrderBookSubscription(pair = Pair('ETH', 'BTC'), callbacks = [order_book_update]),
