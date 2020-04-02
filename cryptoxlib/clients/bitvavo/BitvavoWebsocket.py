@@ -87,8 +87,17 @@ class BitvavoWebsocket(WebsocketMgr):
 
         # regular message
         else:
-            await self.publish_message(WebsocketMessage(subscription_id = message['event'], message = message))
+            await self.publish_message(WebsocketMessage(subscription_id = self._map_event_id_to_subscription_id(message['event']),
+                                                        message = message))
 
+    @staticmethod
+    def _map_event_id_to_subscription_id(event_typ: str):
+        if event_typ in ['order', 'fill']:
+            return AccountSubscription.get_channel_name()
+        elif event_typ == 'candle':
+            return CandlesticksSubscription.get_channel_name()
+        else:
+            return event_typ
 
 class BitvavoSubscription(Subscription):
     def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
@@ -213,10 +222,6 @@ class CandlesticksSubscription(BitvavoSubscription):
     @staticmethod
     def get_channel_name():
         return "candles"
-
-    # subscription and event names differ (candles vs candle), therefore we need to build custom subscription id
-    def construct_subscription_id(self) -> Any:
-        return "candle"
 
     def get_subscription_message(self, **kwargs) -> dict:
         return {
