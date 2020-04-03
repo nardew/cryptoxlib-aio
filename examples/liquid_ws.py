@@ -2,12 +2,12 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.clients.liquid import enums
-from cryptolib.Pair import Pair
-from cryptolib.clients.liquid.LiquidWebsocket import OrderBookSideSubscription, OrderBookSubscription, OrderSubscription
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.clients.liquid import enums
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.liquid.LiquidWebsocket import OrderBookSideSubscription, OrderBookSubscription, OrderSubscription
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -34,14 +34,14 @@ async def run():
     api_key = os.environ['LIQUIDAPIKEY']
     sec_key = os.environ['LIQUIDSECKEY']
 
-    liquid = CryptoLib.create_liquid_client(api_key, sec_key)
+    liquid = CryptoXLib.create_liquid_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
     liquid.compose_subscriptions([
         OrderBookSideSubscription(pair = Pair('BTC', 'USD'), order_side = enums.OrderSide.BUY, callbacks = [order_book_update]),
-        #OrderBookSubscription(pair = Pair('ETH', 'USD'), callbacks = [order_book_update2]),
-        #OrderBookSubscription(pair = Pair('XRP', 'USD'), callbacks = [order_book_update3]),
-        #OrderSubscription(quote = "USD", callbacks = [order_update])
+        OrderBookSubscription(pair = Pair('ETH', 'USD'), callbacks = [order_book_update2]),
+        OrderBookSubscription(pair = Pair('XRP', 'USD'), callbacks = [order_book_update3]),
+        OrderSubscription(quote = "USD", callbacks = [order_update])
     ])
 
     # Execute all websockets asynchronously

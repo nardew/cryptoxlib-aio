@@ -2,13 +2,13 @@ import asyncio
 import logging
 import os
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.clients.bitforex import enums
-from cryptolib.Pair import Pair
-from cryptolib.clients.bitforex.BitforexWebsocket import OrderBookSubscription, TradeSubscription, TickerSubscription, \
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.clients.bitforex import enums
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.bitforex.BitforexWebsocket import OrderBookSubscription, TradeSubscription, TickerSubscription, \
     Ticker24hSubscription
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -40,9 +40,9 @@ async def run():
     api_key = os.environ['BITFOREXAPIKEY']
     sec_key = os.environ['BITFOREXSECKEY']
 
-    bitforex = CryptoLib.create_bitforex_client(api_key, sec_key)
+    bitforex = CryptoXLib.create_bitforex_client(api_key, sec_key)
 
-     # Bundle several subscriptions into a single websocket
+    # Bundle several subscriptions into a single websocket
     bitforex.compose_subscriptions([
         OrderBookSubscription(pair = Pair('ETH', 'BTC'), depth = "0", callbacks = [order_book_update]),
         OrderBookSubscription(pair = Pair('ETH', 'USDT'), depth = "0", callbacks = [order_book_update2]),

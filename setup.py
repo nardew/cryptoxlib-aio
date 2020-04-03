@@ -8,14 +8,14 @@ with open("requirements.txt", "r") as fh:
 requirements = [line.strip() for line in requirements]
 
 setuptools.setup(
-	name="cryptolib-aio",
-	version="1.0.0",
+	name="cryptoxlib-aio",
+	version="3.0.0",
 	author="nardew",
-	author_email="cryptolib.aio@gmail.com",
+	author_email="cryptoxlib.aio@gmail.com",
 	description="Cryptoexchange asynchronous python client",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
-	url="https://github.com/nardew/cryptolib-aio",
+	url="https://github.com/nardew/cryptoxlib-aio",
 	packages=setuptools.find_packages(),
 	classifiers=[
 		"Development Status :: 5 - Production/Stable",

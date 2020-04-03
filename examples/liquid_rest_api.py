@@ -3,11 +3,11 @@ import logging
 import os
 import json
 
-from cryptolib.CryptoLib import CryptoLib
-from cryptolib.clients.liquid import enums
-from cryptolib.clients.liquid.exceptions import LiquidException
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.clients.liquid import enums
+from cryptoxlib.clients.liquid.exceptions import LiquidException
 
-LOG = logging.getLogger("cryptolib")
+LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -18,9 +18,15 @@ async def run():
     api_key = os.environ['LIQUIDAPIKEY']
     sec_key = os.environ['LIQUIDSECKEY']
 
-    liquid = CryptoLib.create_liquid_client(api_key, sec_key)
+    liquid = CryptoXLib.create_liquid_client(api_key, sec_key)
 
     print("Products:")
+    products = await liquid.get_products()
+    for product in products['response']:
+        if product['currency_pair_code'] == 'ETHBTC':
+            print(json.dumps(product, indent = 4, sort_keys = True))
+
+    print("Product:")
     product = await liquid.get_product(product_id = "1")
     print(json.dumps(product['response'], indent = 4, sort_keys = True))
 
@@ -45,6 +51,21 @@ async def run():
         await liquid.cancel_order(order_id = "1")
     except LiquidException as e:
         print(e)
+
+    print("Crypto accounts:")
+    await liquid.get_crypto_accounts()
+
+    print("Fiat accounts:")
+    await liquid.get_fiat_accounts()
+
+    print("Account details:")
+    await liquid.get_account_details(currency = "BTC")
+
+    print("Currencies:")
+    currencies = await liquid.get_currencies()
+    for currency in currencies['response']:
+        if currency['currency'] in ['BTC', 'ETH', 'USD', 'QASH']:
+            print(json.dumps(currency, indent = 4))
 
     await liquid.close()
 
