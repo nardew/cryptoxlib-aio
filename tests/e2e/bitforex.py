@@ -5,7 +5,6 @@ import logging
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.bitforex import enums
 from cryptoxlib.Pair import Pair
-from cryptoxlib.CryptoXLibClient import CryptoXLibClient
 from cryptoxlib.clients.bitforex.exceptions import BitforexRestException
 
 from CryptoXLibTest import CryptoXLibTest
