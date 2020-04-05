@@ -8,7 +8,7 @@ from typing import List, Tuple, Optional
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
 from cryptoxlib.clients.bitforex import enums
 from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitforex.exceptions import BitforexException
+from cryptoxlib.clients.bitforex.exceptions import BitforexRestException
 from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
 from cryptoxlib.clients.bitforex.BitforexWebsocket import BitforexWebsocket
 from cryptoxlib.clients.bitforex.functions import map_pair
@@ -49,7 +49,7 @@ class BitforexClient(CryptoXLibClient):
 
     def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         if body['success'] is False:
-            raise BitforexException(f"BitforexException: status [{status_code}], response [{body}]")
+            raise BitforexRestException(status_code, body)
 
     def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
         return BitforexWebsocket(subscriptions, ssl_context)

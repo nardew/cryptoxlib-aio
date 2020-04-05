@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
 from cryptoxlib.clients.bitpanda import enums
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
+from cryptoxlib.clients.bitpanda.exceptions import BitpandaRestException
 from cryptoxlib.clients.bitpanda.functions import map_pair
 from cryptoxlib.Pair import Pair
 from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
@@ -34,7 +34,7 @@ class BitpandaClient(CryptoXLibClient):
 
     def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         if str(status_code)[0] != '2':
-            raise BitpandaException(f"BitpandaException: status [{status_code}], response [{body}]")
+            raise BitpandaRestException(status_code, body)
 
     def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
         return BitpandaWebsocket(subscriptions, self.api_key, ssl_context)
