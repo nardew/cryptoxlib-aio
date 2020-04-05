@@ -10,4 +10,4 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/2.0.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.0.0...HEAD

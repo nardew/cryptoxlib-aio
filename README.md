@@ -33,15 +33,15 @@ For the history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-
 
 As mentioned earlier, all exchanges listed below include full support for websockets.
 
-| Name | Docs |
-| --- | --- |
-| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
-| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | [API](https://github.com/BiboxEurope/API_Docs_en) |
-| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | [API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
-| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
-| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | [API](https://developers.bitpanda.com/exchange/) |
-| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | [API](https://docs.bitvavo.com/#section/Introduction) |
-| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | [API](https://developers.liquid.com) |
+| | Name | Docs |
+| --- | --- | --- |
+| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
+| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope | [API](https://github.com/BiboxEurope/API_Docs_en) |
+| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
+| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
+| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
+| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |
+| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | Liquid | [API](https://developers.liquid.com) |
 
 Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptoxlib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
 
