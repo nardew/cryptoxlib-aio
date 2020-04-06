@@ -11,6 +11,9 @@ from cryptoxlib.clients.bitvavo.BitvavoWebsocket import AccountSubscription, \
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
+LOG = logging.getLogger("websockets")
+LOG.setLevel(logging.DEBUG)
+LOG.addHandler(logging.StreamHandler())
 
 print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}\n")
 

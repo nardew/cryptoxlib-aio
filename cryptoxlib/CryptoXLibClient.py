@@ -29,7 +29,7 @@ class CryptoXLibClient(ABC):
         self.api_trace_log = api_trace_log
 
         self.rest_session = None
-        self.subscription_sets = set()
+        self.subscription_sets = []
 
         if ssl_context is not None:
             self.ssl_context = ssl_context
@@ -99,7 +99,12 @@ class CryptoXLibClient(ABC):
                 LOG.debug(f"<: status [{status_code}], response [{body}]")
 
                 if len(body) > 0:
-                    body = json.loads(body)
+                    try:
+                        body = json.loads(body)
+                    except json.JSONDecodeError:
+                        body = {
+                            "raw": body
+                        }
 
                 self._preprocess_rest_response(status_code, headers, body)
 

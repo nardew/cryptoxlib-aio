@@ -5,6 +5,7 @@ from cryptoxlib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
 from cryptoxlib.clients.bitpanda.BitpandaClient import BitpandaClient
 from cryptoxlib.clients.binance.BinanceClient import BinanceClient
 from cryptoxlib.clients.bitvavo.BitvavoClient import BitvavoClient
+from cryptoxlib.clients.btse.BtseClient import BtseClient
 
 
 class CryptoXLib(object):
@@ -35,3 +36,7 @@ class CryptoXLib(object):
     @staticmethod
     def create_bitvavo_client(api_key: str, sec_key: str) -> BitvavoClient:
         return BitvavoClient(api_key, sec_key)
+
+    @staticmethod
+    def create_btse_client(api_key: str, sec_key: str) -> BtseClient:
+        return BtseClient(api_key, sec_key)
