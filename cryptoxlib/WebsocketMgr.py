@@ -112,13 +112,7 @@ class WebsocketMgr(ABC):
                 try:
                     async with websockets.connect(self.websocket_uri + self.get_websocket_uri_variable_part(),
                                                   ping_interval = self.builtin_ping_interval,
-                                                  max_size = self.max_message_size, ssl = self.ssl_context,
-                                                    compression = None,
-                                                  extra_headers = {"Accept-Encoding": "gzip, deflate, br", "Pragma": "no-cache",
-                                                                   "Cache-Control": "no-cache",
-                                                                   "Origin": "chrome-extension://pfdhoblngboilpfeibdedpjgfnlcodoo",
-                                                      "Accept-Language": "en-US,en;q=0.9,cs;q=0.8",
-                                                                   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"}) as websocket:
+                                                  max_size = self.max_message_size, ssl = self.ssl_context,) as websocket:
                         done, pending = await asyncio.wait(
                             [asyncio.create_task(self.main_loop(websocket)),
                              asyncio.create_task(self.periodic_loop(websocket))],
