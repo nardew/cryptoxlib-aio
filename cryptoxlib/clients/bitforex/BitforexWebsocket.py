@@ -4,7 +4,7 @@ import websockets
 from abc import abstractmethod
 from typing import List, Callable, Any, Union, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitforex import enums
 from cryptoxlib.clients.bitforex.exceptions import BitforexException
@@ -26,12 +26,12 @@ class BitforexWebsocket(WebsocketMgr):
 
         self.ping_checker = PeriodicChecker(period_ms = 30 * 1000)
 
-    async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
+    async def _process_periodic(self, websocket: Websocket) -> None:
         if self.ping_checker.check():
             LOG.debug(f"> {BitforexWebsocket.PING_MSG}")
             await websocket.send(BitforexWebsocket.PING_MSG)
 
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
+    async def _process_message(self, websocket: Websocket, message: str) -> None:
         if message != BitforexWebsocket.PONG_MSG:
             message = json.loads(message)
             subscription_id = BitforexSubscription.make_subscription_id(message['event'], message['param'])

@@ -3,7 +3,7 @@ import logging
 import websockets
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.binance.functions import map_ws_pair
 
@@ -33,7 +33,7 @@ class BinanceWebsocket(WebsocketMgr):
         for subscription in self.subscriptions:
             await subscription.initialize(binance_client = self.binance_client)
 
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         BinanceWebsocket.SUBSCRIPTION_ID += 1
 
         subscription_message = {
@@ -54,7 +54,7 @@ class BinanceWebsocket(WebsocketMgr):
         else:
             return False
 
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
+    async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
 
         if self._is_subscription_confirmation(message):
