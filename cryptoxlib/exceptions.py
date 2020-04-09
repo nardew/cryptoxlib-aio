@@ -3,3 +3,11 @@ class CryptoXLibException(Exception):
 
 class WebsocketReconnectionException(CryptoXLibException):
     pass
+
+
+class WebsocketError(CryptoXLibException):
+    pass
+
+
+class WebsocketClosed(CryptoXLibException):
+    pass

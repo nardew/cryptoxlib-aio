@@ -6,7 +6,7 @@ import hashlib
 import datetime
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitvavo.functions import map_pair
 from cryptoxlib.clients.bitvavo import enums
@@ -27,7 +27,7 @@ class BitvavoWebsocket(WebsocketMgr):
         self.api_key = api_key
         self.sec_key = sec_key
 
-    async def _authenticate(self, websocket: websockets.WebSocketClientProtocol):
+    async def _authenticate(self, websocket: Websocket):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -50,7 +50,7 @@ class BitvavoWebsocket(WebsocketMgr):
             LOG.debug(f"> {authentication_message}")
             await websocket.send(json.dumps(authentication_message))
 
-            message = await websocket.recv()
+            message = await websocket.receive()
             LOG.debug(f"< {message}")
 
             message = json.loads(message)
@@ -60,7 +60,7 @@ class BitvavoWebsocket(WebsocketMgr):
             else:
                 raise BitvavoException(f"Authentication error. Response [{json.dumps(message)}]")
 
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         subscription_message = {
             "action": "subscribe",
             "channels": [

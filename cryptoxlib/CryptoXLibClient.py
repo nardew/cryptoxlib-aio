@@ -29,7 +29,7 @@ class CryptoXLibClient(ABC):
         self.api_trace_log = api_trace_log
 
         self.rest_session = None
-        self.subscription_sets = set()
+        self.subscription_sets = []
 
         if ssl_context is not None:
             self.ssl_context = ssl_context

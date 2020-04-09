@@ -3,7 +3,7 @@ import logging
 import websockets
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitpanda.functions import map_pair, map_multiple_pairs
 from cryptoxlib.clients.bitpanda import enums
@@ -34,13 +34,13 @@ class BitpandaWebsocket(WebsocketMgr):
             ]
         }
 
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         subscription_message =  self._get_subscription_message()
 
         LOG.debug(f"> {subscription_message}")
         await websocket.send(json.dumps(subscription_message))
 
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
+    async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
 
         # subscription negative response

@@ -2,10 +2,12 @@ import websockets
 import json
 import logging
 import asyncio
+import ssl
+import aiohttp
 from abc import ABC, abstractmethod
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.exceptions import WebsocketReconnectionException
+from cryptoxlib.exceptions import CryptoXLibException, WebsocketReconnectionException, WebsocketClosed, WebsocketError
 
 LOG = logging.getLogger(__name__)
 
@@ -41,6 +43,118 @@ class Subscription(ABC):
         if self.callbacks is not None:
             await asyncio.gather(*[asyncio.create_task(cb(response)) for cb in self.callbacks])
 
+class Websocket(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    async def connect(self):
+        pass
+
+    @abstractmethod
+    async def close(self):
+        pass
+
+    @abstractmethod
+    async def receive(self):
+        pass
+
+    @abstractmethod
+    async def send(self, message: str):
+        pass
+
+
+class FullWebsocket(Websocket):
+    def __init__(self, websocket_uri: str, builtin_ping_interval: Optional[float] = 20,
+                 max_message_size: int = 2**20, ssl_context: ssl.SSLContext = None):
+        super().__init__()
+
+        self.websocket_uri = websocket_uri
+        self.builtin_ping_interval = builtin_ping_interval
+        self.max_message_size = max_message_size
+        self.ssl_context = ssl_context
+
+        self.ws = None
+
+    async def connect(self):
+        if self.ws is not None:
+            raise CryptoXLibException("Websocket reattempted to make connection while previous one is still active.")
+
+        self.ws = await websockets.connect(self.websocket_uri,
+                                           ping_interval = self.builtin_ping_interval,
+                                           max_size = self.max_message_size,
+                                           ssl = self.ssl_context)
+
+    async def close(self):
+        if self.ws is None:
+            raise CryptoXLibException("Websocket attempted to close connection while connection not open.")
+
+        await self.ws.close()
+        self.ws = None
+
+    async def receive(self):
+        if self.ws is None:
+            raise CryptoXLibException("Websocket attempted to read data while connection not open.")
+
+        return await self.ws.recv()
+
+    async def send(self, message: str):
+        if self.ws is None:
+            raise CryptoXLibException("Websocket attempted to send data while connection not open.")
+
+        return await self.ws.send(message)
+
+class AiohttpClientWebsocket(Websocket):
+    def __init__(self, websocket_uri: str, builtin_ping_interval: Optional[float] = 20,
+                 max_message_size: int = 2 ** 20, ssl_context: ssl.SSLContext = None):
+        super().__init__()
+
+        self.websocket_uri = websocket_uri
+        self.builtin_ping_interval = builtin_ping_interval
+        self.max_message_size = max_message_size
+        self.ssl_context = ssl_context
+
+        self.ws = None
+
+    async def connect(self):
+        if self.ws is not None:
+            raise CryptoXLibException("Websocket reattempted to make connection while previous one is still active.")
+
+        self.session = aiohttp.ClientSession()
+        self.ws = await self.session.ws_connect(url = self.websocket_uri,
+                                           max_msg_size = self.max_message_size,
+                                           autoping = True,
+                                           ssl_context = self.ssl_context)
+
+    async def close(self):
+        if self.ws is None:
+            raise CryptoXLibException("Websocket attempted to close connection while connection not open.")
+
+        await self.ws.close()
+        await self.session.close()
+        self.ws = None
+        self.session = None
+
+    async def receive(self):
+        if self.ws is None:
+            raise CryptoXLibException("Websocket attempted to read data while connection not open.")
+
+        message = await self.ws.receive()
+
+        if message.type == aiohttp.WSMsgType.TEXT:
+            if message.data == 'close cmd':
+                raise WebsocketClosed(f'Websocket was closed: {message.data}')
+            else:
+                return message.data
+        elif message.type == aiohttp.WSMsgType.ERROR:
+            raise WebsocketClosed(f'Websocket was closed: {message.data}')
+
+    async def send(self, message: str):
+        if self.ws is None:
+            raise CryptoXLibException("Websocket attempted to send data while connection not open.")
+
+        return await self.ws.send_str(message)
+
 
 class WebsocketMessage(object):
     def __init__(self, subscription_id: Any, message: dict) -> None:
@@ -61,23 +175,35 @@ class WebsocketMgr(ABC):
         self.auto_reconnect = auto_reconnect
 
     @abstractmethod
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, response: str) -> None:
+    async def _process_message(self, websocket: Websocket, response: str) -> None:
         pass
 
-    async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
+    async def _process_periodic(self, websocket: Websocket) -> None:
         pass
 
     def get_websocket_uri_variable_part(self):
         return ""
 
+    def get_websocket(self) -> Websocket:
+        return FullWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
+                      builtin_ping_interval = self.builtin_ping_interval,
+                      max_message_size = self.max_message_size,
+                      ssl_context = self.ssl_context)
+
+    def get_aiohttp_client_websocket(self) -> Websocket:
+        return AiohttpClientWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
+                      builtin_ping_interval = self.builtin_ping_interval,
+                      max_message_size = self.max_message_size,
+                      ssl_context = self.ssl_context)
+
     async def initialize_subscriptions(self) -> None:
         for subscription in self.subscriptions:
             await subscription.initialize()
 
-    async def _authenticate(self, websocket: websockets.WebSocketClientProtocol):
+    async def _authenticate(self, websocket: Websocket):
         pass
 
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         subscription_messages = []
         for subscription in self.subscriptions:
             subscription_messages.append(subscription.get_subscription_message())
@@ -85,18 +211,18 @@ class WebsocketMgr(ABC):
         LOG.debug(f"> {subscription_messages}")
         await websocket.send(json.dumps(subscription_messages))
 
-    async def main_loop(self, websocket: websockets.WebSocketClientProtocol):
+    async def main_loop(self, websocket: Websocket):
         await self._authenticate(websocket)
         await self._subscribe(websocket)
 
         # start processing incoming messages
         while True:
-            message = await websocket.recv()
+            message = await websocket.receive()
             LOG.debug(f"< {message}")
 
             await self._process_message(websocket, message)
 
-    async def periodic_loop(self, websocket: websockets.WebSocketClientProtocol):
+    async def periodic_loop(self, websocket: Websocket):
         if self.periodic_timeout_sec is not None:
             while True:
                 await self._process_periodic(websocket)
@@ -110,9 +236,9 @@ class WebsocketMgr(ABC):
             while True:
                 LOG.debug(f"Initiating websocket connection.")
                 try:
-                    async with websockets.connect(self.websocket_uri + self.get_websocket_uri_variable_part(),
-                                                  ping_interval = self.builtin_ping_interval,
-                                                  max_size = self.max_message_size, ssl = self.ssl_context) as websocket:
+                        websocket = self.get_websocket()
+                        await websocket.connect()
+
                         done, pending = await asyncio.wait(
                             [asyncio.create_task(self.main_loop(websocket)),
                              asyncio.create_task(self.periodic_loop(websocket))],
@@ -139,6 +265,8 @@ class WebsocketMgr(ABC):
                         websockets.ConnectionClosedOK,
                         websockets.InvalidStatusCode,
                         ConnectionResetError,
+                        WebsocketClosed,
+                        WebsocketError,
                         WebsocketReconnectionException) as e:
                     if self.auto_reconnect:
                         LOG.info("A recoverable exception has occurred, the websocket will be restarted automatically.")
@@ -146,6 +274,10 @@ class WebsocketMgr(ABC):
                         LOG.exception(e)
                     else:
                         raise
+                finally:
+                    if websocket is not None:
+                        LOG.debug("Closing websocket.")
+                        await websocket.close()
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:

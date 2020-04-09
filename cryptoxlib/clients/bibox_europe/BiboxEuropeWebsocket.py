@@ -10,7 +10,7 @@ import websockets
 from abc import abstractmethod
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bibox.functions import map_pair
 from cryptoxlib.clients.bibox import enums
@@ -29,14 +29,14 @@ class BiboxEuropeWebsocket(WebsocketMgr):
         self.api_key = api_key
         self.sec_key = sec_key
 
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         for subscription in self.subscriptions:
             subscription_message = json.dumps(subscription.get_subscription_message(api_key = self.api_key, sec_key = self.sec_key))
 
             LOG.debug(f"> {subscription_message}")
             await websocket.send(subscription_message)
 
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
+    async def _process_message(self, websocket: Websocket, message: str) -> None:
         messages = json.loads(message)
 
         if "ping" in messages:

@@ -6,7 +6,7 @@ import websockets
 from abc import abstractmethod
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.liquid.functions import map_pair
 from cryptoxlib.clients.liquid import enums
@@ -28,7 +28,7 @@ class LiquidWebsocket(WebsocketMgr):
 
         self.ping_checker = PeriodicChecker(period_ms = 60 * 1000)
 
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         authentication_payload = {
             "token_id": self.api_key,
             "path": '/realtime',
@@ -51,7 +51,7 @@ class LiquidWebsocket(WebsocketMgr):
         LOG.debug(f"> {authentication_request}")
         await websocket.send(json.dumps(authentication_request))
 
-    async def _process_periodic(self, websocket: websockets.WebSocketClientProtocol) -> None:
+    async def _process_periodic(self, websocket: Websocket) -> None:
         if self.ping_checker.check():
             ping_message = {
                 "event": "pusher:ping",
@@ -60,7 +60,7 @@ class LiquidWebsocket(WebsocketMgr):
             LOG.debug(f"> {ping_message}")
             await websocket.send(json.dumps(ping_message))
 
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
+    async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
 
         if message['event'] == "pusher:connection_established":
