@@ -15,6 +15,10 @@ LOG = logging.getLogger("websockets")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
+LOG = logging.getLogger("aiohttp")
+LOG.setLevel(logging.DEBUG)
+LOG.addHandler(logging.StreamHandler())
+
 print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}\n")
 
 
