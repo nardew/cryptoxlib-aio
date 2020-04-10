@@ -104,7 +104,7 @@ class FullWebsocket(Websocket):
 
         return await self.ws.send(message)
 
-class AiohttpClientWebsocket(Websocket):
+class AiohttpWebsocket(Websocket):
     def __init__(self, websocket_uri: str, builtin_ping_interval: Optional[float] = 20,
                  max_message_size: int = 2 ** 20, ssl_context: ssl.SSLContext = None):
         super().__init__()
@@ -124,6 +124,7 @@ class AiohttpClientWebsocket(Websocket):
         self.ws = await self.session.ws_connect(url = self.websocket_uri,
                                            max_msg_size = self.max_message_size,
                                            autoping = True,
+                                           heartbeat = self.builtin_ping_interval,
                                            ssl_context = self.ssl_context)
 
     async def close(self):
@@ -185,13 +186,16 @@ class WebsocketMgr(ABC):
         return ""
 
     def get_websocket(self) -> Websocket:
+        return self.get_full_websocket()
+
+    def get_full_websocket(self) -> Websocket:
         return FullWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
                       builtin_ping_interval = self.builtin_ping_interval,
                       max_message_size = self.max_message_size,
                       ssl_context = self.ssl_context)
 
-    def get_aiohttp_client_websocket(self) -> Websocket:
-        return AiohttpClientWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
+    def get_aiohttp_websocket(self) -> Websocket:
+        return AiohttpWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
                       builtin_ping_interval = self.builtin_ping_interval,
                       max_message_size = self.max_message_size,
                       ssl_context = self.ssl_context)

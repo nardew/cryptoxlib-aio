@@ -4,18 +4,10 @@ import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
-#from cryptoxlib.clients.btse.enums import TimeUnit
-from cryptoxlib.clients.btse.BtseWebsocket import AccountSubscription
+from cryptoxlib.clients.btse.BtseWebsocket import AccountSubscription, OrderbookL2Subscription, OrderbookSubscription, \
+    TradeSubscription
 
 LOG = logging.getLogger("cryptoxlib")
-LOG.setLevel(logging.DEBUG)
-LOG.addHandler(logging.StreamHandler())
-
-LOG = logging.getLogger("websockets")
-LOG.setLevel(logging.DEBUG)
-LOG.addHandler(logging.StreamHandler())
-
-LOG = logging.getLogger("aiohttp")
 LOG.setLevel(logging.DEBUG)
 LOG.addHandler(logging.StreamHandler())
 
@@ -35,13 +27,14 @@ async def run():
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
         AccountSubscription(),
-        #OrderbookSubscription([Pair("BTC", "EUR")], "50", callbacks = [order_book_update]),
+        OrderbookL2Subscription([Pair("BTC", "USD"), Pair('ETH', 'BTC')], depth = 1)
     ])
 
     # Bundle another subscriptions into a separate websocket
-    #client.compose_subscriptions([
-    #    OrderbookSubscription([Pair("ETH", "EUR")], "3", callbacks = [order_book_update]),
-    #])
+    client.compose_subscriptions([
+        OrderbookSubscription([Pair('BTSE', 'BTC')], callbacks = [order_book_update]),
+        TradeSubscription([Pair('BTSE', 'BTC')])
+    ])
 
     # Execute all websockets asynchronously
     await client.start_websockets()

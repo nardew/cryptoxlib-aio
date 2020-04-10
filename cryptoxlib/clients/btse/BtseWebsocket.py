@@ -6,7 +6,7 @@ import hmac
 import hashlib
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.btse.functions import map_pair
 from cryptoxlib.clients.btse import enums
@@ -28,7 +28,10 @@ class BtseWebsocket(WebsocketMgr):
         self.api_key = api_key
         self.sec_key = sec_key
 
-    async def _authenticate(self, websocket: websockets.WebSocketClientProtocol):
+    def get_websocket(self) -> Websocket:
+        return self.get_aiohttp_websocket()
+
+    async def _authenticate(self, websocket: Websocket):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -49,20 +52,10 @@ class BtseWebsocket(WebsocketMgr):
             LOG.debug(f"> {authentication_message}")
             await websocket.send(json.dumps(authentication_message))
 
-            message = await websocket.recv()
-            LOG.debug(f"< {message}")
-
-            message = json.loads(message)
-            if 'event' in message and message['event'] == 'authenticate' and \
-                    'authenticated' in message and message['authenticated'] is True:
-                LOG.info(f"Websocket authenticated successfully.")
-            else:
-                raise BtseException(f"Authentication error. Response [{json.dumps(message)}]")
-
-    async def _subscribe(self, websocket: websockets.WebSocketClientProtocol):
+    async def _subscribe(self, websocket: Websocket):
         subscription_list = []
         for subscription in self.subscriptions:
-            subscription_list += subscription.get_subscription_message()
+            subscription_list += subscription.get_subscription_list()
 
         subscription_message = {
             "op": "subscribe",
@@ -72,57 +65,36 @@ class BtseWebsocket(WebsocketMgr):
         LOG.debug(f"> {subscription_message}")
         await websocket.send(json.dumps(subscription_message))
 
-    async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
+    async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
+        topic = message['topic']
+        channel = topic.split(':')[0]
 
-        # subscription negative response
-        if "error" in message or message['type'] == "ERROR":
-            raise BtseException(
-                f"Subscription error. Request [{json.dumps(self._get_subscription_message())}] Response [{json.dumps(message)}]")
-
-        # subscription positive response
-        elif message['type'] == "SUBSCRIPTIONS":
-            LOG.info(f"Subscription confirmed for channels [" + ",".join(
-                [channel["name"] for channel in message["channels"]]) + "]")
-
-        # remote termination with an opportunity to reconnect
-        elif message["type"] == "CONNECTION_CLOSING":
-            LOG.warning(f"Server is performing connection termination with an opportunity to reconnect.")
-            raise WebsocketReconnectionException("Graceful connection termination.")
-
-        # heartbeat message
-        elif message["type"] == "HEARTBEAT":
-            pass
-
-        # regular message
-        else:
-            await self.publish_message(WebsocketMessage(subscription_id = message['channel_name'], message = message))
+        await self.publish_message(WebsocketMessage(subscription_id = channel, message = message))
 
 
 class BtseSubscription(Subscription):
     def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
 
-    @staticmethod
-    def get_channel_name():
+    def get_subscription_list(self) -> List[str]:
         pass
 
     def construct_subscription_id(self) -> Any:
-        return self.get_channel_name()
+        return self.get_subscription_list()[0].split(':')[0]
 
     def requires_authentication(self) -> bool:
         return False
 
+    def get_subscription_message(self, **kwargs) -> dict:
+        return {}
+
 
 class AccountSubscription(BtseSubscription):
-    def __init__(self, callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, callbacks: List[Callable[[dict], Any]] = None):
         super().__init__(callbacks)
 
-    @staticmethod
-    def get_channel_name():
-        return "ACCOUNT_HISTORY"
-
-    def get_subscription_message(self, **kwargs) -> dict:
+    def get_subscription_list(self) -> List[str]:
         return ["notificationApi"]
 
     def requires_authentication(self) -> bool:
@@ -130,19 +102,44 @@ class AccountSubscription(BtseSubscription):
 
 
 class OrderbookSubscription(BtseSubscription):
-    def __init__(self, pairs : List[Pair], depth : str, callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], grouping_level: int = 0, callbacks: List[Callable[[dict], Any]] = None):
+        super().__init__(callbacks)
+
+        self.pairs = pairs
+        self.grouping_level = grouping_level
+
+    def get_subscription_list(self) -> List[str]:
+        subscription_list = []
+        for pair in self.pairs:
+            subscription_list.append(f"orderBookApi:{map_pair(pair)}_{self.grouping_level}")
+
+        return subscription_list
+
+
+class OrderbookL2Subscription(BtseSubscription):
+    def __init__(self, pairs: List[Pair], depth: int, callbacks: List[Callable[[dict], Any]] = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
         self.depth = depth
 
-    @staticmethod
-    def get_channel_name():
-        return "ORDER_BOOK"
-
-    def get_subscription_message(self, **kwargs) -> dict:
+    def get_subscription_list(self) -> List[str]:
         subscription_list = []
         for pair in self.pairs:
-            subscription_list.append(f"orderBookApi:{map_pair(pair)}_{self.depth}")
+            subscription_list.append(f"orderBookL2Api:{map_pair(pair)}_{self.depth}")
+
+        return subscription_list
+
+
+class TradeSubscription(BtseSubscription):
+    def __init__(self, pairs: List[Pair], callbacks: List[Callable[[dict], Any]] = None):
+        super().__init__(callbacks)
+
+        self.pairs = pairs
+
+    def get_subscription_list(self) -> List[str]:
+        subscription_list = []
+        for pair in self.pairs:
+            subscription_list.append(f"tradeHistoryApi:{map_pair(pair)}")
 
         return subscription_list
