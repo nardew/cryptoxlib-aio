@@ -41,6 +41,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
 | ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
 | ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |
+| ![btse](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/btse.png) | BTSE | [API](https://www.btse.com/apiexplorer/spot/#btse-spot-api) |
 | ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | Liquid | [API](https://developers.liquid.com) |
 
 Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptoxlib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
@@ -51,7 +52,7 @@ The list of supported exchanges will grow without any specific pattern, usually 
 ```bash
 pip install cryptoxlib-aio
 ```
-In case you want to install the latest version from the `git` repo, use
+In case you want to install the latest version from the repo, use
 ```bash
 pip install git+https://github.com/nardew/cryptoxlib-aio.git@master
 ```
