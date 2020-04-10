@@ -280,12 +280,12 @@ class WebsocketMgr(ABC):
                         raise
                 finally:
                     if websocket is not None:
-                        LOG.debug("Closing websocket.")
+                        LOG.debug("Closing websocket connection.")
                         await websocket.close()
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:
-            LOG.error(f"An exception occurred. The websocket will be closed.")
+            LOG.error(f"An exception occurred. The websocket manager will be closed.")
             self._print_subscriptions()
             raise
 

@@ -40,7 +40,7 @@ class BtseWebsocket(WebsocketMgr):
 
         if requires_authentication:
             timestamp_ms = int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
-            signature_string = f"/futures/api/topic{timestamp_ms}"
+            signature_string = f"/spotWS{timestamp_ms}"
             signature = hmac.new(self.sec_key.encode('utf-8'), signature_string.encode('utf-8'),
                                  hashlib.sha384).hexdigest()
 
@@ -51,6 +51,14 @@ class BtseWebsocket(WebsocketMgr):
 
             LOG.debug(f"> {authentication_message}")
             await websocket.send(json.dumps(authentication_message))
+
+            message = await websocket.receive()
+            LOG.debug(f"< {message}")
+
+            if 'authenticated successfully' in message:
+                LOG.info(f"Websocket authenticated successfully.")
+            else:
+                raise BtseException(f"Authentication error. Response [{message}]")
 
     async def _subscribe(self, websocket: Websocket):
         subscription_list = []
