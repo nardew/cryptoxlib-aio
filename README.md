@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.0.0
+# cryptoxlib-aio 3.1.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
@@ -50,6 +50,10 @@ The list of supported exchanges will grow without any specific pattern, usually 
 ### Installation
 ```bash
 pip install cryptoxlib-aio
+```
+In case you want to install the latest version from the `git` repo, use
+```bash
+pip install git+https://github.com/nardew/cryptoxlib-aio.git@master
 ```
 
 ### Examples
