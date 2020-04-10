@@ -99,7 +99,12 @@ class CryptoXLibClient(ABC):
                 LOG.debug(f"<: status [{status_code}], response [{body}]")
 
                 if len(body) > 0:
-                    body = json.loads(body)
+                    try:
+                        body = json.loads(body)
+                    except json.JSONDecodeError:
+                        body = {
+                            "raw": body
+                        }
 
                 self._preprocess_rest_response(status_code, headers, body)
 
