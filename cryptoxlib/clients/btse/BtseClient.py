@@ -38,7 +38,7 @@ class BtseClient(CryptoXLibClient):
 
         signature_string = f"/api/v3.1/{resource}{timestamp}"
         if data is not None:
-            signature_string += json.dumps(data, separators = (',', ':'))
+            signature_string += json.dumps(data)
 
         LOG.debug(f"Signature input string: {signature_string}")
         signature = hmac.new(self.sec_key.encode('utf-8'), signature_string.encode('utf-8'), hashlib.sha384).hexdigest()

@@ -53,13 +53,10 @@ class BtseRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_create_order(self):
-        with self.assertRaises(BtseRestException) as cm:
-            await self.client.create_order(pair = Pair('BTC', 'USD'), type = enums.OrderType.LIMIT,
-                                           side = enums.OrderSide.BUY,
-                                           amount = "10000", price = "1")
-        e = cm.exception
-
-        self.assertEqual(e.status_code, 401)
+        response = await self.client.create_order(pair = Pair('BTC', 'USD'), type = enums.OrderType.LIMIT,
+                                       side = enums.OrderSide.BUY,
+                                       amount = "10000", price = "1")
+        self.assertTrue(self.check_positive_response(response))
 
     async def test_cancel_order(self):
         response = await self.client.cancel_order(pair = Pair('BTC', 'USD'))
