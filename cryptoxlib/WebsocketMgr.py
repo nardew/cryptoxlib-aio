@@ -147,8 +147,10 @@ class AiohttpWebsocket(Websocket):
                 raise WebsocketClosed(f'Websocket was closed: {message.data}')
             else:
                 return message.data
-        elif message.type == aiohttp.WSMsgType.ERROR:
+        elif message.type == aiohttp.WSMsgType.CLOSED:
             raise WebsocketClosed(f'Websocket was closed: {message.data}')
+        elif message.type == aiohttp.WSMsgType.ERROR:
+            raise WebsocketError(f'Websocket error: {message.data}')
 
     async def send(self, message: str):
         if self.ws is None:

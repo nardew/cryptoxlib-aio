@@ -64,10 +64,12 @@ class BtseClient(CryptoXLibClient):
     async def get_time(self) -> dict:
         return await self._create_get("time", headers = self._get_header())
 
-    async def get_exchange_info(self, pair: Pair) -> dict:
-        params = {
-            'symbol': map_pair(pair)
-        }
+    async def get_exchange_info(self, pair: Pair = None) -> dict:
+        params = {}
+
+        if pair is not None:
+            params['symbol'] = map_pair(pair)
+
         return await self._create_get("market_summary", params = params, headers = self._get_header())
 
     async def get_order_book(self, pair: Pair = None, depth: int = None) -> dict:

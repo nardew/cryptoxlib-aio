@@ -12,6 +12,7 @@ from cryptoxlib.clients.btse.functions import map_pair
 from cryptoxlib.clients.btse import enums
 from cryptoxlib.clients.btse.exceptions import BtseException
 from cryptoxlib.exceptions import WebsocketReconnectionException
+from cryptoxlib.PeriodicChecker import PeriodicChecker
 
 LOG = logging.getLogger(__name__)
 
@@ -23,13 +24,21 @@ class BtseWebsocket(WebsocketMgr):
                  ssl_context = None) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
                          ssl_context = ssl_context,
-                         auto_reconnect = True)
+                         builtin_ping_interval = None,
+                         auto_reconnect = True,
+                         periodic_timeout_sec = 5)
 
         self.api_key = api_key
         self.sec_key = sec_key
 
+        self.ping_checker = PeriodicChecker(period_ms = 30 * 1000)
+
     def get_websocket(self) -> Websocket:
         return self.get_aiohttp_websocket()
+
+    async def _process_periodic(self, websocket: Websocket) -> None:
+        if self.ping_checker.check():
+            await websocket.send("2")
 
     async def _authenticate(self, websocket: Websocket):
         requires_authentication = False
