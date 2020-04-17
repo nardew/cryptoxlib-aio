@@ -107,6 +107,7 @@ class MarketSubscription(BiboxEuropeSubscription):
     def get_channel_name(self):
         return "bibox_sub_spot_ALL_ALL_market"
 
+
 class TradeSubscription(BiboxEuropeSubscription):
     def __init__(self, pair: Pair, callbacks: Optional[List[Callable[[dict], Any]]] = None):
         super().__init__(callbacks)
@@ -115,6 +116,7 @@ class TradeSubscription(BiboxEuropeSubscription):
 
     def get_channel_name(self):
         return f"bibox_sub_spot_{map_pair(self.pair)}_deals"
+
 
 class UserDataSubscription(BiboxEuropeSubscription):
     def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):

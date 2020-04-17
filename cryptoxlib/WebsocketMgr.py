@@ -80,6 +80,7 @@ class FullWebsocket(Websocket):
         if self.ws is not None:
             raise CryptoXLibException("Websocket reattempted to make connection while previous one is still active.")
 
+        LOG.debug(f"Connecting to websocket {self.websocket_uri}")
         self.ws = await websockets.connect(self.websocket_uri,
                                            ping_interval = self.builtin_ping_interval,
                                            max_size = self.max_message_size,
@@ -202,6 +203,9 @@ class WebsocketMgr(ABC):
                       max_message_size = self.max_message_size,
                       ssl_context = self.ssl_context)
 
+    async def validate_subscriptions(self) -> None:
+        pass
+
     async def initialize_subscriptions(self) -> None:
         for subscription in self.subscriptions:
             await subscription.initialize()
@@ -235,6 +239,7 @@ class WebsocketMgr(ABC):
                 await asyncio.sleep(self.periodic_timeout_sec)
 
     async def run(self) -> None:
+        await self.validate_subscriptions()
         await self.initialize_subscriptions()
 
         try:
