@@ -43,10 +43,10 @@ async def run():
     aax = CryptoXLib.create_aax_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
-    #aax.compose_subscriptions([
-    #    OrderBookSubscription(pair = Pair('BTC', 'USDT'), depth = 20, callbacks = [order_book_update]),
-    #    OrderBookSubscription(pair = Pair('ETH', 'USDT'), depth = 20, callbacks = [order_book_update2]),
-    #])
+    aax.compose_subscriptions([
+        OrderBookSubscription(pair = Pair('BTC', 'USDT'), depth = 20, callbacks = [order_book_update]),
+        OrderBookSubscription(pair = Pair('ETH', 'USDT'), depth = 20, callbacks = [order_book_update2]),
+    ])
 
     # Bundle subscriptions into a separate websocket
     aax.compose_subscriptions([

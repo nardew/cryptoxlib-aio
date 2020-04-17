@@ -3,9 +3,6 @@ import logging
 import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.clients.aax import enums
-from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.aax.exceptions import AAXException
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -15,8 +12,6 @@ print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}"
 
 
 async def run():
-    # to retrieve your API/SEC key go to your bitforex account, create the keys and store them in
-    # BITFOREXAPIKEY/BITFOREXSECKEY environment variables
     api_key = os.environ['AAXAPIKEY']
     sec_key = os.environ['AAXSECKEY']
 

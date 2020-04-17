@@ -101,7 +101,13 @@ class AAXWebsocket(WebsocketMgr):
         elif message['e'] == 'reply' and message['status'] == 'error':
             raise AAXException(f"Unexpected reply received: {message}")
         else:
-            await self.publish_message(WebsocketMessage(subscription_id = message['e'], message = message))
+            await self.publish_message(WebsocketMessage(subscription_id = self.map_subscription_id(message), message = message))
+
+    def map_subscription_id(self, message: dict):
+        if "event" in message and message['event'] in ['USER_BALANCE', 'SPOT', 'FUTURES']:
+            return "notification"
+        else:
+            return message['e']
 
 
 class AAXSubscription(Subscription):
@@ -152,7 +158,7 @@ class AccountSubscription(AAXSubscription):
         self.user_id = user_id
 
     def get_channel_name(self):
-        return f"user/{self.user_id}"
+        return f"notification"
 
     def get_stream_uri(self) -> str:
         return "notification/v2/"
@@ -162,9 +168,9 @@ class AccountSubscription(AAXSubscription):
 
     def get_subscription_message(self, **kwargs) -> dict:
         return {
-            "e": "#subscribe",
+            "e": "subscribe",
             "data": {
-                "channel": self.get_channel_name()
+                "channel": f"user/{self.user_id}"
             },
             "cid": 2
         }
