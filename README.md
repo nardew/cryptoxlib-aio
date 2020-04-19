@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.1.0
+# cryptoxlib-aio 3.2.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
@@ -35,7 +35,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 
 | | Name | Docs |
 | --- | --- | --- |
-| ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/aax/images/aax.png) | AAX | [API](https://www.aax.com/apidoc/index.html#introduction) |
+| ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/aax.png) | AAX | [API](https://www.aax.com/apidoc/index.html#introduction) |
 | ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
 | ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope | [API](https://github.com/BiboxEurope/API_Docs_en) |
 | ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
