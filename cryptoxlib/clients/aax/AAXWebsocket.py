@@ -99,7 +99,7 @@ class AAXWebsocket(WebsocketMgr):
         elif message['e'] == 'reply' and message['status'] == 'ok':
             LOG.info("Channel subscribed successfully.")
         elif message['e'] == 'reply' and message['status'] == 'error':
-            raise AAXException(f"Unexpected reply received: {message}")
+            raise AAXException(f"Websocket error message received: {message}")
         else:
             await self.publish_message(WebsocketMessage(subscription_id = self.map_subscription_id(message), message = message))
 

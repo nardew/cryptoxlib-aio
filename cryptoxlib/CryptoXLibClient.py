@@ -63,11 +63,11 @@ class CryptoXLibClient(ABC):
     async def _create_post(self, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
         return await self._create_rest_call(RestCallType.POST, resource, data, params, headers, signed)
 
-    async def _create_delete(self, resource: str, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
-        return await self._create_rest_call(RestCallType.DELETE, resource, None, params, headers, signed)
+    async def _create_delete(self, resource: str, data:dict = None,  params: dict = None, headers: dict = None, signed: bool = False) -> dict:
+        return await self._create_rest_call(RestCallType.DELETE, resource, data, params, headers, signed)
 
-    async def _create_put(self, resource: str, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
-        return await self._create_rest_call(RestCallType.PUT, resource, None, params, headers, signed)
+    async def _create_put(self, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
+        return await self._create_rest_call(RestCallType.PUT, resource, data, params, headers, signed)
 
     async def _create_rest_call(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
         with Timer('RestCall'):

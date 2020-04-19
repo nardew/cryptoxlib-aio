@@ -4,7 +4,7 @@ import hmac
 import hashlib
 import json
 from multidict import CIMultiDictProxy
-from typing import List, Tuple, Optional
+from typing import List, Optional
 
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
 from cryptoxlib.clients.aax import enums
@@ -37,6 +37,8 @@ class AAXClient(CryptoXLibClient):
         signature_string = f"{timestamp}:{rest_call_type.value}/v2/{resource}"
         if data is not None:
             signature_string += json.dumps(data)
+        if params is not None:
+            signature_string += json.dumps(params)
 
         LOG.debug(f"Signature input string: {signature_string}")
         signature = hmac.new(self.sec_key.encode('utf-8'), signature_string.encode('utf-8'), hashlib.sha256).hexdigest()
@@ -57,3 +59,53 @@ class AAXClient(CryptoXLibClient):
 
     async def get_funds(self) -> dict:
         return await self._create_get("user/balances", signed = True)
+
+    async def get_user_info(self) -> dict:
+        return await self._create_get("user/info", signed = True)
+
+    async def create_spot_order(self, pair: Pair, type: enums.OrderType, side: enums.OrderSide,
+                           amount: str, price: str = None, stop_price: str = None,
+                           time_in_force: enums.TimeInForce = None, client_id: str = None) -> dict:
+        data = self._clean_request_params({
+            "symbol": map_pair(pair),
+            "side": side.value,
+            "orderType": type.value,
+            "orderQty": amount,
+            "price": price,
+            "stopPrice": stop_price,
+            "clOrdID": client_id
+        })
+
+        if time_in_force is not None:
+            data['timeInForce'] = time_in_force.value
+
+        return await self._create_post("spot/orders", data = data, signed = True)
+
+    async def update_spot_order(self, order_id: str, amount: str, price: str = None, stop_price: str = None) -> dict:
+        data = self._clean_request_params({
+            "orderId": order_id,
+            "orderQty": amount,
+            "price": price,
+            "stopPrice": stop_price
+        })
+
+        return await self._create_put("spot/orders", data = data, signed = True)
+
+    async def cancel_spot_order(self, order_id: str) -> dict:
+        return await self._create_delete(f"spot/orders/cancel/{order_id}", signed = True)
+
+    async def cancel_batch_spot_order(self, pair: Pair, order_id: str = None, client_id: str = None) -> dict:
+        data = self._clean_request_params({
+            "symbol": map_pair(pair),
+            "orderId": order_id,
+            "clOrdID": client_id
+        })
+
+        return await self._create_delete("spot/orders/cancel/all", data = data, signed = True)
+
+    async def cancel_all_spot_order(self, timeout_ms: int) -> dict:
+        data = {
+            "timeout": timeout_ms
+        }
+
+        return await self._create_post("spot/orders/cancelAllOnTimeout", data = data, signed = True)
