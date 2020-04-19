@@ -16,7 +16,7 @@ The mission of `cryptoxlib-aio` is to:
 
 Full support of websockets is the corner stone of `cryptoxlib-aio` which attempts to set `cryptoxlib-aio` apart from existing solutions which either do not provide websocket support or do not provide it for free.
 
-You will also find out that our subject of interest are often smaller exchanges (by world standards) not enjoying a seat in the mainstream crypto libraries.
+You will also find out that our subject of interest are often exchanges not enjoying a seat in the mainstream crypto libraries and this is a way for them to reach developers community.
 
 Disclaimer: By no means we are suggesting that existing libraries are inferior to `cryptoxlib-aio`, they just appeal to different endusers.
 
