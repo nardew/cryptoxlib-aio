@@ -79,6 +79,14 @@ class BinanceSubscription(Subscription):
         return self.get_channel_name()
 
 
+class AllMarketTickersSubscription(BinanceSubscription):
+    def __init__(self, callbacks: List[Callable[[dict], Any]] = None):
+        super().__init__(callbacks)
+
+    def get_channel_name(self):
+        return "!ticker@arr"
+
+
 class BestOrderBookTickerSubscription(BinanceSubscription):
     def __init__(self, callbacks : List[Callable[[dict], Any]] = None):
         super().__init__(callbacks)
