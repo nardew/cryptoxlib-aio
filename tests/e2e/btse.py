@@ -4,9 +4,10 @@ import logging
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.btse import enums
+from cryptoxlib.clients.btse.BtseWebsocket import OrderbookSubscription, OrderbookL2Subscription, TradeSubscription
 from cryptoxlib.Pair import Pair
 
-from CryptoXLibTest import CryptoXLibTest
+from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
 
 api_key = os.environ['BTSEAPIKEY']
 sec_key = os.environ['BTSESECKEY']
@@ -64,6 +65,40 @@ class BtseRestApi(CryptoXLibTest):
     async def test_cancel_order(self):
         response = await self.client.cancel_order(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
+
+
+class BtseWs(CryptoXLibTest):
+    @classmethod
+    def initialize(cls) -> None:
+        cls.print_logs = True
+        cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_btse_client(api_key, sec_key)
+
+    async def test_order_book_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            OrderbookSubscription([Pair('BTSE', 'BTC')], callbacks = [message_counter.generate_callback(2)]),
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_order_book_L2_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            OrderbookL2Subscription([Pair('BTSE', 'BTC')], depth = 1, callbacks = [message_counter.generate_callback(2)]),
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_trade_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            TradeSubscription([Pair('BTSE', 'BTC')], callbacks = [message_counter.generate_callback(1)]),
+        ])
+
+        await self.assertWsMessageCount(message_counter)
 
 
 if __name__ == '__main__':
