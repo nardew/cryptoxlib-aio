@@ -6,12 +6,10 @@ import hmac
 import hashlib
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.btse.functions import map_pair
-from cryptoxlib.clients.btse import enums
 from cryptoxlib.clients.btse.exceptions import BtseException
-from cryptoxlib.exceptions import WebsocketReconnectionException
 from cryptoxlib.PeriodicChecker import PeriodicChecker
 
 LOG = logging.getLogger(__name__)
@@ -64,6 +62,14 @@ class BtseWebsocket(WebsocketMgr):
             message = await websocket.receive()
             LOG.debug(f"< {message}")
 
+            if 'connect success' in message:
+                LOG.info(f"Authenticated websocket connected successfully.")
+            else:
+                raise BtseException(f"Authentication error. Response [{message}]")
+
+            message = await websocket.receive()
+            LOG.debug(f"< {message}")
+
             if 'authenticated successfully' in message:
                 LOG.info(f"Websocket authenticated successfully.")
             else:
@@ -83,15 +89,18 @@ class BtseWebsocket(WebsocketMgr):
         await websocket.send(json.dumps(subscription_message))
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
-        message = json.loads(message)
-        topic = message['topic']
-        channel = topic.split(':')[0]
+        if "connect success" in message:
+            pass
+        else:
+            message = json.loads(message)
+            topic = message['topic']
+            channel = topic.split(':')[0]
 
-        await self.publish_message(WebsocketMessage(subscription_id = channel, message = message))
+            await self.publish_message(WebsocketMessage(subscription_id = channel, message = message))
 
 
 class BtseSubscription(Subscription):
-    def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     def get_subscription_list(self) -> List[str]:
@@ -108,7 +117,7 @@ class BtseSubscription(Subscription):
 
 
 class AccountSubscription(BtseSubscription):
-    def __init__(self, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     def get_subscription_list(self) -> List[str]:
@@ -119,7 +128,7 @@ class AccountSubscription(BtseSubscription):
 
 
 class OrderbookSubscription(BtseSubscription):
-    def __init__(self, pairs: List[Pair], grouping_level: int = 0, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], grouping_level: int = 0, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
@@ -134,7 +143,7 @@ class OrderbookSubscription(BtseSubscription):
 
 
 class OrderbookL2Subscription(BtseSubscription):
-    def __init__(self, pairs: List[Pair], depth: int, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], depth: int, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
@@ -149,7 +158,7 @@ class OrderbookL2Subscription(BtseSubscription):
 
 
 class TradeSubscription(BtseSubscription):
-    def __init__(self, pairs: List[Pair], callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
