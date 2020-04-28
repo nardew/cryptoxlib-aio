@@ -11,9 +11,11 @@ from cryptoxlib.exceptions import CryptoXLibException, WebsocketReconnectionExce
 
 LOG = logging.getLogger(__name__)
 
+CallbacksType = List[Callable[..., Any]]
+
 
 class Subscription(ABC):
-    def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         self.callbacks = callbacks
 
         self.subscription_id = None
@@ -246,6 +248,7 @@ class WebsocketMgr(ABC):
             # main loop ensuring proper reconnection if required
             while True:
                 LOG.debug(f"Initiating websocket connection.")
+                websocket = None
                 try:
                         websocket = self.get_websocket()
                         await websocket.connect()
@@ -282,7 +285,7 @@ class WebsocketMgr(ABC):
                     if self.auto_reconnect:
                         LOG.info("A recoverable exception has occurred, the websocket will be restarted automatically.")
                         self._print_subscriptions()
-                        LOG.exception(e)
+                        LOG.info(f"Exception: {e}")
                     else:
                         raise
                 finally:

@@ -17,9 +17,14 @@ sec_key = os.environ['AAXSECKEY']
 class BitpandaRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
-        cls.client = CryptoXLib.create_aax_client(api_key, sec_key)
         cls.print_logs = True
         cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_aax_client(api_key, sec_key)
+
+    async def clean_test(self):
+        await self.client.close()
 
     def check_response(self, response, code = 1):
         return str(response['status_code'])[0] == '2' and response['response']['code'] == code

@@ -1,12 +1,10 @@
 import unittest
 import os
 import logging
-import datetime
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.btse import enums
 from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.btse.exceptions import BtseRestException
 
 from CryptoXLibTest import CryptoXLibTest
 
@@ -17,9 +15,14 @@ sec_key = os.environ['BTSESECKEY']
 class BtseRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
-        cls.client = CryptoXLib.create_btse_client(api_key, sec_key)
         cls.print_logs = True
         cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_btse_client(api_key, sec_key)
+
+    async def clean_test(self):
+        await self.client.close()
 
     def check_positive_response(self, response):
         return str(response['status_code'])[0] == '2'

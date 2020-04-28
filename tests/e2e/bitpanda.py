@@ -5,10 +5,12 @@ import datetime
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.bitpanda import enums
+from cryptoxlib.clients.bitpanda.BitpandaWebsocket import PricesSubscription, AccountSubscription, OrderbookSubscription, \
+    CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitpanda.exceptions import BitpandaRestException
 
-from CryptoXLibTest import CryptoXLibTest
+from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
 
 api_key = os.environ['BITPANDAAPIKEY']
 
@@ -16,12 +18,17 @@ api_key = os.environ['BITPANDAAPIKEY']
 class BitpandaRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
-        cls.client = CryptoXLib.create_bitpanda_client(api_key)
         cls.print_logs = True
         cls.log_level = logging.DEBUG
 
     def check_positive_response(self, response):
         return str(response['status_code'])[0] == '2'
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_bitpanda_client(api_key)
+
+    async def clean_test(self):
+        await self.client.close()
 
     async def test_get_time(self):
         response = await self.client.get_time()
@@ -98,7 +105,8 @@ class BitpandaRestApi(CryptoXLibTest):
 
     async def test_find_order(self):
         response = await self.client.get_candlesticks(Pair("BTC", "EUR"), enums.TimeUnit.DAYS, "1",
-                                  datetime.datetime.now() - datetime.timedelta(days = 7), datetime.datetime.now())
+                                                      datetime.datetime.now() - datetime.timedelta(days = 7),
+                                                      datetime.datetime.now())
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_account_fees(self):
@@ -112,6 +120,68 @@ class BitpandaRestApi(CryptoXLibTest):
     async def test_get_order_book(self):
         response = await self.client.get_order_book(Pair("BTC", "EUR"))
         self.assertTrue(self.check_positive_response(response))
+
+
+class BitpandaWs(CryptoXLibTest):
+    @classmethod
+    def initialize(cls) -> None:
+        cls.print_logs = True
+        cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_bitpanda_client(api_key)
+
+    async def test_price_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            PricesSubscription([Pair("BTC", "EUR")], callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_account_subscription(self):
+        message_counter = WsMessageCounter()
+
+        self.client.compose_subscriptions([
+            AccountSubscription(callbacks = [message_counter.generate_callback(3)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_order_book_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            OrderbookSubscription([Pair("BTC", "EUR")], "1", [message_counter.generate_callback(1)]),
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    #@unittest.expectedFailure
+    async def test_candlesticks_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            CandlesticksSubscription([CandlesticksSubscriptionParams(Pair("BTC", "EUR"), enums.TimeUnit.MINUTES, 1)],
+                                     callbacks = [message_counter.generate_callback(1)]),
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_market_ticker_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            MarketTickerSubscription([Pair("BTC", "EUR")], callbacks = [message_counter.generate_callback(2)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_multiple_subscription(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            MarketTickerSubscription([Pair("BTC", "EUR")], callbacks = [message_counter.generate_callback(2, name = "MarketTicker")]),
+            OrderbookSubscription([Pair("BTC", "EUR")], "1", callbacks = [message_counter.generate_callback(1, name = "Orderbook")])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
 
 
 if __name__ == '__main__':

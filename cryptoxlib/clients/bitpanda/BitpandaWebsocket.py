@@ -1,9 +1,8 @@
 import json
 import logging
-import websockets
-from typing import List, Callable, Any, Optional
+from typing import List, Any
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitpanda.functions import map_pair, map_multiple_pairs
 from cryptoxlib.clients.bitpanda import enums
@@ -68,7 +67,7 @@ class BitpandaWebsocket(WebsocketMgr):
 
 
 class BitpandaSubscription(Subscription):
-    def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     @staticmethod
@@ -79,7 +78,7 @@ class BitpandaSubscription(Subscription):
         return self.get_channel_name()
 
 class AccountSubscription(BitpandaSubscription):
-    def __init__(self, callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     @staticmethod
@@ -93,7 +92,7 @@ class AccountSubscription(BitpandaSubscription):
 
 
 class PricesSubscription(BitpandaSubscription):
-    def __init__(self, pairs : List[Pair], callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
@@ -110,7 +109,7 @@ class PricesSubscription(BitpandaSubscription):
 
 
 class OrderbookSubscription(BitpandaSubscription):
-    def __init__(self, pairs : List[Pair], depth : str, callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], depth: str, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
@@ -136,7 +135,7 @@ class CandlesticksSubscriptionParams(object):
 
 
 class CandlesticksSubscription(BitpandaSubscription):
-    def __init__(self, subscription_params : List[CandlesticksSubscriptionParams], callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, subscription_params: List[CandlesticksSubscriptionParams], callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.subscription_params = subscription_params
@@ -159,7 +158,7 @@ class CandlesticksSubscription(BitpandaSubscription):
 
 
 class MarketTickerSubscription(BitpandaSubscription):
-    def __init__(self, pairs : List[Pair], callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs

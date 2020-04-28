@@ -171,7 +171,7 @@ class CryptoXLibClient(ABC):
                 try:
                     task.result()
                 except Exception as e:
-                    LOG.exception(f"Unrecoverable exception occurred while processing messages: {e}")
+                    LOG.error(f"Unrecoverable exception occurred while processing messages: {e}")
                     LOG.info("All websockets scheduled for shutdown")
 
                     for task in pending:

@@ -16,9 +16,14 @@ sec_key = os.environ['BITFOREXSECKEY']
 class BitforexRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
-        cls.client = CryptoXLib.create_bitforex_client(api_key, sec_key)
         cls.print_logs = True
         cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_bitforex_client(api_key, sec_key)
+
+    async def clean_test(self):
+        await self.client.close()
 
     def check_positive_response(self, response):
         return response['response']['success'] is True
