@@ -4,6 +4,7 @@ import logging
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.btse import enums
+from cryptoxlib.clients.btse.exceptions import BtseRestException
 from cryptoxlib.clients.btse.BtseWebsocket import OrderbookSubscription, OrderbookL2Subscription, TradeSubscription
 from cryptoxlib.Pair import Pair
 
@@ -57,10 +58,14 @@ class BtseRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_create_order(self):
-        response = await self.client.create_order(pair = Pair('BTC', 'USD'), type = enums.OrderType.LIMIT,
-                                       side = enums.OrderSide.BUY,
-                                       amount = "10000", price = "1")
-        self.assertTrue(self.check_positive_response(response))
+        with self.assertRaises(BtseRestException) as cm:
+            await self.client.create_order(pair = Pair('BTC', 'USD'), type = enums.OrderType.LIMIT,
+                                           side = enums.OrderSide.BUY,
+                                           amount = "1000", price = "1")
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 400)
+        self.assertTrue(str(e.body['errorCode']) == '51523')
 
     async def test_cancel_order(self):
         response = await self.client.cancel_order(pair = Pair('BTC', 'USD'))
