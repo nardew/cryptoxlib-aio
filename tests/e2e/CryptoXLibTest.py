@@ -25,7 +25,7 @@ class WsMessageCounterCallback(object):
         self.current_count += 1
 
         if self.current_count == self.target_count:
-            LOG.info(f"Message count reached [{self.name}].")
+            LOG.info(f"Message count reached [counter = {self.name}].")
 
             self.ws_message_counter.check_target_reached()
 
