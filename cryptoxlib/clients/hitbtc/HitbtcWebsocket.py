@@ -1,174 +1,188 @@
 import json
 import logging
+import datetime
+import hmac
+import hashlib
 from typing import List, Any
 
 from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType
 from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitpanda.functions import map_pair, map_multiple_pairs
-from cryptoxlib.clients.bitpanda import enums
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
-from cryptoxlib.exceptions import WebsocketReconnectionException
+from cryptoxlib.clients.hitbtc.functions import map_pair
+from cryptoxlib.clients.hitbtc.exceptions import HitbtcException
 
 LOG = logging.getLogger(__name__)
 
 
 class HitbtcWebsocket(WebsocketMgr):
-    WEBSOCKET_URI = "wss://streams.exchange.bitpanda.com"
+    WEBSOCKET_URI = "wss://api.hitbtc.com/api/2/ws"
     MAX_MESSAGE_SIZE = 3 * 1024 * 1024  # 3MB
 
-    def __init__(self, subscriptions: List[Subscription], api_key: str = None, ssl_context = None) -> None:
+    def __init__(self, subscriptions: List[Subscription], api_key: str = None, sec_key: str = None,
+                 ssl_context = None) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
-                         max_message_size = BitpandaWebsocket.MAX_MESSAGE_SIZE,
                          ssl_context = ssl_context,
-                         auto_reconnect = True)
+                         builtin_ping_interval = None,
+                         auto_reconnect = True,
+                         max_message_size = self.MAX_MESSAGE_SIZE)
 
         self.api_key = api_key
+        self.sec_key = sec_key
 
-    def _get_subscription_message(self):
-        return {
-            "type": "SUBSCRIBE",
-            "channels": [
-                dict(subscription.get_subscription_message(), **{"api_token": self.api_key}) for
-                subscription in self.subscriptions
-            ]
-        }
+    def get_websocket(self) -> Websocket:
+        return self.get_aiohttp_websocket()
+
+    async def _authenticate(self, websocket: Websocket):
+        requires_authentication = False
+        for subscription in self.subscriptions:
+            if subscription.requires_authentication():
+                requires_authentication = True
+                break
+
+        if requires_authentication:
+            timestamp_ms = str(int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000))
+            signature = hmac.new(self.sec_key.encode('utf-8'), timestamp_ms.encode('utf-8'),
+                                 hashlib.sha256).hexdigest()
+
+            authentication_message = {
+                "method": "login",
+                "params": {
+                    "algo": "HS256",
+                    "pKey": self.api_key,
+                    "nonce": timestamp_ms,
+                    "signature": signature
+                }
+            }
+
+            LOG.debug(f"> {authentication_message}")
+            await websocket.send(json.dumps(authentication_message))
+
+            message = await websocket.receive()
+            LOG.debug(f"< {message}")
+
+            message = json.loads(message)
+            if 'result' in message and message['result'] == True:
+                LOG.info(f"Authenticated websocket connected successfully.")
+            else:
+                raise HitbtcException(f"Authentication error. Response [{message}]")
 
     async def _subscribe(self, websocket: Websocket):
-        subscription_message =  self._get_subscription_message()
-
-        LOG.debug(f"> {subscription_message}")
-        await websocket.send(json.dumps(subscription_message))
+        for subscription in self.subscriptions:
+            subscription_message = subscription.get_subscription_message()
+            LOG.debug(f"> {subscription_message}")
+            await websocket.send(json.dumps(subscription_message))
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
 
-        # subscription negative response
-        if "error" in message or message['type'] == "ERROR":
-            raise BitpandaException(
-                f"Subscription error. Request [{json.dumps(self._get_subscription_message())}] Response [{json.dumps(message)}]")
-
-        # subscription positive response
-        elif message['type'] == "SUBSCRIPTIONS":
-            LOG.info(f"Subscription confirmed for channels [" + ",".join(
-                [channel["name"] for channel in message["channels"]]) + "]")
-
-        # remote termination with an opportunity to reconnect
-        elif message["type"] == "CONNECTION_CLOSING":
-            LOG.warning(f"Server is performing connection termination with an opportunity to reconnect.")
-            raise WebsocketReconnectionException("Graceful connection termination.")
-
-        # heartbeat message
-        elif message["type"] == "HEARTBEAT":
+        if 'id' in message and 'result' in message and message['result'] == True:
+            # subscription confirmation
             pass
-
-        # regular message
         else:
-            await self.publish_message(WebsocketMessage(subscription_id = message['channel_name'], message = message))
+            # regular message
+            await self.publish_message(WebsocketMessage(
+                subscription_id = self._map_message_to_subscription_id(message), message = message))
+
+    @staticmethod
+    def _map_message_to_subscription_id(message: dict):
+        if message['method'] in ['snapshotOrderbook', 'updateOrderbook']:
+            return f"orderbook{message['params']['symbol']}"
+        elif message['method'] == 'ticker':
+            return f"{message['method']}{message['params']['symbol']}"
+        elif message['method'] in ['snapshotTrades', 'updateTrades']:
+            return f"trades{message['params']['symbol']}"
+        elif message['method'] in ['activeOrders', 'report']:
+            return "account"
 
 
-class BitpandaSubscription(Subscription):
+class HitbtcSubscription(Subscription):
+    SUBSCRIPTION_ID = 1
+
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-    @staticmethod
-    def get_channel_name():
-        pass
+        self.SUBSCRIPTION_ID += 1
+        self.id = self.SUBSCRIPTION_ID
+
+    def requires_authentication(self) -> bool:
+        return False
+
+
+class AccountSubscription(HitbtcSubscription):
+    def __init__(self, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+    def get_subscription_message(self, **kwargs) -> dict:
+        return {
+            "method": "subscribeReports",
+            "params": {},
+            "id": self.id
+        }
 
     def construct_subscription_id(self) -> Any:
-        return self.get_channel_name()
+        return "account"
 
-class AccountSubscription(BitpandaSubscription):
-    def __init__(self, callbacks: CallbacksType = None):
+    def requires_authentication(self) -> bool:
+        return True
+
+
+class OrderbookSubscription(HitbtcSubscription):
+    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-    @staticmethod
-    def get_channel_name():
-        return "ACCOUNT_HISTORY"
-
-    def get_subscription_message(self, **kwargs) -> dict:
-        return {
-            "name": self.get_channel_name(),
-        }
-
-
-class PricesSubscription(BitpandaSubscription):
-    def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
-        super().__init__(callbacks)
-
-        self.pairs = pairs
-
-    @staticmethod
-    def get_channel_name():
-        return "PRICE_TICKS"
-
-    def get_subscription_message(self, **kwargs) -> dict:
-        return {
-            "name": self.get_channel_name(),
-            "instrument_codes": map_multiple_pairs(self.pairs, sort = True)
-        }
-
-
-class OrderbookSubscription(BitpandaSubscription):
-    def __init__(self, pairs: List[Pair], depth: str, callbacks: CallbacksType = None):
-        super().__init__(callbacks)
-
-        self.pairs = pairs
-        self.depth = depth
-
-    @staticmethod
-    def get_channel_name():
-        return "ORDER_BOOK"
-
-    def get_subscription_message(self, **kwargs) -> dict:
-        return {
-            "name": self.get_channel_name(),
-            "depth": self.depth,
-            "instrument_codes": map_multiple_pairs(self.pairs, sort = True)
-        }
-
-
-class CandlesticksSubscriptionParams(object):
-    def __init__(self, pair : Pair, unit : enums.TimeUnit, period):
         self.pair = pair
-        self.unit = unit
-        self.period = period
-
-
-class CandlesticksSubscription(BitpandaSubscription):
-    def __init__(self, subscription_params: List[CandlesticksSubscriptionParams], callbacks: CallbacksType = None):
-        super().__init__(callbacks)
-
-        self.subscription_params = subscription_params
-
-    @staticmethod
-    def get_channel_name():
-        return "CANDLESTICKS"
 
     def get_subscription_message(self, **kwargs) -> dict:
         return {
-            "name": self.get_channel_name(),
-            "properties": [{
-                "instrument_code": map_pair(params.pair),
-                "time_granularity": {
-                    "unit": params.unit.value,
-                    "period": params.period
-                }
-            } for params in sorted(self.subscription_params)]
+            "method": "subscribeOrderbook",
+            "params": {
+                "symbol": map_pair(self.pair),
+            },
+            "id": self.id
         }
 
+    def construct_subscription_id(self) -> Any:
+        return f"orderbook{map_pair(self.pair)}"
 
-class MarketTickerSubscription(BitpandaSubscription):
-    def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
+
+class TickerSubscription(HitbtcSubscription):
+    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pairs = pairs
-
-    @staticmethod
-    def get_channel_name():
-        return "MARKET_TICKER"
+        self.pair = pair
 
     def get_subscription_message(self, **kwargs) -> dict:
         return {
-            "name": self.get_channel_name(),
-            "instrument_codes": map_multiple_pairs(self.pairs, sort = True)
+            "method": "subscribeTicker",
+            "params": {
+                "symbol": map_pair(self.pair),
+            },
+            "id": self.id
         }
+
+    def construct_subscription_id(self) -> Any:
+        return f"ticker{map_pair(self.pair)}"
+
+
+class TradesSubscription(HitbtcSubscription):
+    def __init__(self, pair: Pair, limit: int = None, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.pair = pair
+        self.limit = limit
+
+    def get_subscription_message(self, **kwargs) -> dict:
+        params = {
+            "method": "subscribeTrades",
+            "params": {
+                "symbol": map_pair(self.pair),
+            },
+            "id": self.id
+        }
+
+        if self.limit is not None:
+            params['params']['limit'] = self.limit
+
+        return params
+
+    def construct_subscription_id(self) -> Any:
+        return f"trades{map_pair(self.pair)}"

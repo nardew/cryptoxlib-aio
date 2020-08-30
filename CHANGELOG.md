@@ -6,6 +6,13 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [3.3.0] - 2020-08-30
+
+### Added
+
+- `HitBTC` exchange added
+-  `candlestick` websocket added into `binance`
+
 ## [3.2.1] - 2020-04-29
 
 ### Added
@@ -42,7 +49,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.1...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.3.0...HEAD
+[3.3.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.1...3.3.0
 [3.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.0...3.2.1
 [3.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.1.0...3.2.0
 [3.1.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.0.0...3.1.0
