@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.2.1
+# cryptoxlib-aio 3.3.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
