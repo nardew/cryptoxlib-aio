@@ -4,9 +4,8 @@ import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitpanda.enums import TimeUnit
-from cryptoxlib.clients.bitpanda.BitpandaWebsocket import AccountSubscription, PricesSubscription, \
-    OrderbookSubscription, CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription
+from cryptoxlib.clients.hitbtc.HitbtcWebsocket import TickerSubscription, OrderbookSubscription, TradesSubscription, \
+    AccountSubscription
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -18,24 +17,29 @@ print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}\
 async def order_book_update(response: dict) -> None:
     print(f"Callback order_book_update: [{response}]")
 
+async def ticker_update(response: dict) -> None:
+    print(f"Callback ticker_update: [{response}]")
+
+async def trade_update(response: dict) -> None:
+    print(f"Callback trade_update: [{response}]")
+
 
 async def run():
-    api_key = os.environ['BITPANDAAPIKEY']
+    api_key = os.environ['HITBTCAPIKEY']
+    sec_key = os.environ['HITBTCSECKEY']
 
-    client = CryptoXLib.create_bitpanda_client(api_key)
+    client = CryptoXLib.create_hitbtc_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
         AccountSubscription(),
-        PricesSubscription([Pair("BTC", "EUR")]),
-        OrderbookSubscription([Pair("BTC", "EUR")], "50", callbacks = [order_book_update]),
-        CandlesticksSubscription([CandlesticksSubscriptionParams(Pair("BTC", "EUR"), TimeUnit.MINUTES, 1)]),
-        MarketTickerSubscription([Pair("BTC", "EUR")])
+        OrderbookSubscription(pair = Pair("BTC", "USD"), callbacks = [order_book_update]),
+        TickerSubscription(pair = Pair("BTC", "USD"), callbacks = [ticker_update])
     ])
 
     # Bundle another subscriptions into a separate websocket
     client.compose_subscriptions([
-        OrderbookSubscription([Pair("ETH", "EUR")], "3", callbacks = [order_book_update]),
+        TradesSubscription(pair = Pair("ETH", "BTC"), limit = 5,callbacks = [trade_update])
     ])
 
     # Execute all websockets asynchronously
