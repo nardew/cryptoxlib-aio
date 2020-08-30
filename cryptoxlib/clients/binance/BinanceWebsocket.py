@@ -1,11 +1,11 @@
 import json
 import logging
-import websockets
 from typing import List, Callable, Any, Optional
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.binance.functions import map_ws_pair
+from cryptoxlib.clients.binance.enums import CandelstickInterval
 
 LOG = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class BinanceWebsocket(WebsocketMgr):
 
 
 class BinanceSubscription(Subscription):
-    def __init__(self, callbacks: Optional[List[Callable[[dict], Any]]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     @staticmethod
@@ -80,7 +80,7 @@ class BinanceSubscription(Subscription):
 
 
 class AllMarketTickersSubscription(BinanceSubscription):
-    def __init__(self, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     def get_channel_name(self):
@@ -88,7 +88,7 @@ class AllMarketTickersSubscription(BinanceSubscription):
 
 
 class BestOrderBookTickerSubscription(BinanceSubscription):
-    def __init__(self, callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
     def get_channel_name(self):
@@ -96,7 +96,7 @@ class BestOrderBookTickerSubscription(BinanceSubscription):
 
 
 class BestOrderBookSymbolTickerSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pair = pair
@@ -106,7 +106,7 @@ class BestOrderBookSymbolTickerSubscription(BinanceSubscription):
 
 
 class TradeSubscription(BinanceSubscription):
-    def __init__(self, pair : Pair, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pair = pair
@@ -116,7 +116,7 @@ class TradeSubscription(BinanceSubscription):
 
 
 class AggregateTradeSubscription(BinanceSubscription):
-    def __init__(self, pair : Pair, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pair = pair
@@ -125,8 +125,19 @@ class AggregateTradeSubscription(BinanceSubscription):
         return map_ws_pair(self.pair) + "@aggTrade"
 
 
+class CandlestickSubscription(BinanceSubscription):
+    def __init__(self, pair: Pair, interval: CandelstickInterval, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.pair = pair
+        self.interval = interval
+
+    def get_channel_name(self):
+        return f"{map_ws_pair(self.pair)}@kline_{self.interval.value}"
+
+
 class AccountSubscription(BinanceSubscription):
-    def __init__(self, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.listen_key = None
