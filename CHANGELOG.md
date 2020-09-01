@@ -6,6 +6,13 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [3.4.0] - 2020-09-01
+
+### Added
+
+- new `TRADING` subscription added into `bitpanda`
+- new `ORDERS` subscription added into `bitpanda`
+
 ## [3.3.0] - 2020-08-30
 
 ### Added
@@ -49,7 +56,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.3.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.4.0...HEAD
+[3.4.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.3.0...3.4.0
 [3.3.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.1...3.3.0
 [3.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.0...3.2.1
 [3.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.1.0...3.2.0
