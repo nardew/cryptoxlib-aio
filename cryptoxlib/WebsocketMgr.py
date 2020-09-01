@@ -196,7 +196,7 @@ class Subscription(ABC):
         if self.callbacks is not None:
             tasks = []
             for cb in self.callbacks:
-                # If message contains websocket, it will be passed to the callback.
+                # If message contains a websocket, then the websocket handle will be passed to the callbacks.
                 # This is useful for duplex websockets
                 if message.websocket is not None:
                     tasks.append(asyncio.create_task(cb(message.message, message.websocket)))
@@ -216,7 +216,6 @@ class WebsocketMgr(ABC):
         self.periodic_timeout_sec = periodic_timeout_sec
         self.ssl_context = ssl_context
         self.auto_reconnect = auto_reconnect
-        self.websocket = None
 
     @abstractmethod
     async def _process_message(self, websocket: Websocket, response: str) -> None:
@@ -286,13 +285,14 @@ class WebsocketMgr(ABC):
             # main loop ensuring proper reconnection if required
             while True:
                 LOG.debug(f"Initiating websocket connection.")
+                websocket = None
                 try:
-                        self.websocket = self.get_websocket()
-                        await self.websocket.connect()
+                        websocket = self.get_websocket()
+                        await websocket.connect()
 
                         done, pending = await asyncio.wait(
-                            [asyncio.create_task(self.main_loop(self.websocket)),
-                             asyncio.create_task(self.periodic_loop(self.websocket))],
+                            [asyncio.create_task(self.main_loop(websocket)),
+                             asyncio.create_task(self.periodic_loop(websocket))],
                             return_when = asyncio.FIRST_EXCEPTION
                         )
                         for task in done:
@@ -326,9 +326,9 @@ class WebsocketMgr(ABC):
                     else:
                         raise
                 finally:
-                    if self.websocket is not None:
+                    if websocket is not None:
                         LOG.debug("Closing websocket connection.")
-                        await self.websocket.close()
+                        await websocket.close()
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:

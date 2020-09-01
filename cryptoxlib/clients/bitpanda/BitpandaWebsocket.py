@@ -82,7 +82,7 @@ class BitpandaWebsocket(WebsocketMgr):
                 await self.publish_message(WebsocketMessage(
                     subscription_id = 'ORDERS',
                     message = message,
-                    websocket = ClientWebsocketHandle(websocket = self.websocket)
+                    websocket = ClientWebsocketHandle(websocket = websocket)
                 ))
 
         # remote termination with an opportunity to reconnect
@@ -100,7 +100,7 @@ class BitpandaWebsocket(WebsocketMgr):
                 subscription_id = message['channel_name'],
                 message = message,
                 # for ORDERS channel communicate also the websocket handle
-                websocket = ClientWebsocketHandle(websocket = self.websocket) if message['channel_name'] == 'ORDERS' else None
+                websocket = ClientWebsocketHandle(websocket = websocket) if message['channel_name'] == 'ORDERS' else None
             ))
 
 
