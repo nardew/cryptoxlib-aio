@@ -5,7 +5,7 @@ import asyncio
 import ssl
 import aiohttp
 from abc import ABC, abstractmethod
-from typing import List, Callable, Any, Optional
+from typing import List, Callable, Any, Optional, Union
 
 from cryptoxlib.exceptions import CryptoXLibException, WebsocketReconnectionException, WebsocketClosed, WebsocketError
 
@@ -13,37 +13,6 @@ LOG = logging.getLogger(__name__)
 
 CallbacksType = List[Callable[..., Any]]
 
-
-class Subscription(ABC):
-    def __init__(self, callbacks: CallbacksType = None):
-        self.callbacks = callbacks
-
-        self.subscription_id = None
-
-    @abstractmethod
-    def construct_subscription_id(self) -> Any:
-        pass
-
-    @abstractmethod
-    def get_subscription_message(self, **kwargs) -> dict:
-        pass
-
-    def get_subscription_id(self) -> Any:
-        if self.subscription_id is None:
-            self.subscription_id = self.construct_subscription_id()
-            LOG.debug(f"New subscription id constructed: {self.subscription_id}")
-
-        return self.subscription_id
-
-    async def initialize(self, **kwargs) -> None:
-        pass
-
-    async def process_message(self, response: dict) -> None:
-        await self.process_callbacks(response)
-
-    async def process_callbacks(self, response: dict) -> None:
-        if self.callbacks is not None:
-            await asyncio.gather(*[asyncio.create_task(cb(response)) for cb in self.callbacks])
 
 class Websocket(ABC):
     def __init__(self):
@@ -162,10 +131,78 @@ class AiohttpWebsocket(Websocket):
         return await self.ws.send_str(message)
 
 
+class WebsocketOutboundMessage(ABC):
+    @abstractmethod
+    def to_json(self):
+        pass
+
+
+class ClientWebsocketHandle(object):
+    def __init__(self, websocket: Websocket):
+        self.websocket = websocket
+
+    async def send(self, message: Union[str, dict, WebsocketOutboundMessage]):
+        if isinstance(message, str):
+            pass
+        elif isinstance(message, dict):
+            message = json.dumps(message)
+        elif isinstance(message, WebsocketOutboundMessage):
+            message = json.dumps(message.to_json())
+        else:
+            raise CryptoXLibException("Only string or JSON serializable objects can be sent over the websocket.")
+
+        LOG.debug(f"> {message}")
+        return await self.websocket.send(message)
+
+    async def receive(self):
+        return await self.websocket.receive()
+
+
 class WebsocketMessage(object):
-    def __init__(self, subscription_id: Any, message: dict) -> None:
+    def __init__(self, subscription_id: Any, message: dict, websocket: ClientWebsocketHandle = None) -> None:
         self.subscription_id = subscription_id
         self.message = message
+        self.websocket = websocket
+
+
+class Subscription(ABC):
+    def __init__(self, callbacks: CallbacksType = None):
+        self.callbacks = callbacks
+
+        self.subscription_id = None
+
+    @abstractmethod
+    def construct_subscription_id(self) -> Any:
+        pass
+
+    @abstractmethod
+    def get_subscription_message(self, **kwargs) -> dict:
+        pass
+
+    def get_subscription_id(self) -> Any:
+        if self.subscription_id is None:
+            self.subscription_id = self.construct_subscription_id()
+            LOG.debug(f"New subscription id constructed: {self.subscription_id}")
+
+        return self.subscription_id
+
+    async def initialize(self, **kwargs) -> None:
+        pass
+
+    async def process_message(self, message: WebsocketMessage) -> None:
+        await self.process_callbacks(message)
+
+    async def process_callbacks(self, message: WebsocketMessage) -> None:
+        if self.callbacks is not None:
+            tasks = []
+            for cb in self.callbacks:
+                # If message contains websocket, it will be passed to the callback.
+                # This is useful for duplex websockets
+                if message.websocket is not None:
+                    tasks.append(asyncio.create_task(cb(message.message, message.websocket)))
+                else:
+                    tasks.append(asyncio.create_task(cb(message.message)))
+            await asyncio.gather(*tasks)
 
 
 class WebsocketMgr(ABC):
@@ -179,6 +216,7 @@ class WebsocketMgr(ABC):
         self.periodic_timeout_sec = periodic_timeout_sec
         self.ssl_context = ssl_context
         self.auto_reconnect = auto_reconnect
+        self.websocket = None
 
     @abstractmethod
     async def _process_message(self, websocket: Websocket, response: str) -> None:
@@ -248,14 +286,13 @@ class WebsocketMgr(ABC):
             # main loop ensuring proper reconnection if required
             while True:
                 LOG.debug(f"Initiating websocket connection.")
-                websocket = None
                 try:
-                        websocket = self.get_websocket()
-                        await websocket.connect()
+                        self.websocket = self.get_websocket()
+                        await self.websocket.connect()
 
                         done, pending = await asyncio.wait(
-                            [asyncio.create_task(self.main_loop(websocket)),
-                             asyncio.create_task(self.periodic_loop(websocket))],
+                            [asyncio.create_task(self.main_loop(self.websocket)),
+                             asyncio.create_task(self.periodic_loop(self.websocket))],
                             return_when = asyncio.FIRST_EXCEPTION
                         )
                         for task in done:
@@ -289,9 +326,9 @@ class WebsocketMgr(ABC):
                     else:
                         raise
                 finally:
-                    if websocket is not None:
+                    if self.websocket is not None:
                         LOG.debug("Closing websocket connection.")
-                        await websocket.close()
+                        await self.websocket.close()
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:
@@ -302,7 +339,7 @@ class WebsocketMgr(ABC):
     async def publish_message(self, message: WebsocketMessage) -> None:
         for subscription in self.subscriptions:
             if subscription.get_subscription_id() == message.subscription_id:
-                await subscription.process_message(message.message)
+                await subscription.process_message(message)
                 return
 
         LOG.warning(f"Websocket message with subscription id {message.subscription_id} did not identify any subscription!")

@@ -1,6 +1,12 @@
 import enum
 
 
+class OrderType(enum.Enum):
+    MARKET = "MARKET"
+    LIMIT = "LIMIT"
+    STOP_LIMIT = "STOP"
+
+
 class OrderSide(enum.Enum):
     BUY = "BUY"
     SELL = "SELL"

@@ -105,7 +105,7 @@ class BitpandaClient(CryptoXLibClient):
         data = {
             "instrument_code": map_pair(pair),
             "side": side.value,
-            "type": "MARKET",
+            "type": enums.OrderType.MARKET.value,
             "amount": amount
         }
 
@@ -119,7 +119,7 @@ class BitpandaClient(CryptoXLibClient):
         data = {
             "instrument_code": map_pair(pair),
             "side": side.value,
-            "type": "LIMIT",
+            "type": enums.OrderType.LIMIT.value,
             "amount": amount,
             "price": limit_price
         }
@@ -138,7 +138,7 @@ class BitpandaClient(CryptoXLibClient):
         data = {
             "instrument_code": map_pair(pair),
             "side": side.value,
-            "type": "STOP",
+            "type": enums.OrderType.STOP_LIMIT.value,
             "amount": amount,
             "price": limit_price,
             "trigger_price": stop_price
