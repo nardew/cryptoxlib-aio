@@ -1,10 +1,17 @@
-# cryptoxlib-aio 3.3.0
+# cryptoxlib-aio 3.4.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
 `cryptoxlib-aio` is a compact Python library providing access to REST and WEBSOCKET API of selected crypto exchanges.
 
 `cryptoxlib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
+
+### What's new in version 3.4.0
+
+- new `TRADING` subscription added into `bitpanda`. The channel delivers minimal, low-latency updates on user's order changes.
+- new `ORDERS` subscription added into `bitpanda`. User can create or cancel orders directly via websocket which provides superior performance to standard REST API.
+
+For the history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
 ### Main mission
 Today there are numerous existing libraries targeting similar audience as `cryptoxlib-aio`. In order to achieve the broadest coverage of exchanges the supported API is often limited, the most apparent example being lack of _websockets_.  
@@ -26,8 +33,6 @@ Disclaimer: By no means we are suggesting that existing libraries are inferior t
 - bundling of channels 
 - lean architecture making it straightforward to implement API of a new exchange
 - fully asynchronous design aiming for the best performance
-
-For the history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
 ### List of supported exchanges
 
