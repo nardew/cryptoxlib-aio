@@ -15,6 +15,8 @@ class OrderSide(enum.Enum):
 class TimeInForce(enum.Enum):
     GOOD_TILL_CANCELLED = "GOOD_TILL_CANCELLED"
     IMMEDIATE_OR_CANCELLED = "IMMEDIATE_OR_CANCELLED"
+    FILL_OR_KILL = "FILL_OR_KILL"
+    GOOD_TILL_TIME = "GOOD_TILL_TIME"
 
 
 class TimeUnit(enum.Enum):

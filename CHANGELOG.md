@@ -12,6 +12,7 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 - new `TRADING` subscription added into `bitpanda`
 - new `ORDERS` subscription added into `bitpanda`
+- additional `Time In Force` options added into `bitpanda`
 
 ## [3.3.0] - 2020-08-30
 
