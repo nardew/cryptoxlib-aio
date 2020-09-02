@@ -100,8 +100,8 @@ class HitbtcSubscription(Subscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.SUBSCRIPTION_ID += 1
-        self.id = self.SUBSCRIPTION_ID
+        HitbtcSubscription.SUBSCRIPTION_ID += 1
+        self.id = HitbtcSubscription.SUBSCRIPTION_ID
 
     def requires_authentication(self) -> bool:
         return False
