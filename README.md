@@ -135,7 +135,5 @@ If you like the library and you feel like you want to support its further develo
 - file bugs, proposals, pull requests, ...
 - spread the word
 - donate an arbitrary tip
-  * `BTC`: `15JUgVq3YFoPedEj5wgQgvkZRx5HQoKJC4`
-  * `ETH`: `0xf29304b6af5831030ba99aceb290a3a2129b993d`
-  * `ADA`: `DdzFFzCqrhshyLV3wktXFvConETEr9mCfrMo9V3dYz4pz6yNq9PjJusfnn4kzWKQR91pWecEbKoHodPaJzgBHdV2AKeDSfR4sckrEk79`
-  * `XRP`: `rhVWrjB9EGDeK4zuJ1x2KXSjjSpsDQSaU6` **+ tag** `599790141`
+  * `BTC`: `3GJPT6H6WeuTWR2KwDSEN5qyJq95LEErzf`
+  * `ETH`: `0xC7d8673Ee1B01f6F10e40aA416a1b0A746eaBe68`

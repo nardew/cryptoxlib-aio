@@ -30,7 +30,7 @@ class BitpandaClient(CryptoXLibClient):
         return self.REST_API_URI
 
     def _sign_payload(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None) -> None:
-        pass
+        headers["Authorization"] = "Bearer " + self.api_key
 
     def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         if str(status_code)[0] != '2':
@@ -41,6 +41,9 @@ class BitpandaClient(CryptoXLibClient):
 
     async def get_currencies(self) -> dict:
         return await self._create_get("currencies")
+    
+    async def get_fee_groups(self) -> dict:
+        return await self._create_get("fees")
 
     async def get_account_balances(self) -> dict:
         return await self._create_get("account/balances", headers = self._get_header())
@@ -177,15 +180,49 @@ class BitpandaClient(CryptoXLibClient):
     async def get_instruments(self) -> dict:
         return await self._create_get("instruments")
 
-    async def get_order_book(self, pair: Pair, level: str = None) -> dict:
+    async def get_order_book(self, pair: Pair, level: str = None, depth: str = None) -> dict:
         params = BitpandaClient._clean_request_params({
             "level": level,
+            "depth": depth
         })
 
         return await self._create_get("order-book/" + map_pair(pair), params = params)
 
     async def get_time(self) -> dict:
         return await self._create_get("time")
+
+    async def get_market_tickers(self) -> dict:
+        return await self._create_get("market-ticker")
+
+    async def get_market_ticker(self, pair: Pair) -> dict:
+        return await self._create_get("market-ticker/" + map_pair(pair))
+
+    async def get_price_tick(self, pair: Pair, from_timestamp: datetime.datetime = None,
+                               to_timestamp: datetime.datetime = None) -> dict:
+        params = {}
+
+        if from_timestamp is not None:
+            params['from'] = from_timestamp.astimezone(pytz.utc).isoformat()
+
+        if to_timestamp is not None:
+            params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
+
+
+        return await self._create_get("price-ticks/" + map_pair(pair), params = params)
+
+    async def create_deposit_crypto_address(self, currency: str) -> dict:
+        data = {
+            "currency": currency
+        }
+
+        return await self._create_post("/account/deposit/crypto", data = data, signed = True)
+
+    async def get_deposit_crypto_address(self, currency: str) -> dict:
+        return await self._create_get("/account/deposit/crypto/" + currency, signed = True)
+
+    async def get_fiat_deposit_info(self) -> dict:
+        return await self._create_get("/account/deposit/fiat/EUR", signed = True)
+
 
     def _get_header(self):
         header = {

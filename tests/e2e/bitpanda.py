@@ -15,7 +15,7 @@ from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
 api_key = os.environ['BITPANDAAPIKEY']
 
 
-class BitpandaRestApi(CryptoXLibTest):
+class BitpandaRestApi():
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
@@ -122,7 +122,7 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
 
-class BitpandaWs(CryptoXLibTest):
+class BitpandaWs():
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
@@ -182,6 +182,70 @@ class BitpandaWs(CryptoXLibTest):
         ])
 
         await self.assertWsMessageCount(message_counter)
+
+
+class BitpandaRestApi2(CryptoXLibTest):
+    @classmethod
+    def initialize(cls) -> None:
+        cls.print_logs = True
+        cls.log_level = logging.DEBUG
+
+    def check_positive_response(self, response):
+        return str(response['status_code'])[0] == '2'
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_bitpanda_client(api_key)
+
+    async def clean_test(self):
+        await self.client.close()
+
+    @unittest.skip
+    async def test_get_fee_groups(self):
+        response = await self.client.get_fee_groups()
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_get_order_book2(self):
+        response = await self.client.get_order_book(Pair("BTC", "EUR"), level = "3", depth = "1")
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_get_market_tickers(self):
+        response = await self.client.get_market_tickers()
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_get_market_ticker(self):
+        response = await self.client.get_market_ticker(Pair('ETH', 'EUR'))
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_get_price_ticks(self):
+        response = await self.client.get_price_tick(Pair('ETH', 'EUR'))
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_get_price_ticks2(self):
+        response = await self.client.get_price_tick(Pair('ETH', 'EUR'),
+                                                    from_timestamp = datetime.datetime.now() - datetime.timedelta(hours = 2),
+                                                    to_timestamp = datetime.datetime.now())
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_create_deposit_crypto_address(self):
+        response = await self.client.create_deposit_crypto_address("ABC")
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    async def test_get_deposit_crypto_address(self):
+        response = await self.client.get_deposit_crypto_address("BTC")
+        self.assertTrue(self.check_positive_response(response))
+
+
+    async def test_get_fiat_deposit_info(self):
+        response = await self.client.get_fiat_deposit_info()
+        self.assertTrue(self.check_positive_response(response))
+
 
 
 if __name__ == '__main__':
