@@ -46,10 +46,10 @@ class BitpandaClient(CryptoXLibClient):
         return await self._create_get("fees")
 
     async def get_account_balances(self) -> dict:
-        return await self._create_get("account/balances", headers = self._get_header())
+        return await self._create_get("account/balances", signed = True)
 
     async def get_account_fees(self) -> dict:
-        return await self._create_get("account/fees", headers = self._get_header())
+        return await self._create_get("account/fees", signed = True)
 
     async def get_account_orders(self, from_timestamp: datetime.datetime = None, to_timestamp: datetime.datetime = None,
                                  pair: Pair = None, with_cancelled_and_rejected: str = None,
@@ -72,13 +72,13 @@ class BitpandaClient(CryptoXLibClient):
         if to_timestamp is not None:
             params["to"] = to_timestamp.astimezone(pytz.utc).isoformat()
 
-        return await self._create_get("account/orders", params = params, headers = self._get_header())
+        return await self._create_get("account/orders", params = params, signed = True)
 
     async def get_account_order(self, order_id: str) -> dict:
-        return await self._create_get("account/orders/" + order_id, headers = self._get_header())
+        return await self._create_get("account/orders/" + order_id, signed = True)
 
     async def get_account_order_trades(self, order_id: str) -> dict:
-        return await self._create_get("account/orders/" + order_id + "/trades", headers = self._get_header())
+        return await self._create_get("account/orders/" + order_id + "/trades", signed = True)
 
     async def get_account_trades(self, from_timestamp: datetime.datetime = None, to_timestamp: datetime.datetime = None,
                                  pair: Pair = None, max_page_size: str = None, cursor: str = None) -> dict:
@@ -96,13 +96,13 @@ class BitpandaClient(CryptoXLibClient):
         if to_timestamp is not None:
             params["to"] = to_timestamp.astimezone(pytz.utc).isoformat()
 
-        return await self._create_get("account/trades", params = params, headers = self._get_header())
+        return await self._create_get("account/trades", params = params, signed = True)
 
     async def get_account_trade(self, trade_id: str) -> dict:
-        return await self._create_get("account/trades/" + trade_id, headers = self._get_header())
+        return await self._create_get("account/trades/" + trade_id, signed = True)
 
     async def get_account_trading_volume(self) -> dict:
-        return await self._create_get("account/trading-volume", headers = self._get_header())
+        return await self._create_get("account/trading-volume", signed = True)
 
     async def create_market_order(self, pair: Pair, side: enums.OrderSide, amount: str, client_id: str = None) -> dict:
         data = {
@@ -115,7 +115,7 @@ class BitpandaClient(CryptoXLibClient):
         if client_id is not None:
             data['client_id'] = client_id
 
-        return await self._create_post("account/orders", data = data, headers = self._get_header())
+        return await self._create_post("account/orders", data = data, signed = True)
 
     async def create_limit_order(self, pair: Pair, side: enums.OrderSide, amount: str, limit_price: str,
                                  time_in_force: enums.TimeInForce = None, client_id: str = None) -> dict:
@@ -133,7 +133,7 @@ class BitpandaClient(CryptoXLibClient):
         if time_in_force is not None:
             data['time_in_force'] = time_in_force.value
 
-        return await self._create_post("account/orders", data = data, headers = self._get_header())
+        return await self._create_post("account/orders", data = data, signed = True)
 
     async def create_stop_limit_order(self, pair: Pair, side: enums.OrderSide, amount: str, limit_price: str,
                                       stop_price: str,
@@ -153,7 +153,7 @@ class BitpandaClient(CryptoXLibClient):
         if time_in_force is not None:
             data['time_in_force'] = time_in_force.value
 
-        return await self._create_post("account/orders", data = data, headers = self._get_header())
+        return await self._create_post("account/orders", data = data, signed = True)
 
     async def delete_account_orders(self, pair: Pair = None, ids: List[str] = None) -> dict:
         params = {}
@@ -164,7 +164,7 @@ class BitpandaClient(CryptoXLibClient):
         if ids is not None:
             params['ids'] = ','.join(ids)
 
-        return await self._create_delete("account/orders", params = params, headers = self._get_header())
+        return await self._create_delete("account/orders", params = params, signed = True)
 
     async def delete_account_order(self, order_id: str = None, client_id: str = None) -> dict:
         if order_id is None and client_id is None:
@@ -340,10 +340,3 @@ class BitpandaClient(CryptoXLibClient):
         }
 
         return await self._create_post("account/fees", data = data, signed = True)
-
-    def _get_header(self):
-        header = {
-            "Authorization": "Bearer " + self.api_key
-        }
-
-        return header
