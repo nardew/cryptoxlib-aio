@@ -15,7 +15,7 @@ from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
 api_key = os.environ['BITPANDAAPIKEY']
 
 
-class BitpandaRestApi():
+class BitpandaRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
@@ -70,13 +70,6 @@ class BitpandaRestApi():
 
         self.assertEqual(e.status_code, 422)
 
-    async def test_delete_account_order(self):
-        with self.assertRaises(BitpandaRestException) as cm:
-            await self.client.delete_account_order("1")
-        e = cm.exception
-
-        self.assertEqual(e.status_code, 404)
-
     async def test_get_account_order_trades(self):
         with self.assertRaises(BitpandaRestException) as cm:
             await self.client.get_account_order_trades("1")
@@ -121,8 +114,119 @@ class BitpandaRestApi():
         response = await self.client.get_order_book(Pair("BTC", "EUR"))
         self.assertTrue(self.check_positive_response(response))
 
+    async def test_get_fee_groups(self):
+        response = await self.client.get_fee_groups()
+        self.assertTrue(self.check_positive_response(response))
 
-class BitpandaWs():
+    async def test_get_order_book2(self):
+        response = await self.client.get_order_book(Pair("BTC", "EUR"), level = "3", depth = "1")
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_market_tickers(self):
+        response = await self.client.get_market_tickers()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_market_ticker(self):
+        response = await self.client.get_market_ticker(Pair('ETH', 'EUR'))
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_price_ticks(self):
+        response = await self.client.get_price_tick(Pair('ETH', 'EUR'))
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_price_ticks2(self):
+        response = await self.client.get_price_tick(Pair('ETH', 'EUR'),
+                                                    from_timestamp = datetime.datetime.now() - datetime.timedelta(hours = 2),
+                                                    to_timestamp = datetime.datetime.now())
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_create_deposit_crypto_address(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.create_deposit_crypto_address("ABC")
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+        self.assertTrue(e.body['error'] == 'CURRENCY_NOT_FOUND')
+
+    async def test_get_deposit_crypto_address(self):
+        response = await self.client.get_deposit_crypto_address("BTC")
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_fiat_deposit_info(self):
+        response = await self.client.get_fiat_deposit_info()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_withdraw_crypto(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.withdraw_crypto('ABC', '1.0', 'ABC')
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+        self.assertTrue(e.body['error'] == 'CURRENCY_NOT_FOUND')
+
+    @unittest.skip
+    # SERVICE_UNAVAILABLE
+    async def test_withdraw_fiat(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.withdraw_fiat('ABC', '1.0', 'ABC')
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+
+    async def test_get_deposits(self):
+        response = await self.client.get_deposits()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_deposits2(self):
+        response = await self.client.get_deposits(currency = 'CHF')
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_bitpanda_deposits(self):
+        response = await self.client.get_bitpanda_deposits()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_bitpanda_deposits2(self):
+        response = await self.client.get_bitpanda_deposits(currency = 'CHF')
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_withdrawals(self):
+        response = await self.client.get_withdrawals()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_withdrawals2(self):
+        response = await self.client.get_withdrawals(currency = 'CHF')
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_bitpanda_withdrawals(self):
+        response = await self.client.get_bitpanda_withdrawals()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_bitpanda_withdrawals2(self):
+        response = await self.client.get_bitpanda_withdrawals(currency = 'CHF')
+        self.assertTrue(self.check_positive_response(response))
+
+    @unittest.skip
+    # updates account settings
+    async def test_toggle_best_fee_collection(self):
+        response = await self.client.toggle_best_fee_collection(True)
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_delete_account_order(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.delete_account_order(order_id = "1")
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+
+    async def test_delete_account_order2(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.delete_account_order(client_id = "1")
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+
+
+class BitpandaWs(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
@@ -156,7 +260,7 @@ class BitpandaWs():
 
         await self.assertWsMessageCount(message_counter)
 
-    #@unittest.expectedFailure
+    @unittest.skip
     async def test_candlesticks_subscription(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
@@ -182,70 +286,6 @@ class BitpandaWs():
         ])
 
         await self.assertWsMessageCount(message_counter)
-
-
-class BitpandaRestApi2(CryptoXLibTest):
-    @classmethod
-    def initialize(cls) -> None:
-        cls.print_logs = True
-        cls.log_level = logging.DEBUG
-
-    def check_positive_response(self, response):
-        return str(response['status_code'])[0] == '2'
-
-    async def init_test(self):
-        self.client = CryptoXLib.create_bitpanda_client(api_key)
-
-    async def clean_test(self):
-        await self.client.close()
-
-    @unittest.skip
-    async def test_get_fee_groups(self):
-        response = await self.client.get_fee_groups()
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_get_order_book2(self):
-        response = await self.client.get_order_book(Pair("BTC", "EUR"), level = "3", depth = "1")
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_get_market_tickers(self):
-        response = await self.client.get_market_tickers()
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_get_market_ticker(self):
-        response = await self.client.get_market_ticker(Pair('ETH', 'EUR'))
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_get_price_ticks(self):
-        response = await self.client.get_price_tick(Pair('ETH', 'EUR'))
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_get_price_ticks2(self):
-        response = await self.client.get_price_tick(Pair('ETH', 'EUR'),
-                                                    from_timestamp = datetime.datetime.now() - datetime.timedelta(hours = 2),
-                                                    to_timestamp = datetime.datetime.now())
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_create_deposit_crypto_address(self):
-        response = await self.client.create_deposit_crypto_address("ABC")
-        self.assertTrue(self.check_positive_response(response))
-
-    @unittest.skip
-    async def test_get_deposit_crypto_address(self):
-        response = await self.client.get_deposit_crypto_address("BTC")
-        self.assertTrue(self.check_positive_response(response))
-
-
-    async def test_get_fiat_deposit_info(self):
-        response = await self.client.get_fiat_deposit_info()
-        self.assertTrue(self.check_positive_response(response))
-
 
 
 if __name__ == '__main__':

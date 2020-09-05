@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
 from cryptoxlib.clients.bitpanda import enums
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaRestException
+from cryptoxlib.clients.bitpanda.exceptions import BitpandaRestException, BitpandaException
 from cryptoxlib.clients.bitpanda.functions import map_pair
 from cryptoxlib.Pair import Pair
 from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
@@ -155,16 +155,28 @@ class BitpandaClient(CryptoXLibClient):
 
         return await self._create_post("account/orders", data = data, headers = self._get_header())
 
-    async def delete_account_orders(self, pair: Pair = None) -> dict:
+    async def delete_account_orders(self, pair: Pair = None, ids: List[str] = None) -> dict:
         params = {}
 
         if pair is not None:
             params["instrument_code"] = map_pair(pair)
 
+        if ids is not None:
+            params['ids'] = ','.join(ids)
+
         return await self._create_delete("account/orders", params = params, headers = self._get_header())
 
-    async def delete_account_order(self, order_id: str) -> dict:
-        return await self._create_delete("account/orders/" + order_id, headers = self._get_header())
+    async def delete_account_order(self, order_id: str = None, client_id: str = None) -> dict:
+        if order_id is None and client_id is None:
+            raise BitpandaException('One of order_id/client_id has to be provided.')
+
+        if order_id is not None and client_id is not None:
+            raise BitpandaException('Only one of order_id/client_id can be provided.')
+
+        if order_id is not None:
+            return await self._create_delete("account/orders/" + order_id, signed = True)
+        else:
+            return await self._create_delete("account/orders/client/" + client_id, signed = True)
 
     async def get_candlesticks(self, pair: Pair, unit: enums.TimeUnit, period: str, from_timestamp: datetime.datetime,
                                to_timestamp: datetime.datetime) -> dict:
@@ -215,14 +227,119 @@ class BitpandaClient(CryptoXLibClient):
             "currency": currency
         }
 
-        return await self._create_post("/account/deposit/crypto", data = data, signed = True)
+        return await self._create_post("account/deposit/crypto", data = data, signed = True)
 
     async def get_deposit_crypto_address(self, currency: str) -> dict:
-        return await self._create_get("/account/deposit/crypto/" + currency, signed = True)
+        return await self._create_get("account/deposit/crypto/" + currency, signed = True)
 
     async def get_fiat_deposit_info(self) -> dict:
-        return await self._create_get("/account/deposit/fiat/EUR", signed = True)
+        return await self._create_get("account/deposit/fiat/EUR", signed = True)
 
+    async def withdraw_crypto(self, currency: str, amount: str, address: str, destination_tag: str = None) -> dict:
+        data = {
+            'currency': currency,
+            'amount': amount,
+            'recipient': {
+                'address': address
+            }
+        }
+
+        if destination_tag is not None:
+            data['recipient']['destination_tag'] = destination_tag
+
+        return await self._create_post("account/withdraw/crypto", data = data, signed = True)
+
+    async def withdraw_fiat(self, currency: str, amount: str, payout_account_id: str) -> dict:
+        data = {
+            'currency': currency,
+            'amount': amount,
+            'payout_account_id': payout_account_id
+        }
+
+        return await self._create_post("account/withdraw/fiat", data = data, signed = True)
+
+    async def get_deposits(self, from_timestamp: datetime.datetime = None,
+                           to_timestamp: datetime.datetime = None,
+                           currency: str = None,
+                           max_page_size: int = None,
+                           cursor: int = None) -> dict:
+        params = self._clean_request_params({
+            'currency_code': currency,
+            'max_page_size': max_page_size,
+            'cursor': cursor
+        })
+
+        if from_timestamp is not None:
+            params['from'] = from_timestamp.astimezone(pytz.utc).isoformat()
+
+        if to_timestamp is not None:
+            params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
+
+        return await self._create_get("account/deposits", params = params, signed = True)
+
+    async def get_bitpanda_deposits(self, from_timestamp: datetime.datetime = None,
+                           to_timestamp: datetime.datetime = None,
+                           currency: str = None,
+                           max_page_size: int = None,
+                           cursor: int = None) -> dict:
+        params = self._clean_request_params({
+            'currency_code': currency,
+            'max_page_size': max_page_size,
+            'cursor': cursor
+        })
+
+        if from_timestamp is not None:
+            params['from'] = from_timestamp.astimezone(pytz.utc).isoformat()
+
+        if to_timestamp is not None:
+            params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
+
+        return await self._create_get("account/deposits/bitpanda", params = params, signed = True)
+
+    async def get_withdrawals(self, from_timestamp: datetime.datetime = None,
+                           to_timestamp: datetime.datetime = None,
+                           currency: str = None,
+                           max_page_size: int = None,
+                           cursor: int = None) -> dict:
+        params = self._clean_request_params({
+            'currency_code': currency,
+            'max_page_size': max_page_size,
+            'cursor': cursor
+        })
+
+        if from_timestamp is not None:
+            params['from'] = from_timestamp.astimezone(pytz.utc).isoformat()
+
+        if to_timestamp is not None:
+            params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
+
+        return await self._create_get("account/withdrawals", params = params, signed = True)
+
+    async def get_bitpanda_withdrawals(self, from_timestamp: datetime.datetime = None,
+                           to_timestamp: datetime.datetime = None,
+                           currency: str = None,
+                           max_page_size: int = None,
+                           cursor: int = None) -> dict:
+        params = self._clean_request_params({
+            'currency_code': currency,
+            'max_page_size': max_page_size,
+            'cursor': cursor
+        })
+
+        if from_timestamp is not None:
+            params['from'] = from_timestamp.astimezone(pytz.utc).isoformat()
+
+        if to_timestamp is not None:
+            params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
+
+        return await self._create_get("account/withdrawals/bitpanda", params = params, signed = True)
+
+    async def toggle_best_fee_collection(self, indicator: bool) -> dict:
+        data = {
+            'collect_fees_in_best': indicator
+        }
+
+        return await self._create_post("account/fees", data = data, signed = True)
 
     def _get_header(self):
         header = {
