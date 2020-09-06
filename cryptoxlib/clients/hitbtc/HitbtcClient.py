@@ -113,7 +113,7 @@ class HitbtcClient(CryptoXLibClient):
             data['timeInForce'] = time_in_force.value
 
         if expire_time:
-            data["expireTime"]: expire_time.astimezone(pytz.utc).isoformat()
+            data["expireTime"] = expire_time.astimezone(pytz.utc).isoformat()
 
         return await self._create_post("order", data = data, signed = True)
 

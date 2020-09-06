@@ -2,13 +2,16 @@ import json
 import logging
 import datetime
 import hmac
+import pytz
 import hashlib
 from typing import List, Any
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType, ClientWebsocketHandle
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType, \
+    ClientWebsocketHandle, WebsocketOutboundMessage
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.hitbtc.functions import map_pair
 from cryptoxlib.clients.hitbtc.exceptions import HitbtcException
+from cryptoxlib.clients.hitbtc import enums
 
 LOG = logging.getLogger(__name__)
 
@@ -98,15 +101,17 @@ class HitbtcWebsocket(WebsocketMgr):
 
     @staticmethod
     def _map_message_to_subscription_id(message: dict):
-        if message['method'] in ['snapshotOrderbook', 'updateOrderbook']:
-            return f"orderbook{message['params']['symbol']}"
-        elif message['method'] == 'ticker':
-            return f"{message['method']}{message['params']['symbol']}"
-        elif message['method'] in ['snapshotTrades', 'updateTrades']:
-            return f"trades{message['params']['symbol']}"
-        elif message['method'] in ['activeOrders', 'report']:
-            return "account"
-
+        if 'method' in message:
+            if message['method'] in ['snapshotOrderbook', 'updateOrderbook']:
+                return f"orderbook{message['params']['symbol']}"
+            elif message['method'] == 'ticker':
+                return f"{message['method']}{message['params']['symbol']}"
+            elif message['method'] in ['snapshotTrades', 'updateTrades']:
+                return f"trades{message['params']['symbol']}"
+            elif message['method'] in ['activeOrders', 'report']:
+                return "account"
+        else:
+            return ""
 
 class HitbtcSubscription(Subscription):
     SUBSCRIPTION_ID = 1
@@ -114,8 +119,8 @@ class HitbtcSubscription(Subscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        HitbtcSubscription.SUBSCRIPTION_ID += 1
         self.id = HitbtcSubscription.SUBSCRIPTION_ID
+        HitbtcSubscription.SUBSCRIPTION_ID += 1
 
     def requires_authentication(self) -> bool:
         return False
@@ -200,3 +205,76 @@ class TradesSubscription(HitbtcSubscription):
 
     def construct_subscription_id(self) -> Any:
         return f"trades{map_pair(self.pair)}"
+
+
+class CreateOrderMessage(WebsocketOutboundMessage):
+    def __init__(self, pair: Pair, side: enums.OrderSide, type: enums.OrderType, amount: str,client_id: str,
+                 price: str = None, stop_price: str = None, time_in_force: enums.TimeInForce = None,
+                 expire_time: datetime.datetime = None, strict_validate: bool = None,
+                 post_only: bool = None):
+        self.pair = pair
+        self.type = type
+        self.side = side
+        self.amount = amount
+        self.price = price
+        self.stop_price = stop_price
+        self.time_in_force = time_in_force
+        self.client_id = client_id
+        self.expire_time = expire_time
+        self.strict_validate = strict_validate
+        self.post_only = post_only
+
+    def to_json(self):
+        id = HitbtcSubscription.SUBSCRIPTION_ID
+        HitbtcSubscription.SUBSCRIPTION_ID += 1
+
+        ret = {
+            "method": "newOrder",
+            "params": {
+                "symbol": map_pair(self.pair),
+                "side": self.side.value,
+                "type": self.type.value,
+                "quantity": self.amount,
+                'clientOrderId': self.client_id
+            },
+            "id": id
+        }
+
+        if self.price is not None:
+            ret['params']['price'] = self.price
+
+        if self.stop_price is not None:
+            ret['params']['stopPrice'] = self.stop_price
+
+        if self.strict_validate is not None:
+            ret['params']['strictValidate'] = self.strict_validate
+
+        if self.post_only is not None:
+            ret['params']['postOnly'] = self.post_only
+
+        if self.time_in_force is not None:
+            ret['params']['timeInForce'] = self.time_in_force.value
+
+        if self.expire_time:
+            ret['parms']["expireTime"] = self.expire_time.astimezone(pytz.utc).isoformat()
+
+        return ret
+
+
+class CancelOrderMessage(WebsocketOutboundMessage):
+    def __init__(self, client_id: str):
+        self.client_id = client_id
+
+    def to_json(self):
+        id = HitbtcSubscription.SUBSCRIPTION_ID
+        HitbtcSubscription.SUBSCRIPTION_ID += 1
+
+        ret = {
+            'method': 'cancelOrder',
+            'params': {
+                "clientOrderId": self.client_id
+            },
+            'id': id
+        }
+
+        return ret
