@@ -5,7 +5,7 @@ import hmac
 import hashlib
 from typing import List, Any
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType
+from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType, ClientWebsocketHandle
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.hitbtc.functions import map_pair
 from cryptoxlib.clients.hitbtc.exceptions import HitbtcException
@@ -77,11 +77,24 @@ class HitbtcWebsocket(WebsocketMgr):
 
         if 'id' in message and 'result' in message and message['result'] == True:
             # subscription confirmation
-            pass
+            # for confirmed account channel publish the confirmation downstream in order to communicate the websocket handle
+            for subscription in self.subscriptions:
+                    if subscription.id == message['id'] and subscription.get_subscription_id() == 'account':
+                        await self.publish_message(WebsocketMessage(
+                            subscription_id = 'account',
+                            message = message,
+                            websocket = ClientWebsocketHandle(websocket = websocket)
+                        ))
         else:
             # regular message
+            subscription_id = self._map_message_to_subscription_id(message)
             await self.publish_message(WebsocketMessage(
-                subscription_id = self._map_message_to_subscription_id(message), message = message))
+                subscription_id = subscription_id,
+                message = message,
+                # for account channel communicate also the websocket handle
+                websocket = ClientWebsocketHandle(websocket = websocket) if subscription_id == 'account' else None
+            )
+            )
 
     @staticmethod
     def _map_message_to_subscription_id(message: dict):
