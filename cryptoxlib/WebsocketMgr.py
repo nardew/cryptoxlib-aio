@@ -208,7 +208,7 @@ class Subscription(ABC):
 class WebsocketMgr(ABC):
     def __init__(self, websocket_uri: str, subscriptions: List[Subscription], builtin_ping_interval: Optional[float] = 20,
                  max_message_size: int = 2**20, periodic_timeout_sec: int = None, ssl_context = None,
-                 auto_reconnect: bool = False) -> None:
+                 auto_reconnect: bool = False, startup_delay_ms: int = 0) -> None:
         self.websocket_uri = websocket_uri
         self.subscriptions = subscriptions
         self.builtin_ping_interval = builtin_ping_interval
@@ -216,6 +216,7 @@ class WebsocketMgr(ABC):
         self.periodic_timeout_sec = periodic_timeout_sec
         self.ssl_context = ssl_context
         self.auto_reconnect = auto_reconnect
+        self.startup_delay_ms = startup_delay_ms
 
     @abstractmethod
     async def _process_message(self, websocket: Websocket, response: str) -> None:
@@ -287,6 +288,11 @@ class WebsocketMgr(ABC):
                 LOG.debug(f"Initiating websocket connection.")
                 websocket = None
                 try:
+                        # sleep for the requested period before initiating the connection. This is useful when client
+                        # opens many connections at the same time and server cannot handle the load
+                        await asyncio.sleep(self.startup_delay_ms / 1000.0)
+                        LOG.debug(f"Websocket initiation delayed by {self.startup_delay_ms}ms.")
+
                         websocket = self.get_websocket()
                         await websocket.connect()
 

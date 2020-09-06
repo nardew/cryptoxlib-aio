@@ -38,8 +38,9 @@ class HitbtcClient(CryptoXLibClient):
         if str(status_code)[0] != '2':
             raise HitbtcRestException(status_code, body)
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
-        return HitbtcWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
+        return HitbtcWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context, startup_delay_ms)
 
     async def get_currencies(self, currencies: List[str] = None) -> dict:
         params = {}

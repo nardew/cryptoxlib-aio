@@ -18,12 +18,13 @@ class HitbtcWebsocket(WebsocketMgr):
     MAX_MESSAGE_SIZE = 3 * 1024 * 1024  # 3MB
 
     def __init__(self, subscriptions: List[Subscription], api_key: str = None, sec_key: str = None,
-                 ssl_context = None) -> None:
+                 ssl_context = None, startup_delay_ms: int = 0) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
                          ssl_context = ssl_context,
                          builtin_ping_interval = None,
                          auto_reconnect = True,
-                         max_message_size = self.MAX_MESSAGE_SIZE)
+                         max_message_size = self.MAX_MESSAGE_SIZE,
+                         startup_delay_ms = startup_delay_ms)
 
         self.api_key = api_key
         self.sec_key = sec_key

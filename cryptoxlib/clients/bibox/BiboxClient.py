@@ -45,7 +45,8 @@ class BiboxClient(CryptoXLibClient):
         if body is not None and 'error' in body:
             raise BiboxException(f"BiboxException: status [{status_code}], response [{body}]")
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         return BiboxWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
 
     async def get_ping(self) -> dict:

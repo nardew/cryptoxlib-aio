@@ -48,7 +48,8 @@ class BinanceClient(CryptoXLibClient):
         if str(status_code)[0] != '2':
             raise BinanceException(f"BinanceException: status [{status_code}], response [{body}]")
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         return BinanceWebsocket(subscriptions, self, self.api_key, self.sec_key, ssl_context)
 
     async def ping(self) -> dict:

@@ -32,15 +32,15 @@ async def run():
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
-        AccountSubscription(),
-        OrderbookSubscription(pair = Pair("BTC", "USD"), callbacks = [order_book_update]),
-        TickerSubscription(pair = Pair("BTC", "USD"), callbacks = [ticker_update])
+        #AccountSubscription(),
+        OrderbookSubscription(pair = Pair("ETH", "BTC"), callbacks = [order_book_update]),
+        #TickerSubscription(pair = Pair("BTC", "USD"), callbacks = [ticker_update])
     ])
 
     # Bundle another subscriptions into a separate websocket
-    client.compose_subscriptions([
-        TradesSubscription(pair = Pair("ETH", "BTC"), limit = 5,callbacks = [trade_update])
-    ])
+    #client.compose_subscriptions([
+    #    TradesSubscription(pair = Pair("ETH", "BTC"), limit = 5,callbacks = [trade_update])
+    #])
 
     # Execute all websockets asynchronously
     await client.start_websockets()

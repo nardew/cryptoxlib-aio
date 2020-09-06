@@ -51,7 +51,8 @@ class BitforexClient(CryptoXLibClient):
         if body['success'] is False:
             raise BitforexRestException(status_code, body)
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         return BitforexWebsocket(subscriptions, ssl_context)
 
     async def get_exchange_info(self) -> dict:

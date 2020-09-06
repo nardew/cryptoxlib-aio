@@ -36,8 +36,10 @@ class BitpandaClient(CryptoXLibClient):
         if str(status_code)[0] != '2':
             raise BitpandaRestException(status_code, body)
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
-        return BitpandaWebsocket(subscriptions, self.api_key, ssl_context)
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
+        return BitpandaWebsocket(subscriptions = subscriptions, api_key = self.api_key, ssl_context = ssl_context,
+                                 startup_delay_ms = startup_delay_ms)
 
     async def get_currencies(self) -> dict:
         return await self._create_get("currencies")

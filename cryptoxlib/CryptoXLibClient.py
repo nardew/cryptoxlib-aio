@@ -49,7 +49,8 @@ class CryptoXLibClient(ABC):
         pass
 
     @abstractmethod
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         pass
 
     async def close(self) -> None:
@@ -160,13 +161,17 @@ class CryptoXLibClient(ABC):
     def compose_subscriptions(self, subscriptions: List[Subscription]) -> None:
         self.subscription_sets.append(subscriptions)
 
-    async def start_websockets(self) -> None:
+    async def start_websockets(self, websocket_start_time_interval_ms: int = 0) -> None:
         if len(self.subscription_sets):
-            done, pending = await asyncio.wait(
-                [asyncio.create_task(self._get_websocket_mgr(subscriptions, self.ssl_context).run()) for
-                 subscriptions in self.subscription_sets],
-                return_when = asyncio.FIRST_EXCEPTION
-            )
+            tasks = []
+            startup_delay_ms = 0
+            for subscriptions in self.subscription_sets:
+                tasks.append(asyncio.create_task(
+                    self._get_websocket_mgr(subscriptions, startup_delay_ms, self.ssl_context).run())
+                )
+                startup_delay_ms += websocket_start_time_interval_ms
+
+            done, pending = await asyncio.wait(tasks, return_when = asyncio.FIRST_EXCEPTION)
             for task in done:
                 try:
                     task.result()
