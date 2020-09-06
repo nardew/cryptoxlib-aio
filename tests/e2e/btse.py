@@ -100,7 +100,7 @@ class BtseWs(CryptoXLibTest):
     async def test_trade_subscription(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            TradeSubscription([Pair('BTSE', 'BTC')], callbacks = [message_counter.generate_callback(1)]),
+            TradeSubscription([Pair('BTC', 'USDT')], callbacks = [message_counter.generate_callback(1)]),
         ])
 
         await self.assertWsMessageCount(message_counter)

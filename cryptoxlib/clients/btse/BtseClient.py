@@ -51,7 +51,8 @@ class BtseClient(CryptoXLibClient):
         if str(status_code)[0] != '2':
             raise BtseRestException(status_code, body)
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         return BtseWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
 
     def _get_header(self):

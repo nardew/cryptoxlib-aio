@@ -42,7 +42,8 @@ class LiquidClient(CryptoXLibClient):
         if str(status_code)[0] != '2':
             raise LiquidException(f"LiquidException: status [{status_code}], response [{body}]")
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         return LiquidWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
 
     @staticmethod

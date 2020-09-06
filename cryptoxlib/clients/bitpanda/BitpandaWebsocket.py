@@ -17,11 +17,13 @@ class BitpandaWebsocket(WebsocketMgr):
     WEBSOCKET_URI = "wss://streams.exchange.bitpanda.com"
     MAX_MESSAGE_SIZE = 3 * 1024 * 1024  # 3MB
 
-    def __init__(self, subscriptions: List[Subscription], api_key: str = None, ssl_context = None) -> None:
+    def __init__(self, subscriptions: List[Subscription], api_key: str = None, ssl_context = None,
+                 startup_delay_ms: int = 0) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
                          max_message_size = BitpandaWebsocket.MAX_MESSAGE_SIZE,
                          ssl_context = ssl_context,
-                         auto_reconnect = True)
+                         auto_reconnect = True,
+                         startup_delay_ms = startup_delay_ms)
 
         self.api_key = api_key
 

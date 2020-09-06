@@ -51,7 +51,8 @@ class AAXClient(CryptoXLibClient):
         if str(status_code)[0] != '2':
             raise AAXRestException(status_code, body)
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], ssl_context = None) -> WebsocketMgr:
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
         return AAXWebsocket(subscriptions, self.api_key, self.sec_key, ssl_context)
 
     async def get_exchange_info(self) -> dict:
