@@ -82,7 +82,7 @@ class HitbtcWebsocket(WebsocketMgr):
             # subscription confirmation
             # for confirmed account channel publish the confirmation downstream in order to communicate the websocket handle
             for subscription in self.subscriptions:
-                    if subscription.id == message['id'] and subscription.get_subscription_id() == 'account':
+                    if subscription.external_id == message['id'] and subscription.get_subscription_id() == 'account':
                         await self.publish_message(WebsocketMessage(
                             subscription_id = 'account',
                             message = message,
@@ -99,8 +99,7 @@ class HitbtcWebsocket(WebsocketMgr):
             )
             )
 
-    @staticmethod
-    def _map_message_to_subscription_id(message: dict):
+    def _map_message_to_subscription_id(self, message: dict):
         if 'method' in message:
             if message['method'] in ['snapshotOrderbook', 'updateOrderbook']:
                 return f"orderbook{message['params']['symbol']}"
@@ -110,20 +109,32 @@ class HitbtcWebsocket(WebsocketMgr):
                 return f"trades{message['params']['symbol']}"
             elif message['method'] in ['activeOrders', 'report']:
                 return "account"
+        elif 'error' in message and 'id' in message:
+            for subscription in self.subscriptions:
+                if subscription.external_id == message['id']:
+                    return subscription.get_subscription_id()
+
+            # if error message does not belong to any subscription based on the id, then assume it relates
+            # to a placed order and send it to the account channel
+            return "account"
         else:
             return ""
 
 class HitbtcSubscription(Subscription):
-    SUBSCRIPTION_ID = 1
+    EXTERNAL_SUBSCRIPTION_ID = 0
 
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.id = HitbtcSubscription.SUBSCRIPTION_ID
-        HitbtcSubscription.SUBSCRIPTION_ID += 1
+        self.external_id = HitbtcSubscription.generate_new_external_id()
 
     def requires_authentication(self) -> bool:
         return False
+
+    @staticmethod
+    def generate_new_external_id():
+        HitbtcSubscription.EXTERNAL_SUBSCRIPTION_ID += 1
+        return HitbtcSubscription.EXTERNAL_SUBSCRIPTION_ID
 
 
 class AccountSubscription(HitbtcSubscription):
@@ -134,7 +145,7 @@ class AccountSubscription(HitbtcSubscription):
         return {
             "method": "subscribeReports",
             "params": {},
-            "id": self.id
+            "id": self.external_id
         }
 
     def construct_subscription_id(self) -> Any:
@@ -156,7 +167,7 @@ class OrderbookSubscription(HitbtcSubscription):
             "params": {
                 "symbol": map_pair(self.pair),
             },
-            "id": self.id
+            "id": self.external_id
         }
 
     def construct_subscription_id(self) -> Any:
@@ -175,7 +186,7 @@ class TickerSubscription(HitbtcSubscription):
             "params": {
                 "symbol": map_pair(self.pair),
             },
-            "id": self.id
+            "id": self.external_id
         }
 
     def construct_subscription_id(self) -> Any:
@@ -195,7 +206,7 @@ class TradesSubscription(HitbtcSubscription):
             "params": {
                 "symbol": map_pair(self.pair),
             },
-            "id": self.id
+            "id": self.external_id
         }
 
         if self.limit is not None:
@@ -225,8 +236,7 @@ class CreateOrderMessage(WebsocketOutboundMessage):
         self.post_only = post_only
 
     def to_json(self):
-        id = HitbtcSubscription.SUBSCRIPTION_ID
-        HitbtcSubscription.SUBSCRIPTION_ID += 1
+        id = HitbtcSubscription.generate_new_external_id()
 
         ret = {
             "method": "newOrder",
@@ -266,8 +276,7 @@ class CancelOrderMessage(WebsocketOutboundMessage):
         self.client_id = client_id
 
     def to_json(self):
-        id = HitbtcSubscription.SUBSCRIPTION_ID
-        HitbtcSubscription.SUBSCRIPTION_ID += 1
+        id = HitbtcSubscription.generate_new_external_id()
 
         ret = {
             'method': 'cancelOrder',
