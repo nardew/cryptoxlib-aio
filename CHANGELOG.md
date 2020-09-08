@@ -6,6 +6,14 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [3.5.0] - 2020-09-08
+
+### Added
+
+- new REST endpoints (mainly deposits and withdrawals) added into `bitpanda`
+- an option to start websockets in a delayed mode (see `CryptoXLibClient.start_websockets(...)`). Useful when server does not support too many websocket connections opened at the same time
+- support for `hitbtc`'s duplex websockets including order creation/cancellation
+
 ## [3.4.0] - 2020-09-01
 
 ### Added
@@ -57,7 +65,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.4.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.5.0...HEAD
+[3.5.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.4.0...3.5.0
 [3.4.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.3.0...3.4.0
 [3.3.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.1...3.3.0
 [3.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.0...3.2.1

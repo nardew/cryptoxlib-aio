@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.4.0
+# cryptoxlib-aio 3.5.0
 
 [![](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-365/) [![](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-374/)
 
@@ -6,12 +6,17 @@
 
 `cryptoxlib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
 
-### What's new in version 3.4.0
+---
 
-- new `TRADING` subscription added into `bitpanda`. The channel delivers minimal, low-latency updates on user's order changes.
-- new `ORDERS` subscription added into `bitpanda`. User can create or cancel orders directly via websocket which provides superior performance to standard REST API.
+### What's new in version 3.5.0
 
-For the history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
+- new `bitpanda` REST endpoints (mainly deposits and withdrawals)
+- new `hitbtc` duplex websockets for order creation and cancellation 
+- a new option to start websockets in a delayed mode (in case server does not support too many websocket connections opened at the same time)
+
+For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
+
+---
 
 ### Main mission
 Today there are numerous existing libraries targeting similar audience as `cryptoxlib-aio`. In order to achieve the broadest coverage of exchanges the supported API is often limited, the most apparent example being lack of _websockets_.  
