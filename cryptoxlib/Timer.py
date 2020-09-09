@@ -1,6 +1,8 @@
 import time
 import logging
 
+from cryptoxlib import get_current_time_ms
+
 LOG = logging.getLogger(__name__)
 
 
@@ -9,9 +11,12 @@ class Timer(object):
         self.name = name
         self.active = active
 
+        self.start_tmstmp_ms = None
+
     def __enter__(self) -> None:
-        self.start_tmstmp = time.time_ns()
+        if self.active:
+            self.start_tmstmp_ms = get_current_time_ms()
 
     def __exit__(self, type, value, traceback) -> None:
         if self.active:
-            LOG.debug(f'Timer {self.name} finished. Took {round((time.time_ns() - self.start_tmstmp) / 1000000, 3)} ms.')
+            LOG.debug(f'Timer {self.name} finished. Took {round((get_current_time_ms() - self.start_tmstmp_ms), 3)} ms.')

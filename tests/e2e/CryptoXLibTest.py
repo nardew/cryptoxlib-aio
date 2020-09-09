@@ -1,8 +1,11 @@
 import logging
+import sys
 import asyncio
 from typing import Any, List
 
 import aiounittest
+
+from cryptoxlib import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 
@@ -83,10 +86,10 @@ class CryptoXLibTest(aiounittest.AsyncTestCase):
         pass
 
     def setUp(self) -> None:
-        return asyncio.run(self.init_test())
+        return async_run(self.init_test())
 
     def tearDown(self) -> None:
-        return asyncio.run(self.clean_test())
+        return async_run(self.clean_test())
 
     def get_event_loop(self):
         if not hasattr(self, 'loop'):
