@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
-from cryptoxlib import async_create_task
+from cryptoxlib.version_conversions import async_create_task
 from cryptoxlib.Timer import Timer
 from cryptoxlib.exceptions import CryptoXLibException
 from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr

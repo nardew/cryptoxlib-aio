@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 
@@ -6,6 +5,7 @@ from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bibox import enums
 from cryptoxlib.clients.bibox.exceptions import BiboxException
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -45,4 +45,4 @@ async def run():
     await bibox.close()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

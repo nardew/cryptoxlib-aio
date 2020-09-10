@@ -1,7 +1,6 @@
-import time
 import logging
 
-from cryptoxlib import get_current_time_ms
+from cryptoxlib.version_conversions import get_current_time_ms
 
 LOG = logging.getLogger(__name__)
 

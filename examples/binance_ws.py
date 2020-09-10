@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 from datetime import datetime
@@ -8,6 +7,7 @@ from cryptoxlib.clients.binance.BinanceWebsocket import AccountSubscription, Bes
     TradeSubscription, BestOrderBookSymbolTickerSubscription, CandlestickSubscription
 from cryptoxlib.clients.binance.enums import CandelstickInterval
 from cryptoxlib.Pair import Pair
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -58,4 +58,4 @@ async def run():
     await client.close()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

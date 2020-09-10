@@ -7,7 +7,7 @@ import aiohttp
 from abc import ABC, abstractmethod
 from typing import List, Callable, Any, Optional, Union
 
-from cryptoxlib import async_create_task
+from cryptoxlib.version_conversions import async_create_task
 from cryptoxlib.exceptions import CryptoXLibException, WebsocketReconnectionException, WebsocketClosed, WebsocketError
 
 LOG = logging.getLogger(__name__)

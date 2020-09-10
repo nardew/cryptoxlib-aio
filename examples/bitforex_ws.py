@@ -1,12 +1,13 @@
-import asyncio
 import logging
 import os
 
+from cryptoxlib.version_conversions import async_run
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.bitforex import enums
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitforex.BitforexWebsocket import OrderBookSubscription, TradeSubscription, TickerSubscription, \
     Ticker24hSubscription
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -62,4 +63,4 @@ async def run():
     await bitforex.close()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

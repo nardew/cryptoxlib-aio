@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 
@@ -6,6 +5,7 @@ from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.btse.BtseWebsocket import AccountSubscription, OrderbookL2Subscription, OrderbookSubscription, \
     TradeSubscription
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -40,4 +40,4 @@ async def run():
     await client.start_websockets()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

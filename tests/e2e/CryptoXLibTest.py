@@ -5,7 +5,7 @@ from typing import Any, List
 
 import aiounittest
 
-from cryptoxlib import async_run
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 

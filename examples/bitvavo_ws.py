@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 
@@ -7,6 +6,7 @@ from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitvavo import enums
 from cryptoxlib.clients.bitvavo.BitvavoWebsocket import AccountSubscription, \
     OrderbookSubscription, CandlesticksSubscription, TickerSubscription, Ticker24Subscription
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -53,4 +53,4 @@ async def run():
     await client.start_websockets()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())
