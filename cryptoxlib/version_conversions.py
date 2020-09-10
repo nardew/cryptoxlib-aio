@@ -24,7 +24,7 @@ def async_run(f):
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(f)
     elif IS_PYTHON37 or IS_PYTHON38:
-        return async_run(f)
+        return asyncio.run(f)
 
     raise Exception(f'Unsupported Python version! Only versions 3.6.x, 3.7.x and 3.8.x are supported.')
 
