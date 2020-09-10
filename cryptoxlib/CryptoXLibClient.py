@@ -10,6 +10,7 @@ from abc import ABC, abstractmethod
 from multidict import CIMultiDictProxy
 from typing import List, Optional
 
+from cryptoxlib.version_conversions import async_create_task
 from cryptoxlib.Timer import Timer
 from cryptoxlib.exceptions import CryptoXLibException
 from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr
@@ -166,7 +167,7 @@ class CryptoXLibClient(ABC):
             tasks = []
             startup_delay_ms = 0
             for subscriptions in self.subscription_sets:
-                tasks.append(asyncio.create_task(
+                tasks.append(async_create_task(
                     self._get_websocket_mgr(subscriptions, startup_delay_ms, self.ssl_context).run())
                 )
                 startup_delay_ms += websocket_start_time_interval_ms

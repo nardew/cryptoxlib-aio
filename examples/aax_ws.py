@@ -1,11 +1,10 @@
-import asyncio
 import logging
 import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.clients.aax import enums
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.aax.AAXWebsocket import OrderBookSubscription, AccountSubscription
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -59,4 +58,4 @@ async def run():
     await aax.close()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

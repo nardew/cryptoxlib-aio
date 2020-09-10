@@ -1,13 +1,9 @@
-import asyncio
 import logging
-import os
-import json
-import datetime
-from decimal import Decimal
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bibox_europe.BiboxEuropeWebsocket import OrderBookSubscription, UserDataSubscription
+from cryptoxlib.clients.bibox_europe.BiboxEuropeWebsocket import OrderBookSubscription
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -18,10 +14,7 @@ print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}"
 
 async def order_book_update(response : dict) -> None:
     print(f"Callback order_book_update: [{response}]")
-    #data = response['data']
-    #server_timestamp = int(Decimal(data['update_time']))
-    #local_tmstmp_ms = int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
-    #LOG.debug(f"Timestamp diff: {local_tmstmp_ms - server_timestamp} ms")
+
 
 async def order_book_update2(response : dict) -> None:
     print(f"Callback order_book_update2: [{response}]")
@@ -48,12 +41,10 @@ async def run():
         OrderBookSubscription(pair = Pair('BTC', 'EUR'), callbacks = [order_book_update]),
     ])
 
-
-
     # Execute all websockets asynchronously
     await bibox.start_websockets()
 
     await bibox.close()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

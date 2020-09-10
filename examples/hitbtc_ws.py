@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import uuid
@@ -8,6 +7,7 @@ from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.hitbtc.HitbtcWebsocket import TickerSubscription, OrderbookSubscription, TradesSubscription, \
     AccountSubscription, ClientWebsocketHandle, CreateOrderMessage, CancelOrderMessage
 from cryptoxlib.clients.hitbtc import enums
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -69,4 +69,4 @@ async def run():
     await client.start_websockets()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())

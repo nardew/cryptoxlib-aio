@@ -7,6 +7,7 @@ import aiohttp
 from abc import ABC, abstractmethod
 from typing import List, Callable, Any, Optional, Union
 
+from cryptoxlib.version_conversions import async_create_task
 from cryptoxlib.exceptions import CryptoXLibException, WebsocketReconnectionException, WebsocketClosed, WebsocketError
 
 LOG = logging.getLogger(__name__)
@@ -199,9 +200,9 @@ class Subscription(ABC):
                 # If message contains a websocket, then the websocket handle will be passed to the callbacks.
                 # This is useful for duplex websockets
                 if message.websocket is not None:
-                    tasks.append(asyncio.create_task(cb(message.message, message.websocket)))
+                    tasks.append(async_create_task(cb(message.message, message.websocket)))
                 else:
-                    tasks.append(asyncio.create_task(cb(message.message)))
+                    tasks.append(async_create_task(cb(message.message)))
             await asyncio.gather(*tasks)
 
 
@@ -297,8 +298,8 @@ class WebsocketMgr(ABC):
                         await websocket.connect()
 
                         done, pending = await asyncio.wait(
-                            [asyncio.create_task(self.main_loop(websocket)),
-                             asyncio.create_task(self.periodic_loop(websocket))],
+                            [async_create_task(self.main_loop(websocket)),
+                             async_create_task(self.periodic_loop(websocket))],
                             return_when = asyncio.FIRST_EXCEPTION
                         )
                         for task in done:

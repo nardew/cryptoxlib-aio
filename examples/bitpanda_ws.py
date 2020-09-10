@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 
@@ -8,6 +7,7 @@ from cryptoxlib.clients.bitpanda.enums import TimeUnit, OrderSide, OrderType
 from cryptoxlib.clients.bitpanda.BitpandaWebsocket import AccountSubscription, PricesSubscription, \
     OrderbookSubscription, CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription, \
     TradingSubscription, OrdersSubscription, ClientWebsocketHandle, CreateOrderMessage, CancelOrderMessage
+from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
 LOG.setLevel(logging.DEBUG)
@@ -75,4 +75,4 @@ async def run():
     await client.start_websockets()
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    async_run(run())
