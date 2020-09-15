@@ -164,6 +164,10 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertEqual(e.status_code, 404)
         self.assertTrue(e.body['error'] == 'CURRENCY_NOT_FOUND')
 
+    async def test_delete_auto_cancel_all_orders(self):
+        response = await self.client.delete_auto_cancel_all_orders()
+        self.assertTrue(self.check_positive_response(response))
+
     @unittest.skip
     # SERVICE_UNAVAILABLE
     async def test_withdraw_fiat(self):

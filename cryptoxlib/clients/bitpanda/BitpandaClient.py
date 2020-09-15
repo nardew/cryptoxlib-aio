@@ -342,3 +342,13 @@ class BitpandaClient(CryptoXLibClient):
         }
 
         return await self._create_post("account/fees", data = data, signed = True)
+
+    async def auto_cancel_all_orders(self, timeout_ms: int) -> dict:
+        data = {
+            'timeout': timeout_ms
+        }
+
+        return await self._create_post("account/orders/cancel-all-after", data = data, signed = True)
+
+    async def delete_auto_cancel_all_orders(self) -> dict:
+        return await self._create_delete("account/orders/cancel-all-after", signed = True)
