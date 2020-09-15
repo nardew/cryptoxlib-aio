@@ -6,6 +6,16 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [3.6.0] - 2020-09-15
+
+### Added
+
+- dead man's switch added into `bitpanda`
+
+### Fixed
+
+- support for python 3.6
+
 ## [3.5.0] - 2020-09-08
 
 ### Added
@@ -65,7 +75,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.5.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.6.0...HEAD
+[3.6.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.5.0...3.6.0
 [3.5.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.4.0...3.5.0
 [3.4.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.3.0...3.4.0
 [3.3.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.2.1...3.3.0

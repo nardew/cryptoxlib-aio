@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.5.0
+# cryptoxlib-aio 3.6.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg)
 
@@ -8,11 +8,10 @@
 
 ---
 
-### What's new in version 3.5.0
+### What's new in version 3.6.0
 
-- new `bitpanda` REST endpoints (mainly deposits and withdrawals)
-- new `hitbtc` duplex websockets for order creation and cancellation 
-- a new option to start websockets in a delayed mode (in case server does not support too many websocket connections opened at the same time)
+- dead man's switch supported in `bitpanda`
+- support for Python 3.6 (>=3.6.1)
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
