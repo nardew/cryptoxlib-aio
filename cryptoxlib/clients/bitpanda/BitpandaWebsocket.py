@@ -256,7 +256,8 @@ class OrdersSubscription(BitpandaSubscription):
 
 class CreateOrderMessage(WebsocketOutboundMessage):
     def __init__(self, pair: Pair, type: enums.OrderType, side: enums.OrderSide, amount: str, price: str = None,
-                 stop_price: str = None, client_id: str = None):
+                 stop_price: str = None, client_id: str = None, time_in_force: enums.TimeInForce = None,
+                 is_post_only: bool = None):
         self.pair = pair
         self.type = type
         self.side = side
@@ -264,6 +265,8 @@ class CreateOrderMessage(WebsocketOutboundMessage):
         self.price = price
         self.stop_price = stop_price
         self.client_id = client_id
+        self.time_in_force = time_in_force
+        self.is_post_only = is_post_only
 
     def to_json(self):
         ret = {
@@ -284,6 +287,12 @@ class CreateOrderMessage(WebsocketOutboundMessage):
 
         if self.client_id is not None:
             ret['order']['client_id'] = self.client_id
+
+        if self.time_in_force is not None:
+            ret['order']['time_in_force'] = self.time_in_force.value
+
+        if self.is_post_only is not None:
+            ret['order']['is_post_only'] = self.is_post_only
 
         return ret
 
