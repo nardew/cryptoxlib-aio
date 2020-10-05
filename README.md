@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.6.0
+# cryptoxlib-aio 3.6.1
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg)
 
@@ -8,10 +8,9 @@
 
 ---
 
-### What's new in version 3.6.0
+### What's new in version 3.6.1
 
-- dead man's switch supported in `bitpanda`
-- support for Python 3.6 (>=3.6.1)
+- `bitpanda` websocket order API supports missing `time_in_force` and `is_post_only` attributes
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
