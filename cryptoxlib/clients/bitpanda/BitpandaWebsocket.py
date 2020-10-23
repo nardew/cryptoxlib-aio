@@ -120,6 +120,7 @@ class BitpandaSubscription(Subscription):
     def requires_authentication(self) -> bool:
         return False
 
+
 class AccountSubscription(BitpandaSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
@@ -174,7 +175,7 @@ class OrderbookSubscription(BitpandaSubscription):
 
 
 class CandlesticksSubscriptionParams(object):
-    def __init__(self, pair : Pair, unit : enums.TimeUnit, period):
+    def __init__(self, pair : Pair, unit : enums.TimeUnit, period: int):
         self.pair = pair
         self.unit = unit
         self.period = period
@@ -204,20 +205,26 @@ class CandlesticksSubscription(BitpandaSubscription):
 
 
 class MarketTickerSubscription(BitpandaSubscription):
-    def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
+    def __init__(self, pairs: List[Pair], price_points_mode: enums.PricePointsMode = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pairs = pairs
+        self.price_points_mode = price_points_mode
 
     @staticmethod
     def get_channel_name():
         return "MARKET_TICKER"
 
     def get_subscription_message(self, **kwargs) -> dict:
-        return {
+        msg = {
             "name": self.get_channel_name(),
             "instrument_codes": map_multiple_pairs(self.pairs, sort = True)
         }
+
+        if self.price_points_mode is not None:
+            msg['price_points_mode'] = self.price_points_mode.value
+
+        return msg
 
 
 class TradingSubscription(BitpandaSubscription):

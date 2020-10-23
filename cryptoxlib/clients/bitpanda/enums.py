@@ -25,3 +25,9 @@ class TimeUnit(enum.Enum):
     DAYS = "DAYS"
     WEEKS = "WEEKS"
     MONTHS = "MONTHS"
+
+
+class PricePointsMode(enum.Enum):
+    SPLIT = 'SPLIT'
+    INLINE = 'INLINE'
+    OMIT = 'OMIT'
