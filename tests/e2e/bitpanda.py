@@ -229,6 +229,20 @@ class BitpandaRestApi(CryptoXLibTest):
 
         self.assertEqual(e.status_code, 404)
 
+    async def test_order_update_order_id(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.update_order(amount = "10", order_id = "1")
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+
+    async def test_order_update_client_id(self):
+        with self.assertRaises(BitpandaRestException) as cm:
+            await self.client.update_order(amount = "10", client_id = "1")
+        e = cm.exception
+
+        self.assertEqual(e.status_code, 404)
+
 
 class BitpandaWs(CryptoXLibTest):
     @classmethod
