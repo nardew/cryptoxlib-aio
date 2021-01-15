@@ -180,6 +180,22 @@ class BitpandaClient(CryptoXLibClient):
         else:
             return await self._create_delete("account/orders/client/" + client_id, signed = True)
 
+    async def update_order(self, amount: str, order_id: str = None, client_id: str = None) -> dict:
+        if order_id is None and client_id is None:
+            raise BitpandaException('One of order_id/client_id has to be provided.')
+
+        if order_id is not None and client_id is not None:
+            raise BitpandaException('Only one of order_id/client_id can be provided.')
+
+        data = {
+            "amount": amount
+        }
+
+        if order_id is not None:
+            return await self._create_put("account/orders/" + order_id, data = data, signed = True)
+        else:
+            return await self._create_put("account/orders/client/" + client_id, data = data, signed = True)
+
     async def get_candlesticks(self, pair: Pair, unit: enums.TimeUnit, period: str, from_timestamp: datetime.datetime,
                                to_timestamp: datetime.datetime) -> dict:
         params = {
