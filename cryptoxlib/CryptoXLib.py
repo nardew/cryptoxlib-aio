@@ -53,5 +53,5 @@ class CryptoXLib(object):
         return HitbtcClient(api_key, sec_key)
 
     @staticmethod
-    def create_eterbase_client(api_key: str, sec_key: str) -> EterbaseClient:
-        return EterbaseClient(api_key, sec_key)
+    def create_eterbase_client(account_id: str, api_key: str, sec_key: str) -> EterbaseClient:
+        return EterbaseClient(account_id, api_key, sec_key)

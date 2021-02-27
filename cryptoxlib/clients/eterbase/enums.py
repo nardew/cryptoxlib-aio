@@ -14,4 +14,4 @@ class OrderSide(enum.Enum):
 
 
 class TimeInForce(enum.Enum):
-    GOOD_TILL_CANCELLED = "GOOD_TILL_CANCELLED"
+    GOOD_TILL_CANCELLED = "GTC"

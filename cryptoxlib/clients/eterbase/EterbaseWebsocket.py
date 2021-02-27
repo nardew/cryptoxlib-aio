@@ -2,7 +2,6 @@ import json
 import logging
 import datetime
 import hmac
-import pytz
 import hashlib
 from typing import List, Any
 
