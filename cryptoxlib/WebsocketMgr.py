@@ -98,7 +98,7 @@ class AiohttpWebsocket(Websocket):
                                            max_msg_size = self.max_message_size,
                                            autoping = True,
                                            heartbeat = self.builtin_ping_interval,
-                                           ssl_context = self.ssl_context)
+                                           ssl = self.ssl_context)
 
     async def close(self):
         if self.ws is None:

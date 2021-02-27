@@ -27,6 +27,9 @@ class BitpandaWebsocket(WebsocketMgr):
 
         self.api_key = api_key
 
+    def get_websocket(self) -> Websocket:
+        return self.get_aiohttp_websocket()
+
     async def _authenticate(self, websocket: Websocket):
         requires_authentication = False
         for subscription in self.subscriptions:

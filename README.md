@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.6.1
+# cryptoxlib-aio 3.7.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg)
 
@@ -8,9 +8,9 @@
 
 ---
 
-### What's new in version 3.6.1
+### What's new in version 3.7.0
 
-- `bitpanda` websocket order API supports missing `time_in_force` and `is_post_only` attributes
+- `bitpanda` REST API supports update of existing orders
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
