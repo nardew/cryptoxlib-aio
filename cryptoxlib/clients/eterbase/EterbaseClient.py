@@ -55,7 +55,9 @@ class EterbaseClient(CryptoXLibClient):
 
     def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
                            ssl_context = None) -> WebsocketMgr:
-        return EterbaseWebsocket(subscriptions = subscriptions, api_key = self.api_key, ssl_context = ssl_context,
+        return EterbaseWebsocket(subscriptions = subscriptions, eterbase_client = self,
+                                 account_id = self.account_id,
+                                 ssl_context = ssl_context,
                                  startup_delay_ms = startup_delay_ms)
 
     async def get_ping(self) -> dict:
@@ -69,6 +71,9 @@ class EterbaseClient(CryptoXLibClient):
 
     async def get_balances(self) -> dict:
         return await self._create_get(f"accounts/{self.account_id}/balances", signed = True)
+
+    async def get_token(self) -> dict:
+        return await self._create_get(f"wstoken", signed = True)
 
     async def create_order(self, pair_id: str, side: enums.OrderSide, type: enums.OrderType, amount: str,
                            price: str = None, stop_price: str = None, time_in_force: enums.TimeInForce = None,

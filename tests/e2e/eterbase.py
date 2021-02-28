@@ -6,6 +6,7 @@ import uuid
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.eterbase import enums
 from cryptoxlib.clients.eterbase.exceptions import EterbaseRestException
+from cryptoxlib.clients.eterbase.EterbaseWebsocket import OrderbookSubscription
 
 from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
 
@@ -49,6 +50,10 @@ class EterbaseRestApi(CryptoXLibTest):
         response = await self.client.get_balances()
         self.assertTrue(self.check_positive_response(response))
 
+    async def test_get_token(self):
+        response = await self.client.get_token()
+        self.assertTrue(self.check_positive_response(response))
+
     async def test_create_order(self):
         ethusdt_id = await self.get_market_id('ETHUSDT')
         print(f'ETHUSDT: {ethusdt_id}')
@@ -67,6 +72,34 @@ class EterbaseRestApi(CryptoXLibTest):
         e = cm.exception
 
         self.assertEqual(e.status_code, 400)
+
+
+class EterbaseWs(CryptoXLibTest):
+    @classmethod
+    def initialize(cls) -> None:
+        cls.print_logs = True
+        cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_eterbase_client(acct_key, api_key, sec_key)
+
+    async def clean_test(self):
+        await self.client.close()
+
+    async def get_market_id(self, symbol: str) -> str:
+        markets = await self.client.get_markets()
+        return next(filter(lambda x: x['symbol'] == symbol, markets['response']))['id']
+
+    async def test_order_book_subscription(self):
+        ethusdt_id = await self.get_market_id('ETHUSDT')
+        print(f'ETHUSDT: {ethusdt_id}')
+
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            OrderbookSubscription(market_ids = [ethusdt_id], callbacks = [message_counter.generate_callback(1)]),
+        ])
+
+        await self.assertWsMessageCount(message_counter)
 
 
 if __name__ == '__main__':

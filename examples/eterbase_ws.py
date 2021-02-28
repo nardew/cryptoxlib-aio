@@ -2,11 +2,8 @@ import logging
 import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitpanda.enums import TimeUnit, OrderSide, OrderType
-from cryptoxlib.clients.bitpanda.BitpandaWebsocket import AccountSubscription, PricesSubscription, \
-    OrderbookSubscription, CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription, \
-    TradingSubscription, OrdersSubscription, ClientWebsocketHandle, CreateOrderMessage, CancelOrderMessage
+from cryptoxlib.clients.eterbase.EterbaseWebsocket import OrderbookSubscription, TradesSubscription, OHLCVSubscription, \
+    AccountSubscription
 from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
@@ -20,55 +17,43 @@ async def order_book_update(response: dict) -> None:
     print(f"Callback order_book_update: [{response}]")
 
 
-async def trading_update(response: dict) -> None:
-    print(f"Callback trading_update: [{response}]")
+async def trades_update(response: dict) -> None:
+    print(f"Callback trades_update: [{response}]")
+
+
+async def ohlcv_update(response: dict) -> None:
+    print(f"Callback ohlcv_update: [{response}]")
 
 
 async def account_update(response: dict) -> None:
     print(f"Callback account_update: [{response}]")
 
 
-async def orders_update(response: dict, websocket: ClientWebsocketHandle) -> None:
-    print(f"Callback orders_update: [{response}]")
-
-    # as soon as ORDERS channel subscription is confirmed, fire testing orders
-    if response['type'] == 'SUBSCRIPTIONS':
-        await websocket.send(CreateOrderMessage(
-            pair = Pair('BTC', 'EUR'),
-            type = OrderType.LIMIT,
-            side = OrderSide.BUY,
-            amount = "0.0001",
-            price = "10"
-        ))
-
-        await websocket.send(CancelOrderMessage(
-            order_id = "d44cf37a-335d-4936-9336-4c7944cd00ec"
-        ))
+def get_market_id(markets: dict, symbol: str) -> str:
+    return next(filter(lambda x: x['symbol'] == symbol, markets['response']))['id']
 
 
 async def run():
-    api_key = os.environ['BITPANDAAPIKEY']
+    api_key = os.environ['ETERBASEAPIKEY']
+    sec_key = os.environ['ETERBASESECKEY']
+    acct_key = os.environ['ETERBASEACCTKEY']
 
-    client = CryptoXLib.create_bitpanda_client(api_key)
+    client = CryptoXLib.create_eterbase_client(acct_key, api_key, sec_key)
+
+    markets = await client.get_markets()
+    ethusdt_id = get_market_id(markets, 'ETHUSDT')
+    xbaseebase_id = get_market_id(markets, 'XBASEEBASE')
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
-        AccountSubscription(callbacks = [account_update]),
-        PricesSubscription([Pair("BTC", "EUR")]),
-        OrderbookSubscription([Pair("BTC", "EUR")], "50", callbacks = [order_book_update]),
-        CandlesticksSubscription([CandlesticksSubscriptionParams(Pair("BTC", "EUR"), TimeUnit.MINUTES, 1)]),
-        MarketTickerSubscription([Pair("BTC", "EUR")])
+        OrderbookSubscription([ethusdt_id, xbaseebase_id], callbacks = [order_book_update]),
+        TradesSubscription([ethusdt_id, xbaseebase_id], callbacks = [trades_update]),
+        OHLCVSubscription([ethusdt_id, xbaseebase_id], callbacks = [ohlcv_update]),
     ])
 
     # Bundle another subscriptions into a separate websocket
     client.compose_subscriptions([
-        OrderbookSubscription([Pair("ETH", "EUR")], "3", callbacks = [order_book_update]),
-    ])
-
-    # Bundle another subscriptions into a separate websocket
-    client.compose_subscriptions([
-        TradingSubscription(callbacks = [trading_update]),
-        OrdersSubscription(callbacks = [orders_update]),
+        AccountSubscription([ethusdt_id, xbaseebase_id], callbacks = [account_update]),
     ])
 
     # Execute all websockets asynchronously

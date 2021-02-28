@@ -1,11 +1,11 @@
 import logging
-import datetime
+import uuid
 import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.eterbase.exceptions import EterbaseException
-from cryptoxlib.clients.eterbase.enums import OrderSide, TimeUnit
+from cryptoxlib.clients.eterbase import enums
 from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
@@ -15,88 +15,50 @@ LOG.addHandler(logging.StreamHandler())
 print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}")
 
 
+def get_market_id(markets: dict, symbol: str) -> str:
+    return next(filter(lambda x: x['symbol'] == symbol, markets['response']))['id']
+
+
 async def order_book_update(response: dict) -> None:
     print(f"Callback order_book_update: [{response}]")
+
 
 async def run():
     api_key = os.environ['ETERBASEAPIKEY']
     sec_key = os.environ['ETERBASESECKEY']
+    acct_key = os.environ['ETERBASEACCTKEY']
 
-    client = CryptoXLib.create_eterbase_client(api_key, sec_key)
+    client = CryptoXLib.create_eterbase_client(acct_key, api_key, sec_key)
 
     print("Time:")
-    response = await client.get_time()
+    response = await client.get_ping()
     print(f"Headers: {response['headers']}")
 
-    print("Account balance:")
-    await client.get_account_balances()
+    print("Currencies:")
+    await client.get_currencies()
 
-    print("Account orders:")
-    await client.get_account_orders()
+    print("Markets:")
+    markets = await client.get_markets()
 
-    print("Account order:")
+    print("Balances:")
     try:
-        await client.get_account_order("1")
+        await client.get_balances()
     except EterbaseException as e:
         print(e)
 
     print("Create market order:")
     try:
-        await client.create_market_order(Pair("BTC", "EUR"), OrderSide.BUY, "10000")
+        await client.create_order(pair_id = get_market_id(markets, 'ETHUSDT'), side = enums.OrderSide.BUY,
+                                       type = enums.OrderType.LIMIT, amount = "100000", price = "1",
+                                       time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED)
     except EterbaseException as e:
         print(e)
 
-    print("Create limit order:")
+    print("Cancel order:")
     try:
-        await client.create_limit_order(Pair("BTC", "EUR"), OrderSide.BUY, "10000", "1")
+        await client.cancel_order(order_id = str(uuid.uuid4()))
     except EterbaseException as e:
         print(e)
-
-    print("Create stop loss order:")
-    try:
-        await client.create_stop_limit_order(Pair("BTC", "EUR"), OrderSide.BUY, "10000", "1", "1")
-    except EterbaseException as e:
-        print(e)
-
-    print("Delete order:")
-    try:
-        await client.delete_account_order("1")
-    except EterbaseException as e:
-        print(e)
-
-    print("Order trades:")
-    try:
-        await client.get_account_order_trades("1")
-    except EterbaseException as e:
-        print(e)
-
-    print("Trades:")
-    await client.get_account_trades()
-
-    print("Trade:")
-    try:
-        await client.get_account_trade("1")
-    except EterbaseException as e:
-        print(e)
-
-    print("Trading volume:")
-    await client.get_account_trading_volume()
-
-    print("Currencies:")
-    await client.get_currencies()
-
-    print("Candlesticks:")
-    await client.get_candlesticks(Pair("BTC", "EUR"), TimeUnit.DAYS, "1",
-                                  datetime.datetime.now() - datetime.timedelta(days = 7), datetime.datetime.now())
-
-    print("Fees:")
-    await client.get_account_fees()
-
-    print("Instruments:")
-    await client.get_instruments()
-
-    print("Order book:")
-    await client.get_order_book(Pair("BTC", "EUR"))
 
     await client.close()
 
