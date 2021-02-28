@@ -8,6 +8,7 @@ from cryptoxlib.clients.bitvavo.BitvavoClient import BitvavoClient
 from cryptoxlib.clients.btse.BtseClient import BtseClient
 from cryptoxlib.clients.aax.AAXClient import AAXClient
 from cryptoxlib.clients.hitbtc.HitbtcClient import HitbtcClient
+from cryptoxlib.clients.eterbase.EterbaseClient import EterbaseClient
 
 
 class CryptoXLib(object):
@@ -50,3 +51,7 @@ class CryptoXLib(object):
     @staticmethod
     def create_hitbtc_client(api_key: str, sec_key: str) -> HitbtcClient:
         return HitbtcClient(api_key, sec_key)
+
+    @staticmethod
+    def create_eterbase_client(account_id: str, api_key: str, sec_key: str) -> EterbaseClient:
+        return EterbaseClient(account_id, api_key, sec_key)
