@@ -51,6 +51,18 @@ async def run():
     print("Balance:")
     await client.get_balance()
 
+    print("Ticker 24h:")
+    await client.get_24h_price_ticker()
+
+    print("Ticker 24h BTC-EUR:")
+    await client.get_24h_price_ticker(Pair("BTC", "EUR"))
+
+    print("Ticker price")
+    await client.get_price_ticker()
+
+    print("Ticker price BTC-EUR:")
+    await client.get_price_ticker(Pair("BTC", "EUR"))
+
     await client.close()
 
 

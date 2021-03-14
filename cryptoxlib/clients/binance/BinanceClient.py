@@ -391,6 +391,7 @@ class BinanceClient(BinanceDefaultClient):
         return await self._create_get("margin/allAssets", headers = self._get_header(),
                                        api_variable_path = BinanceClient.SAPI_V1)
 
+
 class BinanceTestnetClient(BinanceClient):
     REST_API_URI = "https://testnet.binance.vision/"
 
