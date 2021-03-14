@@ -3,7 +3,8 @@ from cryptoxlib.clients.liquid.LiquidClient import LiquidClient
 from cryptoxlib.clients.bibox.BiboxClient import BiboxClient
 from cryptoxlib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
 from cryptoxlib.clients.bitpanda.BitpandaClient import BitpandaClient
-from cryptoxlib.clients.binance.BinanceClient import BinanceClient
+from cryptoxlib.clients.binance.BinanceClient import BinanceClient, BinanceTestnetClient
+from cryptoxlib.clients.binance import enums as binance_enums
 from cryptoxlib.clients.bitvavo.BitvavoClient import BitvavoClient
 from cryptoxlib.clients.btse.BtseClient import BtseClient
 from cryptoxlib.clients.aax.AAXClient import AAXClient
@@ -33,8 +34,13 @@ class CryptoXLib(object):
         return BitpandaClient(api_key)
 
     @staticmethod
-    def create_binance_client(api_key: str, sec_key: str) -> BinanceClient:
-        return BinanceClient(api_key, sec_key)
+    def create_binance_client(api_key: str, sec_key: str,
+                              api_cluster: binance_enums.APICluster = binance_enums.APICluster.CLUSTER_DEFAULT) -> BinanceClient:
+        return BinanceClient(api_key, sec_key, api_cluster = api_cluster)
+
+    @staticmethod
+    def create_binance_testnet_client(api_key: str, sec_key: str) -> BinanceTestnetClient:
+        return BinanceTestnetClient(api_key, sec_key)
 
     @staticmethod
     def create_bitvavo_client(api_key: str, sec_key: str) -> BitvavoClient:

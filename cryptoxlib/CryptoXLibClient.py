@@ -59,19 +59,24 @@ class CryptoXLibClient(ABC):
         if session is not None:
             await session.close()
 
-    async def _create_get(self, resource: str, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
-        return await self._create_rest_call(RestCallType.GET, resource, None, params, headers, signed)
+    async def _create_get(self, resource: str, params: dict = None, headers: dict = None, signed: bool = False,
+                          api_variable_path: str = None) -> dict:
+        return await self._create_rest_call(RestCallType.GET, resource, None, params, headers, signed, api_variable_path)
 
-    async def _create_post(self, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
-        return await self._create_rest_call(RestCallType.POST, resource, data, params, headers, signed)
+    async def _create_post(self, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False,
+                           api_variable_path: str = None) -> dict:
+        return await self._create_rest_call(RestCallType.POST, resource, data, params, headers, signed, api_variable_path)
 
-    async def _create_delete(self, resource: str, data:dict = None,  params: dict = None, headers: dict = None, signed: bool = False) -> dict:
-        return await self._create_rest_call(RestCallType.DELETE, resource, data, params, headers, signed)
+    async def _create_delete(self, resource: str, data:dict = None,  params: dict = None, headers: dict = None, signed: bool = False,
+                             api_variable_path: str = None) -> dict:
+        return await self._create_rest_call(RestCallType.DELETE, resource, data, params, headers, signed, api_variable_path)
 
-    async def _create_put(self, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
-        return await self._create_rest_call(RestCallType.PUT, resource, data, params, headers, signed)
+    async def _create_put(self, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False,
+                          api_variable_path: str = None) -> dict:
+        return await self._create_rest_call(RestCallType.PUT, resource, data, params, headers, signed, api_variable_path)
 
-    async def _create_rest_call(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False) -> dict:
+    async def _create_rest_call(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False,
+                                api_variable_path: str = None) -> dict:
         with Timer('RestCall'):
             # ensure headers is always a valid object
             if headers is None:
@@ -81,14 +86,19 @@ class CryptoXLibClient(ABC):
             if signed:
                 self._sign_payload(rest_call_type, resource, data, params, headers)
 
+            resource_uri = self._get_rest_api_uri()
+            if api_variable_path is not None:
+                resource_uri += api_variable_path
+            resource_uri += resource
+
             if rest_call_type == RestCallType.GET:
-                rest_call = self._get_rest_session().get(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
+                rest_call = self._get_rest_session().get(resource_uri, json = data, params = params, headers = headers, ssl = self.ssl_context)
             elif rest_call_type == RestCallType.POST:
-                rest_call = self._get_rest_session().post(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
+                rest_call = self._get_rest_session().post(resource_uri, json = data, params = params, headers = headers, ssl = self.ssl_context)
             elif rest_call_type == RestCallType.DELETE:
-                rest_call = self._get_rest_session().delete(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
+                rest_call = self._get_rest_session().delete(resource_uri, json = data, params = params, headers = headers, ssl = self.ssl_context)
             elif rest_call_type == RestCallType.PUT:
-                rest_call = self._get_rest_session().put(self._get_rest_api_uri() + resource, json = data, params = params, headers = headers, ssl = self.ssl_context)
+                rest_call = self._get_rest_session().put(resource_uri, json = data, params = params, headers = headers, ssl = self.ssl_context)
             else:
                 raise Exception(f"Unsupported REST call type {rest_call_type}.")
 

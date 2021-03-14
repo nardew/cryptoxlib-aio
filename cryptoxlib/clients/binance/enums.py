@@ -55,3 +55,10 @@ class TimeInForce(enum.Enum):
     GOOD_TILL_CANCELLED = "GTC"
     IMMEDIATE_OR_CANCELLED = "IOC"
     FILL_OR_KILL = "FOK"
+
+
+class APICluster(enum.Enum):
+    CLUSTER_DEFAULT = "api"
+    CLUSTER_1 = "api1"
+    CLUSTER_2 = "api2"
+    CLUSTER_3 = "api3"

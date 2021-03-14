@@ -14,10 +14,10 @@ LOG.addHandler(logging.StreamHandler())
 print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}")
 
 async def run():
-    api_key = os.environ['APIKEY']
-    sec_key = os.environ['SECKEY']
+    api_key = os.environ['BINANCETESTAPIKEY']
+    sec_key = os.environ['BINANCETESTSECKEY']
 
-    client = CryptoXLib.create_binance_client(api_key, sec_key)
+    client = CryptoXLib.create_binance_testnet_client(api_key, sec_key)
 
     print("Ping:")
     await client.ping()
@@ -55,20 +55,10 @@ async def run():
     print("Best order book ticker:")
     await client.get_best_orderbook_ticker(pair = Pair('ETH', 'BTC'))
 
-    print("Create test market order:")
-    await client.create_test_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.MARKET,
+    print("Create market order:")
+    await client.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.MARKET,
                               quantity = "1",
                               new_order_response_type = enums.OrderResponseType.FULL)
-
-    print("Create limit order:")
-    try:
-        await client.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
-                                  quantity = "1",
-                                  price = "0",
-                                  time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
-                                  new_order_response_type = enums.OrderResponseType.FULL)
-    except BinanceException as e:
-        print(e)
 
     print("Cancel order:")
     try:
