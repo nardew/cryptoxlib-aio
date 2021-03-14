@@ -63,6 +63,12 @@ async def run():
     print("Ticker price BTC-EUR:")
     await client.get_price_ticker(Pair("BTC", "EUR"))
 
+    print("Ticker book")
+    await client.get_best_orderbook_ticker()
+
+    print("Ticker book BTC-EUR:")
+    await client.get_best_orderbook_ticker(Pair("BTC", "EUR"))
+
     await client.close()
 
 
