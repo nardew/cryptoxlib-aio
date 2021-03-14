@@ -15,8 +15,8 @@ class BinanceWebsocket(WebsocketMgr):
     SUBSCRIPTION_ID = 0
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
-                 ssl_context = None) -> None:
-        super().__init__(websocket_uri = self.WEBSOCKET_URI,
+                 websocket_uri: str = None, ssl_context = None) -> None:
+        super().__init__(websocket_uri = websocket_uri if websocket_uri is not None else BinanceWebsocket.WEBSOCKET_URI,
                          subscriptions = subscriptions,
                          builtin_ping_interval = None,
                          ssl_context = ssl_context,
@@ -150,3 +150,14 @@ class AccountSubscription(BinanceSubscription):
 
     def get_channel_name(self):
         return self.listen_key
+
+
+class BinanceTestnetWebsocket(BinanceWebsocket):
+    WEBSOCKET_URI = "wss://testnet.binance.vision/"
+
+    def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
+                 ssl_context = None) -> None:
+        super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
+                         sec_key = sec_key, websocket_uri = BinanceTestnetWebsocket.WEBSOCKET_URI,
+                         ssl_context = ssl_context)
+
