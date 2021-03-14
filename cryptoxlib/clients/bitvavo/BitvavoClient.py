@@ -120,3 +120,17 @@ class BitvavoClient(CryptoXLibClient):
         })
 
         return await self._create_get("balance", params = params, signed = True)
+
+    async def get_24h_price_ticker(self, pair: Pair = None) -> dict:
+        get_params = ""
+        if pair is not None:
+            get_params = f"?market={map_pair(pair)}"
+
+        return await self._create_get(f"ticker/24h{get_params}", signed = True)
+
+    async def get_price_ticker(self, pair: Pair = None) -> dict:
+        get_params = ""
+        if pair is not None:
+            get_params = f"?market={map_pair(pair)}"
+
+        return await self._create_get(f"ticker/price{get_params}", signed = True)
