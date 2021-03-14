@@ -134,3 +134,10 @@ class BitvavoClient(CryptoXLibClient):
             get_params = f"?market={map_pair(pair)}"
 
         return await self._create_get(f"ticker/price{get_params}", signed = True)
+
+    async def get_best_orderbook_ticker(self, pair: Optional[Pair] = None) -> dict:
+        get_params = ""
+        if pair is not None:
+            get_params = f"?market={map_pair(pair)}"
+
+        return await self._create_get(f"ticker/book{get_params}", signed = True)
