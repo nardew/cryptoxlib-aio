@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.8.1
+# cryptoxlib-aio 3.9.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg)
 
@@ -8,8 +8,10 @@
 
 ---
 
-### What's new in version 3.8.1
+### What's new in version 3.9.0
 
+- testnet endpoints for `binance`
+- customizable API clusters available for `binance`
 - new price tickers added to `bitvavo`
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).

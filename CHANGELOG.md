@@ -6,6 +6,14 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [3.9.0] - 2021-03-14
+
+### Added
+
+- testnet endpoints added to `binance`, see `create_binance_testnet_client`
+- different API clusters can now be selected in `binance`, see `binance.enums.APICluster`
+- `get_best_orderbook_ticker` ticker added to `bitvavo`
+
 ## [3.8.1] - 2021-03-14
 
 ### Added
@@ -99,7 +107,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.1...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.9.0...HEAD
+[3.9.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.1...3.9.0
 [3.8.1]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.0...3.8.1
 [3.8.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.7.0...3.8.0
 [3.7.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.6.1...3.7.0
