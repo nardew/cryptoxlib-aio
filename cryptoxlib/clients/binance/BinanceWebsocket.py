@@ -1,82 +1,34 @@
-import json
 import logging
-from typing import List, Callable, Any, Optional
+from typing import List
 
-from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType
+from cryptoxlib.WebsocketMgr import Subscription, CallbacksType
 from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceCommonWebsocket
+from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceSubscription
 from cryptoxlib.clients.binance.functions import map_ws_pair
-from cryptoxlib.clients.binance.enums import CandelstickInterval
+from cryptoxlib.clients.binance.enums import Interval
 
 LOG = logging.getLogger(__name__)
 
 
-class BinanceWebsocket(WebsocketMgr):
+class BinanceWebsocket(BinanceCommonWebsocket):
     WEBSOCKET_URI = "wss://stream.binance.com:9443/"
-    SUBSCRIPTION_ID = 0
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
-                 websocket_uri: str = None, ssl_context = None) -> None:
-        super().__init__(websocket_uri = websocket_uri if websocket_uri is not None else BinanceWebsocket.WEBSOCKET_URI,
-                         subscriptions = subscriptions,
-                         builtin_ping_interval = None,
-                         ssl_context = ssl_context,
-                         auto_reconnect = True)
-
-        self.api_key = api_key
-        self.sec_key = sec_key
-        self.binance_client = binance_client
-
-    def get_websocket_uri_variable_part(self):
-        return "stream?streams=" + "/".join([subscription.get_channel_name() for subscription in self.subscriptions])
-
-    async def initialize_subscriptions(self) -> None:
-        for subscription in self.subscriptions:
-            await subscription.initialize(binance_client = self.binance_client)
-
-    async def _subscribe(self, websocket: Websocket):
-        BinanceWebsocket.SUBSCRIPTION_ID += 1
-
-        subscription_message = {
-            "method": "SUBSCRIBE",
-            "params": [
-                subscription.get_channel_name() for subscription in self.subscriptions
-            ],
-            "id": BinanceWebsocket.SUBSCRIPTION_ID
-        }
-
-        LOG.debug(f"> {subscription_message}")
-        await websocket.send(json.dumps(subscription_message))
-
-    @staticmethod
-    def _is_subscription_confirmation(response):
-        if 'result' in response and response['result'] is None:
-            return True
-        else:
-            return False
-
-    async def _process_message(self, websocket: Websocket, message: str) -> None:
-        message = json.loads(message)
-
-        if self._is_subscription_confirmation(message):
-            LOG.info(f"Subscription confirmed for id: {message['id']}")
-        else:
-            # regular message
-            await self.publish_message(WebsocketMessage(subscription_id = message['stream'], message = message))
+                 ssl_context = None) -> None:
+        super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
+                         sec_key = sec_key, websocket_uri = BinanceWebsocket.WEBSOCKET_URI,
+                         ssl_context = ssl_context)
 
 
-class BinanceSubscription(Subscription):
-    def __init__(self, callbacks: CallbacksType = None):
-        super().__init__(callbacks)
+class BinanceTestnetWebsocket(BinanceCommonWebsocket):
+    WEBSOCKET_URI = "wss://testnet.binance.vision/"
 
-    @staticmethod
-    def get_channel_name():
-        pass
-
-    def get_subscription_message(self, **kwargs) -> dict:
-        pass
-
-    def construct_subscription_id(self) -> Any:
-        return self.get_channel_name()
+    def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
+                 ssl_context = None) -> None:
+        super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
+                         sec_key = sec_key, websocket_uri = BinanceTestnetWebsocket.WEBSOCKET_URI,
+                         ssl_context = ssl_context)
 
 
 class AllMarketTickersSubscription(BinanceSubscription):
@@ -126,7 +78,7 @@ class AggregateTradeSubscription(BinanceSubscription):
 
 
 class CandlestickSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, interval: CandelstickInterval, callbacks: CallbacksType = None):
+    def __init__(self, pair: Pair, interval: Interval, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
         self.pair = pair
@@ -150,14 +102,3 @@ class AccountSubscription(BinanceSubscription):
 
     def get_channel_name(self):
         return self.listen_key
-
-
-class BinanceTestnetWebsocket(BinanceWebsocket):
-    WEBSOCKET_URI = "wss://testnet.binance.vision/"
-
-    def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
-                 ssl_context = None) -> None:
-        super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
-                         sec_key = sec_key, websocket_uri = BinanceTestnetWebsocket.WEBSOCKET_URI,
-                         ssl_context = ssl_context)
-

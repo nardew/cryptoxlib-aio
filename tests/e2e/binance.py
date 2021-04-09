@@ -27,7 +27,7 @@ class BinanceWs(CryptoXLibTest):
     async def test_candlesticks_subscription(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            CandlestickSubscription(Pair("BTC", "USDT"), enums.CandelstickInterval.I_1MIN,
+            CandlestickSubscription(Pair("BTC", "USDT"), enums.Interval.I_1MIN,
                                      callbacks = [message_counter.generate_callback(1)])
         ])
 

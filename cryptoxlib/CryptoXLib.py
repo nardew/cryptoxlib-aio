@@ -4,6 +4,7 @@ from cryptoxlib.clients.bibox.BiboxClient import BiboxClient
 from cryptoxlib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
 from cryptoxlib.clients.bitpanda.BitpandaClient import BitpandaClient
 from cryptoxlib.clients.binance.BinanceClient import BinanceClient, BinanceTestnetClient
+from cryptoxlib.clients.binance.BinanceFuturesClient import BinanceUSDSMFuturesClient, BinanceUSDSMFuturesTestnetClient
 from cryptoxlib.clients.binance import enums as binance_enums
 from cryptoxlib.clients.bitvavo.BitvavoClient import BitvavoClient
 from cryptoxlib.clients.btse.BtseClient import BtseClient
@@ -41,6 +42,14 @@ class CryptoXLib(object):
     @staticmethod
     def create_binance_testnet_client(api_key: str, sec_key: str) -> BinanceTestnetClient:
         return BinanceTestnetClient(api_key, sec_key)
+
+    @staticmethod
+    def create_binance_usds_m_futures_client(api_key: str, sec_key: str) -> BinanceUSDSMFuturesClient:
+        return BinanceUSDSMFuturesClient(api_key, sec_key)
+
+    @staticmethod
+    def create_binance_usds_m_futures_testnet_client(api_key: str, sec_key: str) -> BinanceUSDSMFuturesTestnetClient:
+        return BinanceUSDSMFuturesTestnetClient(api_key, sec_key)
 
     @staticmethod
     def create_bitvavo_client(api_key: str, sec_key: str) -> BitvavoClient:

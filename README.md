@@ -120,7 +120,7 @@ bitforex.compose_subscriptions([
 
 # Another bundle of subscriptions
 bitforex.compose_subscriptions([
-    TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.CandelstickInterval.I_1MIN, callbacks = [ticker_update]),
+    TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.Interval.I_1MIN, callbacks = [ticker_update]),
     Ticker24hSubscription(pair = Pair('BTC', 'USDT'), callbacks = [ticker24_update])
 ])
 

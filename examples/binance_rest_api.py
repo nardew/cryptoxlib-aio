@@ -41,7 +41,7 @@ async def run():
     await client.get_aggregate_trades(pair=Pair('ETH', 'BTC'), limit = 5)
 
     print("Candelsticks:")
-    await client.get_candelsticks(pair=Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1D, limit=5)
+    await client.get_candelsticks(pair=Pair('ETH', 'BTC'), interval = enums.Interval.I_1D, limit=5)
 
     print("Average price:")
     await client.get_average_price(pair = Pair('ETH', 'BTC'))
