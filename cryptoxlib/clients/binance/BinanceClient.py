@@ -114,7 +114,7 @@ class BinanceClient(BinanceCommonClient):
 
         return await self._create_get("ticker/price", params = params, api_variable_path = BinanceClient.API_V3)
 
-    async def get_best_orderbook_ticker(self, pair: Optional[Pair] = None) -> dict:
+    async def get_orderbook_ticker(self, pair: Optional[Pair] = None) -> dict:
         params = {}
         if pair is not None:
             params['symbol'] = map_pair(pair)

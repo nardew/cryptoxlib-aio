@@ -146,7 +146,7 @@ class TickerSubscription(BinanceSubscription):
         return f"{map_ws_pair(self.pair)}@ticker"
 
 
-class BestOrderBookTickerSubscription(BinanceSubscription):
+class OrderBookTickerSubscription(BinanceSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -154,7 +154,7 @@ class BestOrderBookTickerSubscription(BinanceSubscription):
         return "!bookTicker"
 
 
-class BestOrderBookSymbolTickerSubscription(BinanceSubscription):
+class OrderBookSymbolTickerSubscription(BinanceSubscription):
     def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -243,3 +243,19 @@ class CompositeIndexSubscription(BinanceSubscription):
 
     def get_channel_name(self):
         return f"{map_ws_pair(self.pair)}@compositeIndex"
+
+
+class AccountSubscription(BinanceSubscription):
+    def __init__(self, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.listen_key = None
+
+    async def initialize(self, **kwargs):
+        binance_client = kwargs['binance_client']
+        listen_key_response = await binance_client.get_listen_key()
+        self.listen_key = listen_key_response["response"]["listenKey"]
+        LOG.debug(f'Listen key: {self.listen_key}')
+
+    def get_channel_name(self):
+        return self.listen_key

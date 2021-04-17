@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.clients.binance.BinanceWebsocket import AccountSubscription, BestOrderBookTickerSubscription, \
-    TradeSubscription, BestOrderBookSymbolTickerSubscription, CandlestickSubscription
+from cryptoxlib.clients.binance.BinanceWebsocket import AccountSubscription, OrderBookTickerSubscription, \
+    TradeSubscription, OrderBookSymbolTickerSubscription, CandlestickSubscription
 from cryptoxlib.clients.binance.enums import Interval
 from cryptoxlib.Pair import Pair
 from cryptoxlib.version_conversions import async_run
@@ -41,8 +41,8 @@ async def run():
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
-        BestOrderBookTickerSubscription(callbacks = [orderbook_ticker_update]),
-        BestOrderBookSymbolTickerSubscription(pair = Pair("BTC", "USDT"), callbacks = [orderbook_ticker_update]),
+        OrderBookTickerSubscription(callbacks = [orderbook_ticker_update]),
+        OrderBookSymbolTickerSubscription(pair = Pair("BTC", "USDT"), callbacks = [orderbook_ticker_update]),
         TradeSubscription(pair = Pair('ETH', 'BTC'), callbacks = [trade_update]),
         CandlestickSubscription(Pair('BTC', 'USDT'), Interval.I_1MIN, callbacks = [candlestick_update])
     ])

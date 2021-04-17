@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.clients.binance.BinanceWebsocket import AccountSubscription, OrderBookTickerSubscription, \
-    TradeSubscription, OrderBookSymbolTickerSubscription, CandlestickSubscription
+from cryptoxlib.clients.binance.BinanceFuturesWebsocket import AccountSubscription, OrderBookTickerSubscription, \
+    OrderBookSymbolTickerSubscription, CandlestickSubscription, CompositeIndexSubscription
 from cryptoxlib.clients.binance.enums import Interval
 from cryptoxlib.Pair import Pair
 from cryptoxlib.version_conversions import async_run
@@ -37,19 +37,19 @@ async def run():
     api_key = os.environ['APIKEY']
     sec_key = os.environ['SECKEY']
 
-    client = CryptoXLib.create_binance_client(api_key, sec_key)
+    client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
         OrderBookTickerSubscription(callbacks = [orderbook_ticker_update]),
         OrderBookSymbolTickerSubscription(pair = Pair("BTC", "USDT"), callbacks = [orderbook_ticker_update]),
-        TradeSubscription(pair = Pair('ETH', 'BTC'), callbacks = [trade_update]),
         CandlestickSubscription(Pair('BTC', 'USDT'), Interval.I_1MIN, callbacks = [candlestick_update])
     ])
 
     # Bundle another subscriptions into a separate websocket
     client.compose_subscriptions([
-        AccountSubscription(callbacks = [account_update])
+        AccountSubscription(callbacks = [account_update]),
+        CompositeIndexSubscription(pair = Pair('DEFI', 'USDT'))
     ])
 
     # Execute all websockets asynchronously

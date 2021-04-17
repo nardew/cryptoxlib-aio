@@ -23,10 +23,10 @@ class BinanceCommonClient(CryptoXLibClient):
         params_string = ""
         data_string = ""
 
-        if params is not None:
+        if params is not None and len(params) > 0:
             params_string = '&'.join([f"{key}={val}" for key, val in params.items()])
 
-        if data is not None:
+        if data is not None and len(data) > 0:
             data_string = '&'.join(["{}={}".format(param[0], param[1]) for param in data])
 
         m = hmac.new(self.sec_key.encode('utf-8'), (params_string + data_string).encode('utf-8'), hashlib.sha256)

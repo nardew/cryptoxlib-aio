@@ -39,7 +39,7 @@ class AllMarketTickersSubscription(BinanceSubscription):
         return "!ticker@arr"
 
 
-class BestOrderBookTickerSubscription(BinanceSubscription):
+class OrderBookTickerSubscription(BinanceSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -47,7 +47,7 @@ class BestOrderBookTickerSubscription(BinanceSubscription):
         return "!bookTicker"
 
 
-class BestOrderBookSymbolTickerSubscription(BinanceSubscription):
+class OrderBookSymbolTickerSubscription(BinanceSubscription):
     def __init__(self, pair: Pair, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 

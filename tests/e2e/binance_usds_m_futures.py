@@ -6,10 +6,10 @@ from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.binance import enums
 from cryptoxlib.clients.binance.BinanceFuturesWebsocket import AggregateTradeSubscription, MarkPriceSubscription, \
     MarkPriceAllSubscription, AllMarketLiquidationOrdersSubscription, AllMarketMiniTickersSubscription, \
-    AllMarketTickersSubscription, MiniTickerSubscription, BestOrderBookTickerSubscription, \
-    BestOrderBookSymbolTickerSubscription, LiquidationOrdersSubscription, BlvtCandlestickSubscription, \
+    AllMarketTickersSubscription, MiniTickerSubscription, OrderBookTickerSubscription, \
+    OrderBookSymbolTickerSubscription, LiquidationOrdersSubscription, BlvtCandlestickSubscription, \
     BlvtSubscription, CompositeIndexSubscription, DepthSubscription, CandlestickSubscription, \
-    ContContractCandlestickSubscription, TickerSubscription
+    ContContractCandlestickSubscription, TickerSubscription, AccountSubscription
 from cryptoxlib.clients.binance.exceptions import BinanceRestException
 from cryptoxlib.Pair import Pair
 
@@ -56,8 +56,6 @@ class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
         response = await self.client.get_trades(pair = Pair('BTC', 'USDT'))
         self.assertTrue(self.check_positive_response(response))
 
-    @unittest.expectedFailure
-    # unexplained invalid API key
     async def test_get_historical_trades(self):
         response = await self.client.get_historical_trades(pair = Pair('BTC', 'USDT'))
         self.assertTrue(self.check_positive_response(response))
@@ -101,7 +99,7 @@ class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_best_orderbook_ticker(self):
-        response = await self.client.get_best_orderbook_ticker(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_orderbook_ticker(pair = Pair('BTC', 'USDT'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_all_liquidation_orders(self):
@@ -136,8 +134,15 @@ class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
         response = await self.client.get_blvt_candlesticks(pair = Pair('BTC', 'UP'), interval = enums.Interval.I_1D)
         self.assertTrue(self.check_positive_response(response))
 
-    async def get_index_info(self):
-        response = await self.client.get_index_info(pair = Pair('BTC', 'USDT'))
+    async def test_get_index_info(self):
+        response = await self.client.get_index_info(pair = Pair('DEFI', 'USDT'))
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_listen_key(self):
+        response = await self.client.get_listen_key()
+        self.assertTrue(self.check_positive_response(response))
+
+        response = await self.client.keep_alive_listen_key(response['response']['listenKey'])
         self.assertTrue(self.check_positive_response(response))
 
 
@@ -405,7 +410,7 @@ class BinanceUSDSMFuturesMarketWs(CryptoXLibTest):
     async def test_best_orderbook_ticker(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            BestOrderBookTickerSubscription(callbacks = [message_counter.generate_callback(10)])
+            OrderBookTickerSubscription(callbacks = [message_counter.generate_callback(10)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -413,7 +418,7 @@ class BinanceUSDSMFuturesMarketWs(CryptoXLibTest):
     async def test_best_orderbook_symbol_ticker(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            BestOrderBookSymbolTickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+            OrderBookSymbolTickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)

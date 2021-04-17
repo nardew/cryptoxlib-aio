@@ -53,7 +53,7 @@ async def run():
     await client.get_price_ticker(pair = Pair('ETH', 'BTC'))
 
     print("Best order book ticker:")
-    await client.get_best_orderbook_ticker(pair = Pair('ETH', 'BTC'))
+    await client.get_orderbook_ticker(pair = Pair('ETH', 'BTC'))
 
     print("Create test market order:")
     await client.create_test_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.MARKET,

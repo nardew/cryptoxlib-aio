@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 
 
 class BinanceUSDSMFuturesClient(BinanceCommonClient):
-    REST_API_URI = "https://futures.binance.com/"
+    REST_API_URI = "https://fapi.binance.com/"
     FAPI_V1 = "fapi/v1/"
     FAPI_V2 = "fapi/v2/"
     FUTURES = "futures/data/"
@@ -173,7 +173,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
 
         return await self._create_get("ticker/price", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
-    async def get_best_orderbook_ticker(self, pair: Pair = None) -> dict:
+    async def get_orderbook_ticker(self, pair: Pair = None) -> dict:
         params = {}
         if pair is not None:
             params['symbol'] = map_pair(pair)
@@ -600,6 +600,12 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
         })
 
         return await self._create_get("commissionRate", params = params, headers = self._get_header(), signed = True, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+
+    async def get_listen_key(self):
+        return await self._create_post("listenKey", headers = self._get_header(), api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+
+    async def keep_alive_listen_key(self, listen_key: str):
+        return await self._create_put("listenKey", headers = self._get_header(), api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
 
 class BinanceUSDSMFuturesTestnetClient(BinanceUSDSMFuturesClient):
