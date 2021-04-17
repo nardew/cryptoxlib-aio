@@ -15,6 +15,7 @@ LOG = logging.getLogger(__name__)
 
 class BinanceClient(BinanceCommonClient):
     API_V3 = "api/v3/"
+    SAPI_V1 = "sapi/v1/"
 
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,
                  api_cluster: enums.APICluster = enums.APICluster.CLUSTER_DEFAULT,
@@ -346,6 +347,10 @@ class BinanceClient(BinanceCommonClient):
 
     async def get_listen_key(self):
         return await self._create_post("userDataStream", headers = self._get_header(), api_variable_path = BinanceClient.API_V3)
+
+    async def get_margin_all_margin_assets(self):
+        return await self._create_get("margin/allAssets", headers = self._get_header(),
+                                       api_variable_path = BinanceClient.SAPI_V1)
 
 
 class BinanceTestnetClient(BinanceClient):
