@@ -20,7 +20,16 @@ async def run():
     client = CryptoXLib.create_binance_client(api_key, sec_key)
 
     print("All margin assets:")
-    await client.get_margin_all_margin_assets()
+    await client.get_margin_all_assets()
+
+    print("Margin pair:")
+    await client.get_margin_pair(Pair('BTC', 'USDT'))
+
+    print("Margin price index:")
+    await client.get_margin_price_index(Pair('BTC', 'USDT'))
+
+    print("Margin account balance:")
+    await client.get_margin_account()
 
     await client.close()
 

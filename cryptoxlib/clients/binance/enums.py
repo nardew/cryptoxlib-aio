@@ -105,3 +105,24 @@ class APICluster(enum.Enum):
     CLUSTER_1 = "api1"
     CLUSTER_2 = "api2"
     CLUSTER_3 = "api3"
+
+
+class CrossMarginTransferType(enum.Enum):
+    TO_CROSS_MARGIN_ACCOUNT = 1
+    TO_MAIN_ACCOUNT = 2
+
+
+class SideEffectType(enum.Enum):
+    NO_SIDE_EFFECT = "NO_SIDE_EFFECT"
+    MARGIN_BUY = "MARGIN_BUY"
+    AUTO_REPAY = "AUTO_REPAY"
+
+
+class TransferType(enum.Enum):
+    ROLL_IN = "ROLL_IN"
+    ROLL_OUT = "ROLL_OUT"
+
+
+class AccountType(enum.Enum):
+    ISOLATED_MARGIN = "ISOLATED_MARGIN"
+    SPOT = "SPOT"

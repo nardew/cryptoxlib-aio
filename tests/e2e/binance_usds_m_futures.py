@@ -64,22 +64,22 @@ class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
         response = await self.client.get_aggregate_trades(pair = Pair('BTC', 'USDT'))
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_candelsticks(self):
-        response = await self.client.get_candelsticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+    async def test_get_candlesticks(self):
+        response = await self.client.get_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_cont_contract_candelsticks(self):
-        response = await self.client.get_cont_contract_candelsticks(pair = Pair('BTC', 'USDT'),
+    async def test_get_cont_contract_candlesticks(self):
+        response = await self.client.get_cont_contract_candlesticks(pair = Pair('BTC', 'USDT'),
                                                                     interval = enums.Interval.I_1MIN,
                                                                     contract_type = enums.ContractType.PERPETUAL)
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_index_price_candelsticks(self):
-        response = await self.client.get_index_price_candelsticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+    async def test_get_index_price_candlesticks(self):
+        response = await self.client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_mark_price_candelsticks(self):
-        response = await self.client.get_mark_price_candelsticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+    async def test_get_mark_price_candlesticks(self):
+        response = await self.client.get_mark_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_mark_price(self):

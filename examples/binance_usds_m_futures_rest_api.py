@@ -40,8 +40,8 @@ async def run():
     print("Aggregate trades:")
     await client.get_aggregate_trades(pair=Pair('BTC', 'USDT'), limit = 5)
 
-    print("Index proce candelsticks:")
-    await client.get_index_price_candelsticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+    print("Index proce candlesticks:")
+    await client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
 
     print("Index info:")
     await client.get_index_info(pair = Pair('DEFI', 'USDT'))

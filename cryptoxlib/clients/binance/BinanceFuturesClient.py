@@ -79,7 +79,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
 
         return await self._create_get("aggTrades", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
-    async def get_candelsticks(self, pair: Pair, interval: enums.Interval, limit: int = None,
+    async def get_candlesticks(self, pair: Pair, interval: enums.Interval, limit: int = None,
                                start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
@@ -93,7 +93,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
 
         return await self._create_get("klines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
-    async def get_cont_contract_candelsticks(self, pair: Pair, interval: enums.Interval,
+    async def get_cont_contract_candlesticks(self, pair: Pair, interval: enums.Interval,
                                              contract_type: enums.ContractType, limit: int = None,
                                start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
@@ -109,7 +109,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
 
         return await self._create_get("continuousKlines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
-    async def get_index_price_candelsticks(self, pair: Pair, interval: enums.Interval,
+    async def get_index_price_candlesticks(self, pair: Pair, interval: enums.Interval,
                                              limit: int = None,
                                start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
@@ -124,7 +124,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
 
         return await self._create_get("indexPriceKlines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
-    async def get_mark_price_candelsticks(self, pair: Pair, interval: enums.Interval,
+    async def get_mark_price_candlesticks(self, pair: Pair, interval: enums.Interval,
                                              limit: int = None,
                                start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({

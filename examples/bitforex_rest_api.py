@@ -40,8 +40,8 @@ async def run():
     print("Trades:")
     await bitforex.get_trades(pair = Pair('ETH', 'BTC'), size = "1")
 
-    print("Candelsticks:")
-    await bitforex.get_candlesticks(pair = Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1W, size = "5")
+    print("Candlesticks:")
+    await bitforex.get_candlesticks(pair = Pair('ETH', 'BTC'), interval = enums.CandlestickInterval.I_1W, size = "5")
 
     print("Create order:")
     try:
