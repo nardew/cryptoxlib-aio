@@ -7,6 +7,10 @@
 `cryptoxlib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
 
 ---
+ 
+**[! ! !]** Binance USDS-M futures and margin endpoints (thank you @davidmcnabz!) now available under `binance_futures` branch (see PR [#44](https://github.com/nardew/cryptoxlib-aio/pull/44) for code changes).
+
+---
 
 ### What's new in version 3.9.0
 
