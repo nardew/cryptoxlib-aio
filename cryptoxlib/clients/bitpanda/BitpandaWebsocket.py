@@ -324,3 +324,26 @@ class CancelOrderMessage(WebsocketOutboundMessage):
             ret['client_id'] = self.client_id
 
         return ret
+
+
+class UpdateOrderMessage(WebsocketOutboundMessage):
+    def __init__(self, amount: str, order_id: str = None, client_id: str = None):
+        self.amount = amount
+        self.order_id = order_id
+        self.client_id = client_id
+
+    def to_json(self):
+        ret = {
+            "type": "UPDATE_ORDER",
+            "order": {
+                "amount": self.amount
+            }
+        }
+
+        if self.order_id is not None:
+            ret['order']['order_id'] = self.order_id
+
+        if self.client_id is not None:
+            ret['order']['client_id'] = self.client_id
+
+        return ret

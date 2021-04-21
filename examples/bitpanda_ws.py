@@ -6,7 +6,8 @@ from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.bitpanda.enums import TimeUnit, OrderSide, OrderType
 from cryptoxlib.clients.bitpanda.BitpandaWebsocket import AccountSubscription, PricesSubscription, \
     OrderbookSubscription, CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription, \
-    TradingSubscription, OrdersSubscription, ClientWebsocketHandle, CreateOrderMessage, CancelOrderMessage
+    TradingSubscription, OrdersSubscription, ClientWebsocketHandle, CreateOrderMessage, CancelOrderMessage, \
+    UpdateOrderMessage
 from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
@@ -42,6 +43,11 @@ async def orders_update(response: dict, websocket: ClientWebsocketHandle) -> Non
         ))
 
         await websocket.send(CancelOrderMessage(
+            order_id = "d44cf37a-335d-4936-9336-4c7944cd00ec"
+        ))
+
+        await websocket.send(UpdateOrderMessage(
+            amount = "1",
             order_id = "d44cf37a-335d-4936-9336-4c7944cd00ec"
         ))
 

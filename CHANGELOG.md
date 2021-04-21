@@ -6,6 +6,12 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [3.10.0] - 2021-04-21
+
+### Added
+
+- `bitpanda` supports update of orders via streams (see `BitpandaWebsocket.py:UpdateOrderMessage`)
+
 ## [3.9.0] - 2021-03-14
 
 ### Added
@@ -107,7 +113,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.9.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.10.0...HEAD
+[3.9.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.9.0...3.10.0
 [3.9.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.1...3.9.0
 [3.8.1]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.0...3.8.1
 [3.8.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.7.0...3.8.0
