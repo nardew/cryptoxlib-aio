@@ -11,6 +11,9 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 ### Added
 
 - `binance` margin and USDS-M futures endpoints
+
+### Changed
+
 - following existing classes, methods and types were renamed:
 
 ```
