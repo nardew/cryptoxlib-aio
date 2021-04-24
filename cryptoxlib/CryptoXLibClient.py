@@ -102,7 +102,7 @@ class CryptoXLibClient(ABC):
             else:
                 raise Exception(f"Unsupported REST call type {rest_call_type}.")
 
-            LOG.debug(f"> rest type [{rest_call_type.name}], resource [{resource}], params [{params}], headers [{headers}], data [{data}]")
+            LOG.debug(f"> rest type [{rest_call_type.name}], uri [{resource_uri}], params [{params}], headers [{headers}], data [{data}]")
             async with rest_call as response:
                 status_code = response.status
                 headers = response.headers

@@ -213,7 +213,7 @@ class OrderbookSubscription(BitvavoSubscription):
 
 
 class CandlesticksSubscription(BitvavoSubscription):
-    def __init__(self, pairs : List[Pair], intervals: List[enums.CandelstickInterval], callbacks : List[Callable[[dict], Any]] = None):
+    def __init__(self, pairs : List[Pair], intervals: List[enums.CandlestickInterval], callbacks : List[Callable[[dict], Any]] = None):
         super().__init__(callbacks)
 
         self.pairs = pairs

@@ -40,8 +40,8 @@ async def run():
     print("Aggregate trades:")
     await client.get_aggregate_trades(pair=Pair('ETH', 'BTC'), limit = 5)
 
-    print("Candelsticks:")
-    await client.get_candelsticks(pair=Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1D, limit=5)
+    print("Candlesticks:")
+    await client.get_candlesticks(pair=Pair('ETH', 'BTC'), interval = enums.Interval.I_1D, limit=5)
 
     print("Average price:")
     await client.get_average_price(pair = Pair('ETH', 'BTC'))
@@ -53,7 +53,7 @@ async def run():
     await client.get_price_ticker(pair = Pair('ETH', 'BTC'))
 
     print("Best order book ticker:")
-    await client.get_best_orderbook_ticker(pair = Pair('ETH', 'BTC'))
+    await client.get_orderbook_ticker(pair = Pair('ETH', 'BTC'))
 
     print("Create market order:")
     await client.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.MARKET,

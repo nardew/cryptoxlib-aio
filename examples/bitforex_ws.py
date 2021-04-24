@@ -52,7 +52,7 @@ async def run():
 
     # Bundle subscriptions into a separate websocket
     bitforex.compose_subscriptions([
-        TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.CandelstickInterval.I_1MIN,
+        TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.CandlestickInterval.I_1MIN,
                            callbacks = [ticker_update]),
         Ticker24hSubscription(pair = Pair('BTC', 'USDT'), callbacks = [ticker24_update])
     ])

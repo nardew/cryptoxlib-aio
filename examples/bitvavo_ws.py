@@ -46,7 +46,7 @@ async def run():
 
     # Bundle another subscriptions into a separate websocket
     client.compose_subscriptions([
-        CandlesticksSubscription(pairs = [Pair("BTC", "EUR")], intervals = [enums.CandelstickInterval.I_1MIN])
+        CandlesticksSubscription(pairs = [Pair("BTC", "EUR")], intervals = [enums.CandlestickInterval.I_1MIN])
     ])
 
     # Execute all websockets asynchronously

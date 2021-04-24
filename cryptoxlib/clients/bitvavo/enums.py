@@ -24,7 +24,7 @@ class SelfTradePrevention(enum.Enum):
     CANCEL_BOTH = "cancelBoth"
 
 
-class CandelstickInterval(enum.Enum):
+class CandlestickInterval(enum.Enum):
     I_1MIN = '1m'
     I_5MIN = '5m'
     I_15MIN = '15m'

@@ -56,6 +56,7 @@ class WsMessageCounter(object):
         if target_reached:
             raise CryptoXLibWsSuccessException("Websocket message count reached successfully.")
 
+
 class CryptoXLibTest(aiounittest.AsyncTestCase):
     print_logs: bool = True
     log_level: int = logging.DEBUG
@@ -98,11 +99,11 @@ class CryptoXLibTest(aiounittest.AsyncTestCase):
         else:
             return self.loop
 
-    async def assertWsMessageCount(self, ws_message_counter: WsMessageCounter, timeout: float = 10.0):
+    async def assertWsMessageCount(self, ws_message_counter: WsMessageCounter, timeout: float = 25.0):
         try:
             await asyncio.wait_for(self.client.start_websockets(), timeout = timeout)
         except CryptoXLibWsSuccessException as e:
-            LOG.info(f"Exception: {e}")
+            LOG.info(f"SUCCESS exception: {e}")
             return True
         except asyncio.TimeoutError:
             msg_string = ''

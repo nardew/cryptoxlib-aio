@@ -11,7 +11,7 @@ class OrderState(enum.Enum):
     COMPLETE = "1"
 
 
-class CandelstickInterval(enum.Enum):
+class CandlestickInterval(enum.Enum):
     I_1MIN = '1min'
     I_5MIN = '5min'
     I_15MIN = '15min'

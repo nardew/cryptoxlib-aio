@@ -53,7 +53,7 @@ class BitforexRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_candlesticks(self):
-        response = await self.client.get_candlesticks(pair = Pair('ETH', 'BTC'), interval = enums.CandelstickInterval.I_1W, size = "5")
+        response = await self.client.get_candlesticks(pair = Pair('ETH', 'BTC'), interval = enums.CandlestickInterval.I_1W, size = "5")
         self.assertTrue(self.check_positive_response(response))
 
     async def test_create_order(self):

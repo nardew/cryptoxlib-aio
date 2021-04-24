@@ -305,8 +305,8 @@ class WebsocketMgr(ABC):
                         for task in done:
                             try:
                                 task.result()
-                            except Exception:
-                                LOG.debug("Websocket processing has led to an exception, all pending tasks will be cancelled.")
+                            except Exception as e:
+                                LOG.debug(f"Websocket processing has led to an exception, all pending tasks will be cancelled.")
                                 for task in pending:
                                     if not task.cancelled():
                                         task.cancel()

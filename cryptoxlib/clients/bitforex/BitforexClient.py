@@ -73,7 +73,7 @@ class BitforexClient(CryptoXLibClient):
 
         return await self._create_get("market/ticker", params = params, signed = True)
 
-    async def get_candlesticks(self, pair: Pair, interval: enums.CandelstickInterval, size: str = None) -> dict:
+    async def get_candlesticks(self, pair: Pair, interval: enums.CandlestickInterval, size: str = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
             "symbol": map_pair(pair),
             "ktype": interval.value,

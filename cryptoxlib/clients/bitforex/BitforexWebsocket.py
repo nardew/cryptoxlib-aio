@@ -114,7 +114,7 @@ class Ticker24hSubscription(BitforexSubscription):
 
 
 class TickerSubscription(BitforexSubscription):
-    def __init__(self, pair: Pair, size: str, interval: enums.CandelstickInterval, callbacks: List[Callable[[dict], Any]] = None):
+    def __init__(self, pair: Pair, size: str, interval: enums.CandlestickInterval, callbacks: List[Callable[[dict], Any]] = None):
         super().__init__(callbacks)
 
         self.pair = pair
