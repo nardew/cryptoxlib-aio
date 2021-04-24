@@ -1,4 +1,4 @@
-# cryptoxlib-aio 3.10.0
+# cryptoxlib-aio 4.0.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg)
 
@@ -8,13 +8,14 @@
 
 ---
  
-**[! ! !]** Binance USDS-M futures and margin endpoints (thank you @davidmcnabnz) now available under `binance_futures` branch (see PR [#44](https://github.com/nardew/cryptoxlib-aio/pull/44) for code changes).
+**==>** Binance USDS-M futures and margin endpoints (thank you @davidmcnabnz) now available!
 
 ---
 
-### What's new in version 3.10.0
+### What's been recently added
 
-- `bitpanda` supports update of orders via streams (see `BitpandaWebsocket.py:UpdateOrderMessage`)
+- `binance` margin and USDS-M futures endpoints!
+- `bitpanda` supports update of orders via streams
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
@@ -50,7 +51,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/aax.png) | AAX | [API](https://www.aax.com/apidoc/index.html#introduction) |
 | ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
 | ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope | [API](https://github.com/BiboxEurope/API_Docs_en) |
-| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
+| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance (spot, margin, USDS-M futures) |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
 | ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
 | ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
 | ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |

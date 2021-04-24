@@ -6,6 +6,23 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [4.0.0] - 2021-04-24
+
+### Added
+
+- `binance` margin and USDS-M futures endpoints
+- following existing classes, methods and types were renamed:
+
+```
+binance.enums.CandelstickInterval -> binance.enums.Interval
+binance.BinanceWebsocket.BestOrderBookTickerSubscription -> binance.BinanceWebsocket.OrderBookTickerSubscription
+binance.BinanceWebsocket.BestOrderBookSymbolTickerSubscription -> binance.BinanceWebsocket.OrderBookSymbolTickerSubscription
+binance.BinanceClient.get_candelsticks -> binance.BinanceClient.get_candlesticks
+binance.BinanceClient.get_best_orderbook_ticker -> binance.BinanceClient.get_orderbook_ticker
+bitforex.enums.CandelstickInterval -> bitforex.enums.CandlestickInterval
+bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
+```
+
 ## [3.10.0] - 2021-04-21
 
 ### Added
@@ -113,7 +130,8 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/3.10.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/4.0.0...HEAD
+[3.10.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.10.0...4.0.0
 [3.10.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.9.0...3.10.0
 [3.9.0]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.1...3.9.0
 [3.8.1]: https://github.com/nardew/cryptoxlib-aio/compare/3.8.0...3.8.1
