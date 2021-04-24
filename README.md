@@ -14,7 +14,7 @@
 
 ### What's been recently added
 
-- `binance` margin and USDS-M futures endpoints!
+- `binance` margin and USDS-M futures endpoints
 - `bitpanda` supports update of orders via streams
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
