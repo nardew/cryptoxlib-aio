@@ -180,6 +180,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
 
         return await self._create_get("ticker/bookTicker", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
+    # Not maintained by binance, will be removed in the future
     async def get_all_liquidation_orders(self, pair: Pair = None, limit: int = None,
                                     start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({

@@ -39,9 +39,9 @@ class Subscriptions:
         ]
         self.subscription_set_ids = []
         self.timers = [
-            PeriodicChecker(50),
-            PeriodicChecker(50),
-            PeriodicChecker(50)
+            PeriodicChecker(100),
+            PeriodicChecker(100),
+            PeriodicChecker(100)
         ]
 
     async def call1(self, response : dict):
@@ -49,11 +49,11 @@ class Subscriptions:
             print(response)
 
     async def call2(self, response : dict):
-        if self.timers[0].check():
+        if self.timers[1].check():
             print(response)
 
     async def call3(self, response : dict):
-        if self.timers[0].check():
+        if self.timers[2].check():
             print(response)
 
 
@@ -81,6 +81,11 @@ async def main_loop(client: BinanceClient) -> None:
             print("Unsubscribing all")
             await client.unsubscribe_all()
 
+        if i == 15:
+            print("Shutting down websockets.")
+            await client.shutdown_websockets()
+            break
+
         i += 1
         await asyncio.sleep(sleep_sec)
 
@@ -96,10 +101,15 @@ async def run():
     sub.subscription_set_ids.append(client.compose_subscriptions(sub.subscriptions[1]))
     sub.subscription_set_ids.append(client.compose_subscriptions(sub.subscriptions[2]))
 
-    await asyncio.gather(*[
-        client.start_websockets(),
-        main_loop(client)
-    ])
+    try:
+        await asyncio.gather(*[
+            client.start_websockets(),
+            main_loop(client)
+        ])
+    except Exception as e:
+        print(f"Out: {e}")
+
+    print("Exiting.")
 
 
 if __name__ == "__main__":

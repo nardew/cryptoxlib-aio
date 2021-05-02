@@ -331,9 +331,6 @@ class BinanceUSDSMFuturesMarketWs(CryptoXLibTest):
     async def init_test(self):
         self.client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
 
-    #async def clean_test(self):
-    #    await self.client.close()
-
     async def test_aggregate_trade(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([

@@ -233,13 +233,16 @@ class CryptoXLibClient(ABC):
                 task.result()
             except Exception as e:
                 LOG.error(f"Unrecoverable exception occurred while processing messages: {e}")
-                LOG.info("All websockets scheduled for shutdown")
+                LOG.info(f"Remaining websocket managers scheduled for shutdown.")
 
-                for task in pending:
-                    if not task.cancelled():
-                        task.cancel()
+                await self.shutdown_websockets()
+
                 if len(pending) > 0:
                     await asyncio.wait(pending, return_when = asyncio.ALL_COMPLETED)
 
-                LOG.info("All websockets closed.")
+                LOG.info("All websocket managers shut down.")
                 raise
+
+    async def shutdown_websockets(self):
+        for id, subscription_set in self.subscription_sets.items():
+            await subscription_set.websocket_mgr.shutdown()

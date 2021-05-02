@@ -4,6 +4,7 @@ import logging
 import asyncio
 import ssl
 import aiohttp
+import enum
 from abc import ABC, abstractmethod
 from typing import List, Callable, Any, Optional, Union
 
@@ -15,12 +16,22 @@ LOG = logging.getLogger(__name__)
 CallbacksType = List[Callable[..., Any]]
 
 
+class WebsocketMgrMode(enum.Enum):
+    STOPPED = enum.auto()
+    RUNNING = enum.auto()
+    CLOSING = enum.auto()
+
+
 class Websocket(ABC):
     def __init__(self):
         pass
 
     @abstractmethod
     async def connect(self):
+        pass
+
+    @abstractmethod
+    async def is_open(self):
         pass
 
     @abstractmethod
@@ -57,6 +68,9 @@ class FullWebsocket(Websocket):
                                            ping_interval = self.builtin_ping_interval,
                                            max_size = self.max_message_size,
                                            ssl = self.ssl_context)
+
+    async def is_open(self):
+        return self.ws is not None
 
     async def close(self):
         if self.ws is None:
@@ -100,6 +114,9 @@ class AiohttpWebsocket(Websocket):
                                            autoping = True,
                                            heartbeat = self.builtin_ping_interval,
                                            ssl = self.ssl_context)
+
+    async def is_open(self):
+        return self.ws is not None
 
     async def close(self):
         if self.ws is None:
@@ -215,6 +232,8 @@ class Subscription(ABC):
 
 
 class WebsocketMgr(ABC):
+    WEBSOCKET_MGR_ID_SEQ = 0
+
     def __init__(self, websocket_uri: str, subscriptions: List[Subscription], builtin_ping_interval: Optional[float] = 20,
                  max_message_size: int = 2**20, periodic_timeout_sec: int = None, ssl_context = None,
                  auto_reconnect: bool = False, startup_delay_ms: int = 0) -> None:
@@ -227,7 +246,11 @@ class WebsocketMgr(ABC):
         self.auto_reconnect = auto_reconnect
         self.startup_delay_ms = startup_delay_ms
 
+        self.id = WebsocketMgr.WEBSOCKET_MGR_ID_SEQ
+        WebsocketMgr.WEBSOCKET_MGR_ID_SEQ += 1
+
         self.websocket = None
+        self.mode: WebsocketMgrMode = WebsocketMgrMode.STOPPED
 
     @abstractmethod
     async def _process_message(self, websocket: Websocket, response: str) -> None:
@@ -278,7 +301,7 @@ class WebsocketMgr(ABC):
         await websocket.send(json.dumps(subscription_messages))
 
     async def unsubscribe(self, subscriptions: List[Subscription]):
-        raise CryptoXLibException(f"Unsubscription not supported for the client.")
+        raise CryptoXLibException(f"[{self.id}] Unsubscription not supported for the client.")
 
     async def main_loop(self, websocket: Websocket):
         await self._authenticate(websocket)
@@ -298,19 +321,21 @@ class WebsocketMgr(ABC):
                 await asyncio.sleep(self.periodic_timeout_sec)
 
     async def run(self) -> None:
+        self.mode = WebsocketMgrMode.RUNNING
+
         await self.validate_subscriptions()
         await self.initialize_subscriptions()
 
         try:
             # main loop ensuring proper reconnection if required
             while True:
-                LOG.debug(f"Initiating websocket connection.")
+                LOG.debug(f"[{self.id}] Initiating websocket connection.")
                 self.websocket = None
                 try:
                         # sleep for the requested period before initiating the connection. This is useful when client
                         # opens many connections at the same time and server cannot handle the load
                         await asyncio.sleep(self.startup_delay_ms / 1000.0)
-                        LOG.debug(f"Websocket initiation delayed by {self.startup_delay_ms}ms.")
+                        LOG.debug(f"[{self.id}] Websocket initiation delayed by {self.startup_delay_ms}ms.")
 
                         self.websocket = self.get_websocket()
                         await self.websocket.connect()
@@ -324,7 +349,7 @@ class WebsocketMgr(ABC):
                             try:
                                 task.result()
                             except Exception as e:
-                                LOG.debug(f"Websocket processing has led to an exception, all pending tasks will be cancelled.")
+                                LOG.debug(f"[{self.id}] Websocket processing has led to an exception, all pending tasks are going to be cancelled.")
                                 for task in pending:
                                     if not task.cancelled():
                                         task.cancel()
@@ -335,8 +360,9 @@ class WebsocketMgr(ABC):
                                         await asyncio.wait(pending, return_when = asyncio.ALL_COMPLETED)
                                         raise
                                     finally:
-                                        LOG.debug("All pending tasks cancelled successfully.")
+                                        LOG.debug(f"[{self.id}] All pending tasks cancelled successfully.")
                                 raise
+                # recoverable exceptions
                 except (websockets.ConnectionClosedError,
                         websockets.ConnectionClosedOK,
                         websockets.InvalidStatusCode,
@@ -344,20 +370,25 @@ class WebsocketMgr(ABC):
                         WebsocketClosed,
                         WebsocketError,
                         WebsocketReconnectionException) as e:
-                    if self.auto_reconnect:
-                        LOG.info("A recoverable exception has occurred, the websocket will be restarted automatically.")
+                    LOG.info(f"[{self.id}] Exception [{type(e)}]: {e}")
+                    if self.mode == WebsocketMgrMode.CLOSING:
+                        LOG.debug(f"[{self.id}] Websocket is going to be shut down.")
+                        # exit the main infinite loop
+                        break
+                    elif self.auto_reconnect:
+                        LOG.info(f"[{self.id}] A recoverable exception has occurred, the websocket will be restarted automatically.")
                         self._print_subscriptions()
-                        LOG.info(f"Exception: {e}")
                     else:
                         raise
                 finally:
                     if self.websocket is not None:
-                        LOG.debug("Closing websocket connection.")
-                        await self.websocket.close()
+                        if await self.websocket.is_open():
+                            LOG.debug(f"[{self.id}] Closing websocket connection.")
+                            await self.websocket.close()
         except asyncio.CancelledError:
-            LOG.warning(f"The websocket was requested to be shutdown.")
-        except Exception:
-            LOG.error(f"An exception occurred. The websocket manager will be closed.")
+            LOG.warning(f"[{self.id}] The websocket was requested to be cancelled.")
+        except Exception as e:
+            LOG.error(f"[{self.id}] An exception [{e}] occurred. The websocket manager will be closed.")
             self._print_subscriptions()
             raise
 
@@ -367,10 +398,21 @@ class WebsocketMgr(ABC):
                 await subscription.process_message(message)
                 return
 
-        LOG.warning(f"Websocket message with subscription id {message.subscription_id} did not identify any subscription!")
+        LOG.warning(f"[{self.id}] Websocket message with subscription id {message.subscription_id} did not identify any subscription!")
 
     def _print_subscriptions(self):
         subscription_messages = []
         for subscription in self.subscriptions:
             subscription_messages.append(subscription.get_subscription_id())
-        LOG.info(f"Subscriptions: {subscription_messages}")
+        LOG.info(f"[{self.id}] Subscriptions: {subscription_messages}")
+
+    async def shutdown(self):
+        if self.mode == WebsocketMgrMode.CLOSING:
+            LOG.debug(f"[{self.id}] Websocket manager already being shut down.")
+            return
+
+        self.mode = WebsocketMgrMode.CLOSING
+        if self.websocket is not None:
+            LOG.debug(f"[{self.id}] Manually closing websocket connection.")
+            if await self.websocket.is_open():
+                await self.websocket.close()

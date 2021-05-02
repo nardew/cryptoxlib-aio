@@ -25,6 +25,9 @@ class BinanceCommonWebsocket(WebsocketMgr):
     def get_websocket_uri_variable_part(self):
         return "stream?streams=" + "/".join([subscription.get_channel_name() for subscription in self.subscriptions])
 
+    def get_websocket(self) -> Websocket:
+        return self.get_aiohttp_websocket()
+
     async def initialize_subscriptions(self) -> None:
         for subscription in self.subscriptions:
             await subscription.initialize(binance_client = self.binance_client)
@@ -65,6 +68,9 @@ class BinanceCommonWebsocket(WebsocketMgr):
             return False
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
+        if message is None:
+            return
+
         message = json.loads(message)
 
         if self._is_subscription_confirmation(message):
