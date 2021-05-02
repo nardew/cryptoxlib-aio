@@ -8,7 +8,7 @@ import enum
 import time
 from abc import ABC, abstractmethod
 from multidict import CIMultiDictProxy
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from cryptoxlib.version_conversions import async_create_task
 from cryptoxlib.Timer import Timer
@@ -25,12 +25,30 @@ class RestCallType(enum.Enum):
     PUT = "PUT"
 
 
+class SubscriptionSet(object):
+    SUBSCRIPTION_SET_ID_SEQ = 0
+
+    def __init__(self, subscriptions: List[Subscription]):
+        self.subscription_set_id = SubscriptionSet.SUBSCRIPTION_SET_ID_SEQ
+        SubscriptionSet.SUBSCRIPTION_SET_ID_SEQ += 1
+
+        self.subscriptions: List[Subscription] = subscriptions
+        self.websocket_mgr: Optional[WebsocketMgr] = None
+
+    def find_subscription(self, subscription: Subscription) -> Optional[Subscription]:
+        for s in self.subscriptions:
+            if s.internal_subscription_id == subscription.internal_subscription_id:
+                return s
+
+        return None
+
+
 class CryptoXLibClient(ABC):
     def __init__(self, api_trace_log: bool = False, ssl_context: ssl.SSLContext = None) -> None:
         self.api_trace_log = api_trace_log
 
         self.rest_session = None
-        self.subscription_sets = []
+        self.subscription_sets: Dict[int, SubscriptionSet] = {}
 
         if ssl_context is not None:
             self.ssl_context = ssl_context
@@ -169,34 +187,59 @@ class CryptoXLibClient(ABC):
     def _get_unix_timestamp_ns() -> int:
         return int(time.time_ns() * 10**9)
 
-    def compose_subscriptions(self, subscriptions: List[Subscription]) -> None:
-        self.subscription_sets.append(subscriptions)
+    def compose_subscriptions(self, subscriptions: List[Subscription]) -> int:
+        subscription_set = SubscriptionSet(subscriptions = subscriptions)
+        self.subscription_sets[subscription_set.subscription_set_id] = subscription_set
+
+        return subscription_set.subscription_set_id
+
+    async def add_subscriptions(self, subscription_set_id: int, subscriptions: List[Subscription]) -> None:
+        pass
+
+    async def unsubscribe_subscriptions(self, subscriptions: List[Subscription]) -> None:
+        for subscription in subscriptions:
+            subscription_found = False
+            for id, subscription_set in self.subscription_sets.items():
+                if subscription_set.find_subscription(subscription) is not None:
+                    subscription_found = True
+                    await subscription_set.websocket_mgr.unsubscribe(subscriptions)
+
+            if not subscription_found:
+                raise CryptoXLibException(f"No active subscription {subscription.subscription_id} found.")
+
+    async def unsubscribe_subscription_set(self, subscription_set_id: int) -> None:
+        return await self.unsubscribe_subscriptions(self.subscription_sets[subscription_set_id].subscriptions)
+
+    async def unsubscribe_all(self) -> None:
+        for id, _ in self.subscription_sets.items():
+            await self.unsubscribe_subscription_set(id)
 
     async def start_websockets(self, websocket_start_time_interval_ms: int = 0) -> None:
-        if len(self.subscription_sets):
-            tasks = []
-            startup_delay_ms = 0
-            for subscriptions in self.subscription_sets:
-                tasks.append(async_create_task(
-                    self._get_websocket_mgr(subscriptions, startup_delay_ms, self.ssl_context).run())
-                )
-                startup_delay_ms += websocket_start_time_interval_ms
-
-            done, pending = await asyncio.wait(tasks, return_when = asyncio.FIRST_EXCEPTION)
-            for task in done:
-                try:
-                    task.result()
-                except Exception as e:
-                    LOG.error(f"Unrecoverable exception occurred while processing messages: {e}")
-                    LOG.info("All websockets scheduled for shutdown")
-
-                    for task in pending:
-                        if not task.cancelled():
-                            task.cancel()
-                    if len(pending) > 0:
-                        await asyncio.wait(pending, return_when = asyncio.ALL_COMPLETED)
-
-                    LOG.info("All websockets closed.")
-                    raise
-        else:
+        if len(self.subscription_sets) < 1:
             raise CryptoXLibException("ERROR: There are no subscriptions to be started.")
+
+        tasks = []
+        startup_delay_ms = 0
+        for id, subscription_set in self.subscription_sets.items():
+            subscription_set.websocket_mgr = self._get_websocket_mgr(subscription_set.subscriptions, startup_delay_ms, self.ssl_context)
+            tasks.append(async_create_task(
+                subscription_set.websocket_mgr.run())
+            )
+            startup_delay_ms += websocket_start_time_interval_ms
+
+        done, pending = await asyncio.wait(tasks, return_when = asyncio.FIRST_EXCEPTION)
+        for task in done:
+            try:
+                task.result()
+            except Exception as e:
+                LOG.error(f"Unrecoverable exception occurred while processing messages: {e}")
+                LOG.info("All websockets scheduled for shutdown")
+
+                for task in pending:
+                    if not task.cancelled():
+                        task.cancel()
+                if len(pending) > 0:
+                    await asyncio.wait(pending, return_when = asyncio.ALL_COMPLETED)
+
+                LOG.info("All websockets closed.")
+                raise

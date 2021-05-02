@@ -77,6 +77,7 @@ class FullWebsocket(Websocket):
 
         return await self.ws.send(message)
 
+
 class AiohttpWebsocket(Websocket):
     def __init__(self, websocket_uri: str, builtin_ping_interval: Optional[float] = 20,
                  max_message_size: int = 2 ** 20, ssl_context: ssl.SSLContext = None):
@@ -167,10 +168,14 @@ class WebsocketMessage(object):
 
 
 class Subscription(ABC):
+    INTERNAL_SUBSCRIPTION_ID_SEQ = 0
+
     def __init__(self, callbacks: CallbacksType = None):
         self.callbacks = callbacks
 
         self.subscription_id = None
+        self.internal_subscription_id = Subscription.INTERNAL_SUBSCRIPTION_ID_SEQ
+        Subscription.INTERNAL_SUBSCRIPTION_ID_SEQ += 1
 
     @abstractmethod
     def construct_subscription_id(self) -> Any:
@@ -179,6 +184,9 @@ class Subscription(ABC):
     @abstractmethod
     def get_subscription_message(self, **kwargs) -> dict:
         pass
+
+    def get_internal_subscription_id(self) -> int:
+        return self.internal_subscription_id
 
     def get_subscription_id(self) -> Any:
         if self.subscription_id is None:
@@ -219,6 +227,8 @@ class WebsocketMgr(ABC):
         self.auto_reconnect = auto_reconnect
         self.startup_delay_ms = startup_delay_ms
 
+        self.websocket = None
+
     @abstractmethod
     async def _process_message(self, websocket: Websocket, response: str) -> None:
         pass
@@ -254,6 +264,11 @@ class WebsocketMgr(ABC):
     async def _authenticate(self, websocket: Websocket):
         pass
 
+    async def add_subscriptions(self, subscriptions: List[Subscription]):
+        self.subscriptions += subscriptions
+
+        self._subscribe(subscriptions)
+
     async def _subscribe(self, websocket: Websocket):
         subscription_messages = []
         for subscription in self.subscriptions:
@@ -261,6 +276,9 @@ class WebsocketMgr(ABC):
 
         LOG.debug(f"> {subscription_messages}")
         await websocket.send(json.dumps(subscription_messages))
+
+    async def unsubscribe(self, subscriptions: List[Subscription]):
+        raise CryptoXLibException(f"Unsubscription not supported for the client.")
 
     async def main_loop(self, websocket: Websocket):
         await self._authenticate(websocket)
@@ -287,19 +305,19 @@ class WebsocketMgr(ABC):
             # main loop ensuring proper reconnection if required
             while True:
                 LOG.debug(f"Initiating websocket connection.")
-                websocket = None
+                self.websocket = None
                 try:
                         # sleep for the requested period before initiating the connection. This is useful when client
                         # opens many connections at the same time and server cannot handle the load
                         await asyncio.sleep(self.startup_delay_ms / 1000.0)
                         LOG.debug(f"Websocket initiation delayed by {self.startup_delay_ms}ms.")
 
-                        websocket = self.get_websocket()
-                        await websocket.connect()
+                        self.websocket = self.get_websocket()
+                        await self.websocket.connect()
 
                         done, pending = await asyncio.wait(
-                            [async_create_task(self.main_loop(websocket)),
-                             async_create_task(self.periodic_loop(websocket))],
+                            [async_create_task(self.main_loop(self.websocket)),
+                             async_create_task(self.periodic_loop(self.websocket))],
                             return_when = asyncio.FIRST_EXCEPTION
                         )
                         for task in done:
@@ -333,9 +351,9 @@ class WebsocketMgr(ABC):
                     else:
                         raise
                 finally:
-                    if websocket is not None:
+                    if self.websocket is not None:
                         LOG.debug("Closing websocket connection.")
-                        await websocket.close()
+                        await self.websocket.close()
         except asyncio.CancelledError:
             LOG.warning(f"The websocket was requested to be shutdown.")
         except Exception:

@@ -43,6 +43,20 @@ class BinanceCommonWebsocket(WebsocketMgr):
         LOG.debug(f"> {subscription_message}")
         await websocket.send(json.dumps(subscription_message))
 
+    async def unsubscribe(self, subscriptions: List[Subscription]):
+        BinanceCommonWebsocket.SUBSCRIPTION_ID += 1
+
+        subscription_message = {
+            "method": "UNSUBSCRIBE",
+            "params": [
+                subscription.get_channel_name() for subscription in subscriptions
+            ],
+            "id": BinanceCommonWebsocket.SUBSCRIPTION_ID
+        }
+
+        LOG.debug(f"> {subscription_message}")
+        await self.websocket.send(json.dumps(subscription_message))
+
     @staticmethod
     def _is_subscription_confirmation(response):
         if 'result' in response and response['result'] is None:
@@ -54,7 +68,7 @@ class BinanceCommonWebsocket(WebsocketMgr):
         message = json.loads(message)
 
         if self._is_subscription_confirmation(message):
-            LOG.info(f"Subscription confirmed for id: {message['id']}")
+            LOG.info(f"Subscription updated for id: {message['id']}")
         else:
             # regular message
             await self.publish_message(WebsocketMessage(subscription_id = message['stream'], message = message))

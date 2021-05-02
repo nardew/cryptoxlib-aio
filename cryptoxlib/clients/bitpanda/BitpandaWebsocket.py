@@ -63,11 +63,25 @@ class BitpandaWebsocket(WebsocketMgr):
             ]
         }
 
+    def _get_unsubscription_message(self, subscriptions: List[Subscription]):
+        return {
+            "type": "UNSUBSCRIBE",
+            "channels":
+                # pick only 'name' from the subscription message and remove duplicates
+                list(set(subscription.get_subscription_message()['name'] for subscription in subscriptions))
+        }
+
     async def _subscribe(self, websocket: Websocket):
         subscription_message =  self._get_subscription_message()
 
         LOG.debug(f"> {subscription_message}")
         await websocket.send(json.dumps(subscription_message))
+
+    async def unsubscribe(self, subscriptions: List[Subscription]):
+        unsubscription_message = self._get_unsubscription_message(subscriptions)
+
+        LOG.debug(f"> {unsubscription_message}")
+        await self.websocket.send(json.dumps(unsubscription_message))
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
