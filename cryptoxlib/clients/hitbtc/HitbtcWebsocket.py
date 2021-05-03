@@ -35,7 +35,7 @@ class HitbtcWebsocket(WebsocketMgr):
     def get_websocket(self) -> Websocket:
         return self.get_aiohttp_websocket()
 
-    async def _authenticate(self, websocket: Websocket):
+    async def send_authentication_message(self):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -58,9 +58,9 @@ class HitbtcWebsocket(WebsocketMgr):
             }
 
             LOG.debug(f"> {authentication_message}")
-            await websocket.send(json.dumps(authentication_message))
+            await self.websocket.send(json.dumps(authentication_message))
 
-            message = await websocket.receive()
+            message = await self.websocket.receive()
             LOG.debug(f"< {message}")
 
             message = json.loads(message)
@@ -69,11 +69,11 @@ class HitbtcWebsocket(WebsocketMgr):
             else:
                 raise HitbtcException(f"Authentication error. Response [{message}]")
 
-    async def _subscribe(self, websocket: Websocket):
-        for subscription in self.subscriptions:
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
+        for subscription in subscriptions:
             subscription_message = subscription.get_subscription_message()
             LOG.debug(f"> {subscription_message}")
-            await websocket.send(json.dumps(subscription_message))
+            await self.websocket.send(json.dumps(subscription_message))
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)

@@ -194,7 +194,7 @@ class CryptoXLibClient(ABC):
         return subscription_set.subscription_set_id
 
     async def add_subscriptions(self, subscription_set_id: int, subscriptions: List[Subscription]) -> None:
-        pass
+        await self.subscription_sets[subscription_set_id].websocket_mgr.subscribe(subscriptions)
 
     async def unsubscribe_subscriptions(self, subscriptions: List[Subscription]) -> None:
         for subscription in subscriptions:

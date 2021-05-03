@@ -30,13 +30,13 @@ class BiboxWebsocket(WebsocketMgr):
         self.api_key = api_key
         self.sec_key = sec_key
 
-    async def _subscribe(self, websocket: Websocket):
-        for subscription in self.subscriptions:
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
+        for subscription in subscriptions:
             subscription_message = json.dumps(
                 subscription.get_subscription_message(api_key = self.api_key, sec_key = self.sec_key))
 
             LOG.debug(f"> {subscription_message}")
-            await websocket.send(subscription_message)
+            await self.websocket.send(subscription_message)
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
         messages = json.loads(message)

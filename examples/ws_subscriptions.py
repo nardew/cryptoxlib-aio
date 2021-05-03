@@ -11,7 +11,7 @@ from cryptoxlib.clients.binance.BinanceWebsocket import OrderBookSymbolTickerSub
 from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(logging.INFO)
 LOG.addHandler(logging.StreamHandler())
 
 print(f"Available loggers: {[name for name in logging.root.manager.loggerDict]}\n")
@@ -82,8 +82,27 @@ async def main_loop(client: BinanceClient) -> None:
             await client.unsubscribe_all()
 
         if i == 15:
+            print("Subscribe BNB/BTC")
+            await client.add_subscriptions(sub.subscription_set_ids[0],
+                                           [OrderBookSymbolTickerSubscription(Pair("BNB", "BTC"), callbacks = [sub.call1])])
+
+        if i == 18:
+            print("Subscribe ETH/USDT again")
+            await client.add_subscriptions(sub.subscription_set_ids[0],
+                                           [OrderBookSymbolTickerSubscription(Pair("ETH", "USDT"), callbacks = [sub.call1])])
+
+        if i == 21:
+            print("Subscribe ADA/USDT and XRP/USDT again")
+            await client.add_subscriptions(sub.subscription_set_ids[1],
+                                           [OrderBookSymbolTickerSubscription(Pair("ADA", "USDT"), callbacks = [sub.call2]),
+                                            OrderBookSymbolTickerSubscription(Pair("XRP", "USDT"), callbacks = [sub.call2])])
+
+        if i == 24:
             print("Shutting down websockets.")
             await client.shutdown_websockets()
+
+        if i == 27:
+            print("Quitting the main loop.")
             break
 
         i += 1

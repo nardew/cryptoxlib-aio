@@ -38,7 +38,7 @@ class BtseWebsocket(WebsocketMgr):
         if self.ping_checker.check():
             await websocket.send("2")
 
-    async def _authenticate(self, websocket: Websocket):
+    async def send_authentication_message(self):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -57,27 +57,20 @@ class BtseWebsocket(WebsocketMgr):
             }
 
             LOG.debug(f"> {authentication_message}")
-            await websocket.send(json.dumps(authentication_message))
+            await self.websocket.send(json.dumps(authentication_message))
 
-            message = await websocket.receive()
+            message = await self.websocket.receive()
             LOG.debug(f"< {message}")
 
-            if 'connect success' in message:
+            message = json.loads(message)
+            if 'success' in message and message['success'] is True:
                 LOG.info(f"Authenticated websocket connected successfully.")
             else:
                 raise BtseException(f"Authentication error. Response [{message}]")
 
-            message = await websocket.receive()
-            LOG.debug(f"< {message}")
-
-            if 'authenticated successfully' in message:
-                LOG.info(f"Websocket authenticated successfully.")
-            else:
-                raise BtseException(f"Authentication error. Response [{message}]")
-
-    async def _subscribe(self, websocket: Websocket):
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
         subscription_list = []
-        for subscription in self.subscriptions:
+        for subscription in subscriptions:
             subscription_list += subscription.get_subscription_list()
 
         subscription_message = {
@@ -86,17 +79,26 @@ class BtseWebsocket(WebsocketMgr):
         }
 
         LOG.debug(f"> {subscription_message}")
-        await websocket.send(json.dumps(subscription_message))
+        await self.websocket.send(json.dumps(subscription_message))
+
+        message = await self.websocket.receive()
+        LOG.debug(f"< {message}")
+
+        try:
+            message = json.loads(message)
+            if message['event'] == 'subscribe' and len(message['channel']) > 0:
+                LOG.info(f"Websocket subscribed successfully.")
+            else:
+                raise BtseException(f"Subscription error. Response [{message}]")
+        except:
+            raise BtseException(f"Subscription error. Response [{message}]")
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
-        if "connect success" in message:
-            pass
-        else:
-            message = json.loads(message)
-            topic = message['topic']
-            channel = topic.split(':')[0]
+        message = json.loads(message)
+        topic = message['topic']
+        channel = topic.split(':')[0]
 
-            await self.publish_message(WebsocketMessage(subscription_id = channel, message = message))
+        await self.publish_message(WebsocketMessage(subscription_id = channel, message = message))
 
 
 class BtseSubscription(Subscription):

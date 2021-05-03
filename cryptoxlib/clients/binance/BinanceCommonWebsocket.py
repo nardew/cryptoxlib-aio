@@ -28,25 +28,25 @@ class BinanceCommonWebsocket(WebsocketMgr):
     def get_websocket(self) -> Websocket:
         return self.get_aiohttp_websocket()
 
-    async def initialize_subscriptions(self) -> None:
-        for subscription in self.subscriptions:
+    async def initialize_subscriptions(self, subscriptions: List[Subscription]) -> None:
+        for subscription in subscriptions:
             await subscription.initialize(binance_client = self.binance_client)
 
-    async def _subscribe(self, websocket: Websocket):
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
         BinanceCommonWebsocket.SUBSCRIPTION_ID += 1
 
         subscription_message = {
             "method": "SUBSCRIBE",
             "params": [
-                subscription.get_channel_name() for subscription in self.subscriptions
+                subscription.get_channel_name() for subscription in subscriptions
             ],
             "id": BinanceCommonWebsocket.SUBSCRIPTION_ID
         }
 
         LOG.debug(f"> {subscription_message}")
-        await websocket.send(json.dumps(subscription_message))
+        await self.websocket.send(json.dumps(subscription_message))
 
-    async def unsubscribe(self, subscriptions: List[Subscription]):
+    async def send_unsubscription_message(self, subscriptions: List[Subscription]):
         BinanceCommonWebsocket.SUBSCRIPTION_ID += 1
 
         subscription_message = {

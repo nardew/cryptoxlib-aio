@@ -230,6 +230,9 @@ class Subscription(ABC):
                     tasks.append(async_create_task(cb(message.message)))
             await asyncio.gather(*tasks)
 
+    def __eq__(self, other):
+        return self.internal_subscription_id == other.internal_subscription_id
+
 
 class WebsocketMgr(ABC):
     WEBSOCKET_MGR_ID_SEQ = 0
@@ -277,54 +280,61 @@ class WebsocketMgr(ABC):
                       max_message_size = self.max_message_size,
                       ssl_context = self.ssl_context)
 
-    async def validate_subscriptions(self) -> None:
+    async def validate_subscriptions(self, subscriptions: List[Subscription]) -> None:
         pass
 
-    async def initialize_subscriptions(self) -> None:
-        for subscription in self.subscriptions:
+    async def initialize_subscriptions(self, subscriptions: List[Subscription]) -> None:
+        for subscription in subscriptions:
             await subscription.initialize()
 
-    async def _authenticate(self, websocket: Websocket):
-        pass
+    async def subscribe(self, new_subscriptions: List[Subscription]):
+        await self.validate_subscriptions(new_subscriptions)
+        await self.initialize_subscriptions(new_subscriptions)
 
-    async def add_subscriptions(self, subscriptions: List[Subscription]):
-        self.subscriptions += subscriptions
+        self.subscriptions += new_subscriptions
 
-        self._subscribe(subscriptions)
+        await self.send_subscription_message(new_subscriptions)
 
-    async def _subscribe(self, websocket: Websocket):
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
         subscription_messages = []
-        for subscription in self.subscriptions:
+        for subscription in subscriptions:
             subscription_messages.append(subscription.get_subscription_message())
 
         LOG.debug(f"> {subscription_messages}")
-        await websocket.send(json.dumps(subscription_messages))
+        await self.websocket.send(json.dumps(subscription_messages))
 
     async def unsubscribe(self, subscriptions: List[Subscription]):
-        raise CryptoXLibException(f"[{self.id}] Unsubscription not supported for the client.")
+        self.subscriptions = [subscription for subscription in self.subscriptions if subscription not in subscriptions]
+        await self.send_unsubscription_message(subscriptions)
 
-    async def main_loop(self, websocket: Websocket):
-        await self._authenticate(websocket)
-        await self._subscribe(websocket)
+    async def send_unsubscription_message(self, subscriptions: List[Subscription]):
+        raise CryptoXLibException("The client does not support unsubscription messages.")
+
+    async def send_authentication_message(self):
+        pass
+
+    async def main_loop(self):
+        await self.send_authentication_message()
+        await self.send_subscription_message(self.subscriptions)
 
         # start processing incoming messages
         while True:
-            message = await websocket.receive()
+            message = await self.websocket.receive()
             LOG.debug(f"< {message}")
 
-            await self._process_message(websocket, message)
+            await self._process_message(self.websocket, message)
 
-    async def periodic_loop(self, websocket: Websocket):
+    async def periodic_loop(self):
         if self.periodic_timeout_sec is not None:
             while True:
-                await self._process_periodic(websocket)
+                await self._process_periodic(self.websocket)
                 await asyncio.sleep(self.periodic_timeout_sec)
 
     async def run(self) -> None:
         self.mode = WebsocketMgrMode.RUNNING
 
-        await self.validate_subscriptions()
-        await self.initialize_subscriptions()
+        await self.validate_subscriptions(self.subscriptions)
+        await self.initialize_subscriptions(self.subscriptions)
 
         try:
             # main loop ensuring proper reconnection if required
@@ -341,8 +351,8 @@ class WebsocketMgr(ABC):
                         await self.websocket.connect()
 
                         done, pending = await asyncio.wait(
-                            [async_create_task(self.main_loop(self.websocket)),
-                             async_create_task(self.periodic_loop(self.websocket))],
+                            [async_create_task(self.main_loop()),
+                             async_create_task(self.periodic_loop())],
                             return_when = asyncio.FIRST_EXCEPTION
                         )
                         for task in done:

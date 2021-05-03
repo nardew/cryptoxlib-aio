@@ -33,7 +33,7 @@ class AAXWebsocket(WebsocketMgr):
     def get_websocket(self) -> Websocket:
         return self.get_aiohttp_websocket()
 
-    async def _authenticate(self, websocket: Websocket):
+    async def send_authentication_message(self):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -43,8 +43,8 @@ class AAXWebsocket(WebsocketMgr):
         if requires_authentication:
             handshake_message = '{"event":"#handshake","cid":1}'
             LOG.debug(f"> {handshake_message}")
-            await websocket.send(handshake_message)
-            handshake_response = await websocket.receive()
+            await self.websocket.send(handshake_message)
+            handshake_response = await self.websocket.receive()
             LOG.debug(f"< {handshake_response}")
 
             timestamp_ms = int(datetime.datetime.now(tz = datetime.timezone.utc).timestamp() * 1000)
@@ -62,22 +62,22 @@ class AAXWebsocket(WebsocketMgr):
             }
 
             LOG.debug(f"> {authentication_message}")
-            await websocket.send(json.dumps(authentication_message))
+            await self.websocket.send(json.dumps(authentication_message))
 
-            message = json.loads(await websocket.receive())
+            message = json.loads(await self.websocket.receive())
             LOG.debug(f"< {message}")
 
-            if 'event' in message and message['event'] == '#setAuthToken':
+            if 'data' in message and 'isAuthenticated' in message['data'] and message['data']['isAuthenticated'] is True:
                 LOG.info(f"Websocket authenticated successfully.")
             else:
                 raise AAXException(f"Authentication error. Response [{message}]")
 
-    async def _subscribe(self, websocket: Websocket):
-        for subscription in self.subscriptions:
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
+        for subscription in subscriptions:
             LOG.debug(f"> {subscription.get_subscription_message()}")
-            await websocket.send(json.dumps(subscription.get_subscription_message()))
+            await self.websocket.send(json.dumps(subscription.get_subscription_message()))
 
-    async def validate_subscriptions(self) -> None:
+    async def validate_subscriptions(self, subscriptions: List[Subscription]) -> None:
         pass
 
     def get_websocket_uri_variable_part(self):

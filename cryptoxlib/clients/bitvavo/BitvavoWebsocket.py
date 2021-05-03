@@ -27,7 +27,7 @@ class BitvavoWebsocket(WebsocketMgr):
         self.api_key = api_key
         self.sec_key = sec_key
 
-    async def _authenticate(self, websocket: Websocket):
+    async def send_authentication_message(self):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -48,9 +48,9 @@ class BitvavoWebsocket(WebsocketMgr):
             }
 
             LOG.debug(f"> {authentication_message}")
-            await websocket.send(json.dumps(authentication_message))
+            await self.websocket.send(json.dumps(authentication_message))
 
-            message = await websocket.receive()
+            message = await self.websocket.receive()
             LOG.debug(f"< {message}")
 
             message = json.loads(message)
@@ -60,16 +60,16 @@ class BitvavoWebsocket(WebsocketMgr):
             else:
                 raise BitvavoException(f"Authentication error. Response [{json.dumps(message)}]")
 
-    async def _subscribe(self, websocket: Websocket):
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
         subscription_message = {
             "action": "subscribe",
             "channels": [
-                subscription.get_subscription_message() for subscription in self.subscriptions
+                subscription.get_subscription_message() for subscription in subscriptions
             ]
         }
 
         LOG.debug(f"> {subscription_message}")
-        await websocket.send(json.dumps(subscription_message))
+        await self.websocket.send(json.dumps(subscription_message))
 
     async def _process_message(self, websocket: websockets.WebSocketClientProtocol, message: str) -> None:
         message = json.loads(message)

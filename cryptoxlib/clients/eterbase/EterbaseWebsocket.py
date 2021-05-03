@@ -38,8 +38,8 @@ class EterbaseWebsocket(WebsocketMgr):
 
         return ""
 
-    async def initialize_subscriptions(self) -> None:
-        for subscription in self.subscriptions:
+    async def initialize_subscriptions(self, subscriptions: List[Subscription]) -> None:
+        for subscription in subscriptions:
             await subscription.initialize(eterbase_client = self.eterbase_client)
 
     async def _process_periodic(self, websocket: Websocket) -> None:
@@ -49,11 +49,11 @@ class EterbaseWebsocket(WebsocketMgr):
         LOG.debug(f"> {ping_msg}")
         await websocket.send(json.dumps(ping_msg))
 
-    async def _subscribe(self, websocket: Websocket):
-        for subscription in self.subscriptions:
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
+        for subscription in subscriptions:
             subscription_message = subscription.get_subscription_message(account_id = self.account_id)
             LOG.debug(f"> {subscription_message}")
-            await websocket.send(json.dumps(subscription_message))
+            await self.websocket.send(json.dumps(subscription_message))
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)
