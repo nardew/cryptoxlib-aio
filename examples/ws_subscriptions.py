@@ -115,7 +115,7 @@ async def run():
 
     client = CryptoXLib.create_binance_client(api_key, sec_key)
 
-    # Bundle several subscriptions into a single websocket
+    # initialize three independent websockets
     sub.subscription_set_ids.append(client.compose_subscriptions(sub.subscriptions[0]))
     sub.subscription_set_ids.append(client.compose_subscriptions(sub.subscriptions[1]))
     sub.subscription_set_ids.append(client.compose_subscriptions(sub.subscriptions[2]))
