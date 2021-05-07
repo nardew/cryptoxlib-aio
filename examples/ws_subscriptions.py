@@ -128,6 +128,7 @@ async def run():
     except Exception as e:
         print(f"Out: {e}")
 
+    await client.close()
     print("Exiting.")
 
 
