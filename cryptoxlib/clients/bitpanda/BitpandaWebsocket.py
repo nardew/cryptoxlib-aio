@@ -30,7 +30,7 @@ class BitpandaWebsocket(WebsocketMgr):
     def get_websocket(self) -> Websocket:
         return self.get_aiohttp_websocket()
 
-    async def _authenticate(self, websocket: Websocket):
+    async def send_authentication_message(self):
         requires_authentication = False
         for subscription in self.subscriptions:
             if subscription.requires_authentication():
@@ -44,9 +44,9 @@ class BitpandaWebsocket(WebsocketMgr):
             }
 
             LOG.debug(f"> {authentication_message}")
-            await websocket.send(json.dumps(authentication_message))
+            await self.websocket.send(json.dumps(authentication_message))
 
-            message = await websocket.receive()
+            message = await self.websocket.receive()
             LOG.debug(f"< {message}")
 
             message = json.loads(message)
@@ -55,19 +55,33 @@ class BitpandaWebsocket(WebsocketMgr):
             else:
                 raise BitpandaException(f"Authentication error. Response [{message}]")
 
-    def _get_subscription_message(self):
+    def _get_subscription_message(self, subscriptions: List[Subscription]):
         return {
             "type": "SUBSCRIBE",
             "channels": [
-                subscription.get_subscription_message() for subscription in self.subscriptions
+                subscription.get_subscription_message() for subscription in subscriptions
             ]
         }
 
-    async def _subscribe(self, websocket: Websocket):
-        subscription_message =  self._get_subscription_message()
+    def _get_unsubscription_message(self, subscriptions: List[Subscription]):
+        return {
+            "type": "UNSUBSCRIBE",
+            "channels":
+                # pick only 'name' from the subscription message and remove duplicates
+                list(set(subscription.get_subscription_message()['name'] for subscription in subscriptions))
+        }
+
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
+        subscription_message =  self._get_subscription_message(subscriptions)
 
         LOG.debug(f"> {subscription_message}")
-        await websocket.send(json.dumps(subscription_message))
+        await self.websocket.send(json.dumps(subscription_message))
+
+    async def send_unsubscription_message(self, subscriptions: List[Subscription]):
+        unsubscription_message = self._get_unsubscription_message(subscriptions)
+
+        LOG.debug(f"> {unsubscription_message}")
+        await self.websocket.send(json.dumps(unsubscription_message))
 
     async def _process_message(self, websocket: Websocket, message: str) -> None:
         message = json.loads(message)

@@ -28,7 +28,7 @@ class LiquidWebsocket(WebsocketMgr):
 
         self.ping_checker = PeriodicChecker(period_ms = 60 * 1000)
 
-    async def _subscribe(self, websocket: Websocket):
+    async def send_subscription_message(self, subscriptions: List[Subscription]):
         authentication_payload = {
             "token_id": self.api_key,
             "path": '/realtime',
@@ -49,7 +49,7 @@ class LiquidWebsocket(WebsocketMgr):
             "data": authentication_data
         }
         LOG.debug(f"> {authentication_request}")
-        await websocket.send(json.dumps(authentication_request))
+        await self.websocket.send(json.dumps(authentication_request))
 
     async def _process_periodic(self, websocket: Websocket) -> None:
         if self.ping_checker.check():

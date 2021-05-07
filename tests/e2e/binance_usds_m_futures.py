@@ -102,10 +102,6 @@ class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
         response = await self.client.get_orderbook_ticker(pair = Pair('BTC', 'USDT'))
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_all_liquidation_orders(self):
-        response = await self.client.get_all_liquidation_orders(pair = Pair('BTC', 'USDT'))
-        self.assertTrue(self.check_positive_response(response))
-
     async def test_get_open_interest(self):
         response = await self.client.get_open_interest(pair = Pair('BTC', 'USDT'))
         self.assertTrue(self.check_positive_response(response))
@@ -330,9 +326,6 @@ class BinanceUSDSMFuturesMarketWs(CryptoXLibTest):
 
     async def init_test(self):
         self.client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
-
-    #async def clean_test(self):
-    #    await self.client.close()
 
     async def test_aggregate_trade(self):
         message_counter = WsMessageCounter()
