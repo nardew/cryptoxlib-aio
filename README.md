@@ -1,4 +1,4 @@
-# cryptoxlib-aio 4.0.0
+# cryptoxlib-aio 4.1.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg)
 
@@ -14,6 +14,7 @@
 
 ### What's been recently added
 
+- proper unsubscription, re-subscription and shutdown of websockets
 - `binance` margin and USDS-M futures endpoints
 - `bitpanda` supports update of orders via streams
 
