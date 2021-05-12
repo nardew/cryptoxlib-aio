@@ -5,7 +5,7 @@ import datetime
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.clients.binance import enums
-from cryptoxlib.clients.binance.BinanceWebsocket import CandlestickSubscription
+from cryptoxlib.clients.binance.BinanceWebsocket import CandlestickSubscription, DepthSubscription
 from cryptoxlib.Pair import Pair
 
 from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
@@ -52,6 +52,38 @@ class BinanceWs(CryptoXLibTest):
         ])
 
         await self.assertWsMessageCount(message_counter, 15.0)
+
+    async def test_partial_detph(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(Pair('BTC', 'USDT'), 5, 100, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_partial_detph2(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(Pair('BTC', 'USDT'), 5, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_detph(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(Pair('BTC', 'USDT'), 0, 1000, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_detph2(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(Pair('BTC', 'USDT'), 0, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
 
 
 if __name__ == '__main__':
