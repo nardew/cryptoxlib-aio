@@ -5,6 +5,7 @@ from cryptoxlib.WebsocketMgr import Subscription, CallbacksType
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceCommonWebsocket
 from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceSubscription
+from cryptoxlib.clients.binance.exceptions import BinanceException
 from cryptoxlib.clients.binance.functions import map_ws_pair
 from cryptoxlib.clients.binance.enums import Interval
 
@@ -102,3 +103,35 @@ class AccountSubscription(BinanceSubscription):
 
     def get_channel_name(self):
         return self.listen_key
+
+
+class DepthSubscription(BinanceSubscription):
+    DEFAULT_FREQUENCY = 1000
+    DEFAULT_LEVEL = 0
+
+    def __init__(self, pair: Pair, level: int = DEFAULT_LEVEL, frequency: int = DEFAULT_FREQUENCY,
+                 callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        if level not in [0, 5, 10, 20]:
+            raise BinanceException(f"Level [{level}] must be one of 0, 5, 10 or 20.")
+
+        if frequency not in [100, 1000]:
+            raise BinanceException(f"Frequency [{frequency}] must be one of 100 or 1000.")
+
+        self.pair = pair
+        self.level = level
+        self.frequency = frequency
+
+    def get_channel_name(self):
+        if self.level == DepthSubscription.DEFAULT_LEVEL:
+            level_str = ""
+        else:
+            level_str = f"{self.level}"
+
+        if self.frequency == DepthSubscription.DEFAULT_FREQUENCY:
+            frequency_str = ""
+        else:
+            frequency_str = f"@{self.frequency}ms"
+
+        return f"{map_ws_pair(self.pair)}@depth{level_str}{frequency_str}"
