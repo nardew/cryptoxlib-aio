@@ -13,76 +13,73 @@ from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
 LOG = logging.getLogger(__name__)
 
 
-class BinanceUSDSMFuturesClient(BinanceCommonClient):
-    REST_API_URI = "https://fapi.binance.com/"
-    FAPI_V1 = "fapi/v1/"
-    FAPI_V2 = "fapi/v2/"
-    FUTURES = "futures/data/"
-
+class BinanceFuturesClient(BinanceCommonClient):
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,
                  ssl_context: ssl.SSLContext = None) -> None:
         super().__init__(api_key = api_key, sec_key = sec_key, api_trace_log = api_trace_log, ssl_context = ssl_context)
 
-    def _get_rest_api_uri(self) -> str:
-        return BinanceUSDSMFuturesClient.REST_API_URI
+    def get_api_v1(self) -> str:
+        pass
 
-    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
-                           ssl_context = None) -> WebsocketMgr:
-        return BinanceUSDSMFuturesWebsocket(subscriptions = subscriptions, binance_client = self, api_key = self.api_key,
-                                sec_key = self.sec_key, ssl_context = ssl_context)
+    def get_api_v2(self) -> str:
+        pass
+
+    def get_api_futures(self) -> str:
+        pass
 
     async def ping(self) -> dict:
-        return await self._create_get("ping", api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("ping", api_variable_path = self.get_api_v1())
 
     async def get_exchange_info(self) -> dict:
-        return await self._create_get("exchangeInfo", api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("exchangeInfo", api_variable_path = self.get_api_v1())
 
     async def get_time(self) -> dict:
-        return await self._create_get("time", api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("time", api_variable_path = self.get_api_v1())
 
-    async def get_orderbook(self, pair: Pair, limit: enums.DepthLimit = None) -> dict:
+    async def _get_orderbook(self, symbol: str, limit: enums.DepthLimit = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
+            "symbol": symbol,
         })
 
-        if limit:
+        if limit is not None:
             params['limit'] = limit.value
 
-        return await self._create_get("depth", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("depth", params = params, api_variable_path = self.get_api_v1())
 
-    async def get_trades(self, pair: Pair, limit: int = None) -> dict:
+    async def _get_trades(self, symbol: str, limit: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
+            "symbol": symbol,
             "limit": limit
         })
 
-        return await self._create_get("trades", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("trades", params = params, api_variable_path = self.get_api_v1())
 
-    async def get_historical_trades(self, pair: Pair, limit: int = None, from_id: int = None) -> dict:
+    async def _get_historical_trades(self, symbol: str, limit: int = None, from_id: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
+            "symbol": symbol,
             "limit": limit,
             "fromId": from_id
         })
 
-        return await self._create_get("historicalTrades", params = params, headers = self._get_header(), api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("historicalTrades", params = params, headers = self._get_header(),
+                                      api_variable_path = self.get_api_v1())
 
-    async def get_aggregate_trades(self, pair: Pair, limit: int = None, from_id: int = None,
+    async def _get_aggregate_trades(self, symbol: str, limit: int = None, from_id: int = None,
                                    start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
+            "symbol": symbol,
             "limit": limit,
             "fromId": from_id,
             "startTime": start_tmstmp_ms,
             "endTime": end_tmstmp_ms
         })
 
-        return await self._create_get("aggTrades", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("aggTrades", params = params, api_variable_path = self.get_api_v1())
 
-    async def get_candlesticks(self, pair: Pair, interval: enums.Interval, limit: int = None,
+    async def _get_candlesticks(self, symbol: str, interval: enums.Interval, limit: int = None,
                                start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
+            "symbol": symbol,
             "limit": limit,
             "startTime": start_tmstmp_ms,
             "endTime": end_tmstmp_ms
@@ -91,7 +88,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
         if interval:
             params['interval'] = interval.value
 
-        return await self._create_get("klines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("klines", params = params, api_variable_path = self.get_api_v1())
 
     async def get_cont_contract_candlesticks(self, pair: Pair, interval: enums.Interval,
                                              contract_type: enums.ContractType, limit: int = None,
@@ -107,7 +104,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
         if interval:
             params['interval'] = interval.value
 
-        return await self._create_get("continuousKlines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("continuousKlines", params = params, api_variable_path = self.get_api_v1())
 
     async def get_index_price_candlesticks(self, pair: Pair, interval: enums.Interval,
                                              limit: int = None,
@@ -122,13 +119,13 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
         if interval:
             params['interval'] = interval.value
 
-        return await self._create_get("indexPriceKlines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("indexPriceKlines", params = params, api_variable_path = self.get_api_v1())
 
-    async def get_mark_price_candlesticks(self, pair: Pair, interval: enums.Interval,
+    async def _get_mark_price_candlesticks(self, symbol: str, interval: enums.Interval,
                                              limit: int = None,
                                start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
+            "symbol": symbol,
             "limit": limit,
             "startTime": start_tmstmp_ms,
             "endTime": end_tmstmp_ms
@@ -137,7 +134,64 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
         if interval:
             params['interval'] = interval.value
 
-        return await self._create_get("markPriceKlines", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._create_get("markPriceKlines", params = params, api_variable_path = self.get_api_v1())
+
+    async def _get_open_interest(self, symbol: str) -> dict:
+        params = {
+            "symbol": symbol
+        }
+
+        return await self._create_get("openInterest", headers = self._get_header(), params = params, api_variable_path = self.get_api_v1())
+
+
+class BinanceUSDSMFuturesClient(BinanceFuturesClient):
+    REST_API_URI = "https://fapi.binance.com/"
+    FAPI_V1 = "fapi/v1/"
+    FAPI_V2 = "fapi/v2/"
+    FUTURES_DATA = "futures/data/"
+
+    def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,
+                 ssl_context: ssl.SSLContext = None) -> None:
+        super().__init__(api_key = api_key, sec_key = sec_key, api_trace_log = api_trace_log, ssl_context = ssl_context)
+
+    def _get_rest_api_uri(self) -> str:
+        return BinanceUSDSMFuturesClient.REST_API_URI
+
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
+        return BinanceUSDSMFuturesWebsocket(subscriptions = subscriptions, binance_client = self, api_key = self.api_key,
+                                sec_key = self.sec_key, ssl_context = ssl_context)
+
+    def get_api_v1(self) -> str:
+        return BinanceUSDSMFuturesClient.FAPI_V1
+
+    def get_api_v2(self) -> str:
+        return BinanceUSDSMFuturesClient.FAPI_V2
+
+    def get_api_futures(self) -> str:
+        return BinanceUSDSMFuturesClient.FUTURES_DATA
+
+    async def get_orderbook(self, pair: Pair, limit: enums.DepthLimit = None) -> dict:
+        return await self._get_orderbook(map_pair(pair), limit)
+
+    async def get_trades(self, pair: Pair, limit: int = None) -> dict:
+        return await self._get_trades( map_pair(pair), limit)
+
+    async def get_historical_trades(self, pair: Pair, limit: int = None, from_id: int = None) -> dict:
+        return await self._get_historical_trades(map_pair(pair), limit, from_id)
+
+    async def get_aggregate_trades(self, pair: Pair, limit: int = None, from_id: int = None,
+                                   start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        return await self._get_aggregate_trades(map_pair(pair), limit, from_id, start_tmstmp_ms, end_tmstmp_ms)
+
+    async def get_candlesticks(self, pair: Pair, interval: enums.Interval, limit: int = None,
+                               start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        return await self._get_candlesticks(map_pair(pair), interval, limit, start_tmstmp_ms, end_tmstmp_ms)
+
+    async def get_mark_price_candlesticks(self, pair: Pair, interval: enums.Interval,
+                                           limit: int = None,
+                                           start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        return await self._get_mark_price_candlesticks(map_pair(pair), interval, limit, start_tmstmp_ms, end_tmstmp_ms)
 
     async def get_mark_price(self, pair: Pair = None) -> dict:
         params = {}
@@ -195,11 +249,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
         return await self._create_get("allForceOrders", params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
     async def get_open_interest(self, pair: Pair) -> dict:
-        params = {
-            "symbol": map_pair(pair)
-        }
-
-        return await self._create_get("openInterest", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
+        return await self._get_open_interest(map_pair(pair))
 
     async def get_open_interest_hist(self, pair: Pair, interval: enums.Interval,
                                      limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
@@ -211,7 +261,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
             "endTime": end_tmstmp_ms
         })
 
-        return await self._create_get("openInterestHist", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES)
+        return await self._create_get("openInterestHist", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES_DATA)
 
     async def get_top_long_short_account_ratio(self, pair: Pair, interval: enums.Interval,
                                      limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
@@ -223,7 +273,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
             "endTime": end_tmstmp_ms
         })
 
-        return await self._create_get("topLongShortAccountRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES)
+        return await self._create_get("topLongShortAccountRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES_DATA)
 
     async def get_top_long_short_position_ratio(self, pair: Pair, interval: enums.Interval,
                                      limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
@@ -235,7 +285,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
             "endTime": end_tmstmp_ms
         })
 
-        return await self._create_get("topLongShortPositionRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES)
+        return await self._create_get("topLongShortPositionRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES_DATA)
 
     async def get_global_long_short_account_ratio(self, pair: Pair, interval: enums.Interval,
                                      limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
@@ -247,7 +297,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
             "endTime": end_tmstmp_ms
         })
 
-        return await self._create_get("globalLongShortAccountRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES)
+        return await self._create_get("globalLongShortAccountRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES_DATA)
 
     async def get_taker_long_short_ratio(self, pair: Pair, interval: enums.Interval,
                                      limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
@@ -259,7 +309,7 @@ class BinanceUSDSMFuturesClient(BinanceCommonClient):
             "endTime": end_tmstmp_ms
         })
 
-        return await self._create_get("takerlongshortRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES)
+        return await self._create_get("takerlongshortRatio", headers = self._get_header(), params = params, api_variable_path = BinanceUSDSMFuturesClient.FUTURES_DATA)
 
     async def get_blvt_candlesticks(self, pair: Pair, interval: enums.Interval,
                                      limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
@@ -626,10 +676,177 @@ class BinanceUSDSMFuturesTestnetClient(BinanceUSDSMFuturesClient):
                                             sec_key = self.sec_key, ssl_context = ssl_context)
 
 
-class BinanceCOINMFuturesClient(BinanceCommonClient):
+class BinanceCOINMFuturesClient(BinanceFuturesClient):
+    REST_API_URI = "https://dapi.binance.com/"
+    DAPI_V1 = "dapi/v1/"
+    DAPI_V2 = "dapi/v2/"
+    FUTURES_DATA = "futures/data/"
+
     def __init__(self, api_key: str = None, sec_key: str = None, api_trace_log: bool = False,
                  ssl_context: ssl.SSLContext = None) -> None:
-        raise Exception("COIN-M Futures are not implemented at the moment!")
+        super().__init__(api_key = api_key, sec_key = sec_key, api_trace_log = api_trace_log, ssl_context = ssl_context)
+
+    def _get_rest_api_uri(self) -> str:
+        return BinanceCOINMFuturesClient.REST_API_URI
+
+    def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
+                           ssl_context = None) -> WebsocketMgr:
+        return BinanceCOINMFuturesWebsocket(subscriptions = subscriptions, binance_client = self, api_key = self.api_key,
+                                sec_key = self.sec_key, ssl_context = ssl_context)
+
+    def get_api_v1(self) -> str:
+        return BinanceCOINMFuturesClient.DAPI_V1
+
+    def get_api_v2(self) -> str:
+        return BinanceCOINMFuturesClient.DAPI_V2
+
+    def get_api_futures(self) -> str:
+        return BinanceCOINMFuturesClient.FUTURES_DATA
+
+    async def get_orderbook(self, symbol: str, limit: enums.DepthLimit = None) -> dict:
+        return await self._get_orderbook(symbol, limit)
+
+    async def get_trades(self, symbol: str, limit: int = None) -> dict:
+        return await self._get_trades(symbol, limit)
+
+    async def get_historical_trades(self, symbol: str, limit: int = None, from_id: int = None) -> dict:
+        return await self._get_historical_trades(symbol, limit, from_id)
+
+    async def get_aggregate_trades(self, symbol: str, limit: int = None, from_id: int = None,
+                                   start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        return await self._get_aggregate_trades(symbol, limit, from_id, start_tmstmp_ms, end_tmstmp_ms)
+
+    async def get_mark_index_price(self, pair: Pair = None, symbol: str = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            'symbol': symbol
+        })
+
+        if pair is not None:
+            params['pair'] = map_pair(pair)
+
+        return await self._create_get("premiumIndex", params = params, api_variable_path = BinanceCOINMFuturesClient.DAPI_V1)
+
+    async def get_fund_rate_history(self, symbol: str, limit: int = None,
+                                    start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "symbol": symbol,
+            "limit": limit,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms
+        })
+
+        return await self._create_get("fundingRate", params = params, api_variable_path = BinanceCOINMFuturesClient.DAPI_V1)
+
+    async def get_candlesticks(self, symbol: str, interval: enums.Interval, limit: int = None,
+                               start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        return await self._get_candlesticks(symbol, interval, limit, start_tmstmp_ms, end_tmstmp_ms)
+
+    async def get_mark_price_candlesticks(self, symbol: str, interval: enums.Interval,
+                                           limit: int = None,
+                                           start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        return await self._get_mark_price_candlesticks(symbol, interval, limit, start_tmstmp_ms, end_tmstmp_ms)
+
+    async def get_24h_price_ticker(self, pair: Pair = None, symbol: str = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "symbol": symbol
+        })
+        if pair is not None:
+            params['pair'] = map_pair(pair)
+
+        return await self._create_get("ticker/24hr", params = params, api_variable_path = BinanceCOINMFuturesClient.DAPI_V1)
+
+    async def get_price_ticker(self, pair: Pair = None, symbol: str = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "symbol": symbol
+        })
+        if pair is not None:
+            params['pair'] = map_pair(pair)
+
+        return await self._create_get("ticker/price", params = params, api_variable_path = BinanceCOINMFuturesClient.DAPI_V1)
+
+    async def get_orderbook_ticker(self, pair: Pair = None, symbol: str = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "symbol": symbol
+        })
+        if pair is not None:
+            params['pair'] = map_pair(pair)
+
+        return await self._create_get("ticker/bookTicker", headers = self._get_header(), params = params, api_variable_path = BinanceCOINMFuturesClient.DAPI_V1)
+
+    async def get_open_interest(self, symbol: str) -> dict:
+        return await self._get_open_interest(symbol)
+
+    async def get_open_interest_hist(self, pair: Pair, interval: enums.Interval, contract_type: enums.ContractType,
+                                     limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "pair": map_pair(pair),
+            "contractType": contract_type.value,
+            "period": interval.value,
+            "limit": limit,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms
+        })
+
+        return await self._create_get("openInterestHist", headers = self._get_header(), params = params, api_variable_path = BinanceCOINMFuturesClient.FUTURES_DATA)
+
+    async def get_top_long_short_account_ratio(self, pair: Pair, interval: enums.Interval,
+                                     limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "pair": map_pair(pair),
+            "period": interval.value,
+            "limit": limit,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms
+        })
+
+        return await self._create_get("topLongShortAccountRatio", headers = self._get_header(), params = params, api_variable_path = BinanceCOINMFuturesClient.FUTURES_DATA)
+
+    async def get_top_long_short_position_ratio(self, pair: Pair, interval: enums.Interval,
+                                     limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "pair": map_pair(pair),
+            "period": interval.value,
+            "limit": limit,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms
+        })
+
+        return await self._create_get("topLongShortPositionRatio", headers = self._get_header(), params = params, api_variable_path = BinanceCOINMFuturesClient.FUTURES_DATA)
+
+    async def get_taker_buy_sell_volume(self, pair: Pair, interval: enums.Interval, contract_type: enums.ContractType,
+                                     limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "pair": map_pair(pair),
+            "contractType": contract_type.value,
+            "period": interval.value,
+            "limit": limit,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms
+        })
+
+        return await self._create_get("takerBuySellVol", headers = self._get_header(), params = params, api_variable_path = BinanceCOINMFuturesClient.FUTURES_DATA)
+
+    async def get_basis(self, pair: Pair, interval: enums.Interval, contract_type: enums.ContractType,
+                                     limit: int = None, start_tmstmp_ms: int = None, end_tmstmp_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            "pair": map_pair(pair),
+            "contractType": contract_type.value,
+            "period": interval.value,
+            "limit": limit,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms
+        })
+
+        return await self._create_get("basis", headers = self._get_header(), params = params, api_variable_path = BinanceCOINMFuturesClient.FUTURES_DATA)
+
+
+
+
+
+
+
+
+
 
 
 class BinanceCOINMFuturesTestnetClient(BinanceCommonClient):

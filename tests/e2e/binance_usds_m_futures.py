@@ -202,7 +202,7 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
             await self.client.change_position_type(False)
 
         response = await self.client.create_order(pair = Pair('BTC', 'USDT'), side = enums.OrderSide.BUY,
-                                                  type = enums.OrderType.LIMIT, quantity = '0.1', price = '200',
+                                                  type = enums.OrderType.LIMIT, quantity = '0.1', price = '2000',
                                                   time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED)
         self.assertTrue(self.check_positive_response(response))
 
