@@ -120,5 +120,180 @@ class BinanceCOINMFuturesMarketRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
 
+class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
+    @classmethod
+    def initialize(cls) -> None:
+        cls.print_logs = True
+        cls.log_level = logging.DEBUG
+
+    async def init_test(self):
+        self.client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
+
+    async def test_aggregate_trade(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            AggregateTradeSubscription(symbol = "BTCUSDT", callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_mark_price(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            MarkPriceSubscription(pair = Pair("BTC", "USDT"), frequency1sec = True, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_mark_price_all(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            MarkPriceAllSubscription(True, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_candlestick(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            CandlestickSubscription(pair = Pair("BTC", "USDT"), interval = enums.Interval.I_1MIN, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_cont_contract_candlestick(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            ContContractCandlestickSubscription(Pair("BTC", "USDT"), enums.Interval.I_1MIN, enums.ContractType.PERPETUAL,
+                                                callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_all_market_mini_ticker(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            AllMarketMiniTickersSubscription(callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_mini_ticker(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            MiniTickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_all_market_ticker(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            AllMarketTickersSubscription(callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_ticker(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            TickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_best_orderbook_ticker(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            OrderBookTickerSubscription(callbacks = [message_counter.generate_callback(10)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_best_orderbook_symbol_ticker(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            OrderBookSymbolTickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    # fails since normally there are no liquidation orders
+    async def liquidation_orders(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            LiquidationOrdersSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_all_liquidation_orders(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            AllMarketLiquidationOrdersSubscription(callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_partial_detph(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(pair = Pair('BTC', 'USDT'), level =  5, frequency = 100, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_partial_detph2(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(pair = Pair('BTC', 'USDT'), level = 5, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_detph(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(pair = Pair('BTC', 'USDT'), level = 0, frequency = 100, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_detph2(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            DepthSubscription(pair = Pair('BTC', 'USDT'), level = 0, callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    async def test_blvt(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            BlvtSubscription(Pair('BTC', 'UP'), callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+    # typically no data are received
+    async def blvt_candlesticks(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            BlvtCandlestickSubscription(Pair('BTC', 'UP'), enums.Interval.I_1MIN,
+                                        callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter, timeout = 60)
+
+    async def test_composite_index(self):
+        message_counter = WsMessageCounter()
+        self.client.compose_subscriptions([
+            CompositeIndexSubscription(Pair('DEFI', 'USDT'),
+                                        callbacks = [message_counter.generate_callback(1)])
+        ])
+
+        await self.assertWsMessageCount(message_counter)
+
+
 if __name__ == '__main__':
     unittest.main()

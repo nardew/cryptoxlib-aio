@@ -4,7 +4,8 @@ from typing import List, Optional
 
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient
 from cryptoxlib.clients.binance.BinanceCommonClient import BinanceCommonClient
-from cryptoxlib.clients.binance.BinanceFuturesWebsocket import BinanceUSDSMFuturesWebsocket, BinanceUSDSMFuturesTestnetWebsocket
+from cryptoxlib.clients.binance.BinanceFuturesWebsocket import BinanceUSDSMFuturesWebsocket, \
+    BinanceUSDSMFuturesTestnetWebsocket, BinanceCOINMFuturesWebsocket
 from cryptoxlib.clients.binance import enums
 from cryptoxlib.clients.binance.functions import map_pair
 from cryptoxlib.Pair import Pair

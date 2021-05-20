@@ -20,13 +20,19 @@ async def run():
     client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
 
     print("Ping:")
-    await client.ping()
+    #await client.ping()
 
     print("Server time:")
-    await client.get_time()
+    #await client.get_time()
 
     print("Exchange info:")
-    await client.get_exchange_info()
+    #await client.get_exchange_info()
+
+    for it in (await client.get_exchange_info())['response']['symbols']:
+        print(it)
+
+    print("Symbols:")
+    print([it['symbol'] for it in (await client.get_exchange_info())['response']])
 
     print("Order book:")
     await client.get_orderbook(symbol = 'BTCUSD_PERP', limit = enums.DepthLimit.L_5)

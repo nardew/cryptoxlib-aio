@@ -5,7 +5,7 @@ from typing import List
 from cryptoxlib.WebsocketMgr import Subscription, CallbacksType
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.binance.exceptions import BinanceException
-from cryptoxlib.clients.binance.functions import map_ws_pair
+from cryptoxlib.clients.binance.functions import map_ws_pair, get_ws_symbol
 from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceCommonWebsocket, BinanceSubscription
 from cryptoxlib.clients.binance import enums
 
@@ -33,7 +33,7 @@ class BinanceUSDSMFuturesTestnetWebsocket(BinanceCommonWebsocket):
 
 
 class BinanceCOINMFuturesWebsocket(BinanceCommonWebsocket):
-    WEBSOCKET_URI = "https://dapi.binance.com/"
+    WEBSOCKET_URI = "https://dstream.binance.com/"
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
                  ssl_context = None) -> None:
@@ -53,16 +53,16 @@ class BinanceCOINMFuturesTestnetWebsocket(BinanceCommonWebsocket):
 
 
 class AggregateTradeSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
+    def __init__(self, pair: Pair = None, symbol = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pair = pair
+        self.symbol = get_ws_symbol(pair, symbol)
 
     def get_channel_name(self):
-        return map_ws_pair(self.pair) + "@aggTrade"
+        return f"{self.symbol}@aggTrade"
 
 
-class MarkPriceSubscription(BinanceSubscription):
+class IndexPriceSubscription(BinanceSubscription):
     def __init__(self, pair: Pair, frequency1sec: bool = False, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -70,7 +70,18 @@ class MarkPriceSubscription(BinanceSubscription):
         self.frequency1sec = frequency1sec
 
     def get_channel_name(self):
-        return map_ws_pair(self.pair) + "@markPrice" + ("@1s" if self.frequency1sec else "")
+        return map_ws_pair(self.pair) + "@indexPrice" + ("@1s" if self.frequency1sec else "")
+
+
+class MarkPriceSubscription(BinanceSubscription):
+    def __init__(self, pair: Pair = None, symbol: str = None, frequency1sec: bool = False, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.symbol = get_ws_symbol(pair, symbol)
+        self.frequency1sec = frequency1sec
+
+    def get_channel_name(self):
+        return f"{self.symbol}@markPrice" + ("@1s" if self.frequency1sec else "")
 
 
 class MarkPriceAllSubscription(BinanceSubscription):
@@ -84,14 +95,14 @@ class MarkPriceAllSubscription(BinanceSubscription):
 
 
 class CandlestickSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, interval: enums.Interval, callbacks: CallbacksType = None):
+    def __init__(self, interval: enums.Interval, pair: Pair = None, symbol: str = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pair = pair
         self.interval = interval
+        self.symbol = get_ws_symbol(pair, symbol)
 
     def get_channel_name(self):
-        return f"{map_ws_pair(self.pair)}@kline_{self.interval.value}"
+        return f"{self.symbol}@kline_{self.interval.value}"
 
 
 class ContContractCandlestickSubscription(BinanceSubscription):
@@ -110,6 +121,28 @@ class ContContractCandlestickSubscription(BinanceSubscription):
         return f"{map_ws_pair(self.pair)}_{self.contract_type.value.lower()}@continuousKline_{self.interval.value}"
 
 
+class IndexPriceCandlestickSubscription(BinanceSubscription):
+    def __init__(self, pair: Pair, interval: enums.Interval, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.pair = pair
+        self.interval = interval
+
+    def get_channel_name(self):
+        return f"{map_ws_pair(self.pair)}@indexPriceKline_{self.interval.value}"
+
+
+class MarkPriceCandlestickSubscription(BinanceSubscription):
+    def __init__(self, symbol: str, interval: enums.Interval, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.symbol = symbol
+        self.interval = interval
+
+    def get_channel_name(self):
+        return f"{self.symbol}@markPriceKline_{self.interval.value}"
+
+
 class AllMarketMiniTickersSubscription(BinanceSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
@@ -119,13 +152,13 @@ class AllMarketMiniTickersSubscription(BinanceSubscription):
 
 
 class MiniTickerSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
+    def __init__(self, pair: Pair = None, symbol: str = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pair = pair
+        self.symbol = get_ws_symbol(pair, symbol)
 
     def get_channel_name(self):
-        return f"{map_ws_pair(self.pair)}@miniTicker"
+        return f"{self.symbol}@miniTicker"
 
 
 class AllMarketTickersSubscription(BinanceSubscription):
@@ -137,13 +170,13 @@ class AllMarketTickersSubscription(BinanceSubscription):
 
 
 class TickerSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
+    def __init__(self, pair: Pair = None, symbol: str = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pair = pair
+        self.symbol = get_ws_symbol(pair, symbol)
 
     def get_channel_name(self):
-        return f"{map_ws_pair(self.pair)}@ticker"
+        return f"{self.symbol}@ticker"
 
 
 class OrderBookTickerSubscription(BinanceSubscription):
@@ -155,23 +188,23 @@ class OrderBookTickerSubscription(BinanceSubscription):
 
 
 class OrderBookSymbolTickerSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
+    def __init__(self, pair: Pair = None, symbol: str = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pair = pair
+        self.symbol = get_ws_symbol(pair, symbol)
 
     def get_channel_name(self):
-        return f"{map_ws_pair(self.pair)}@bookTicker"
+        return f"{self.symbol}@bookTicker"
 
 
 class LiquidationOrdersSubscription(BinanceSubscription):
-    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
+    def __init__(self, pair: Pair = None, symbol: str = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
-        self.pair = pair
+        self.symbol = get_ws_symbol(pair, symbol)
 
     def get_channel_name(self):
-        return f"{map_ws_pair(self.pair)}@forceOrder"
+        return f"{self.symbol}@forceOrder"
 
 
 class AllMarketLiquidationOrdersSubscription(BinanceSubscription):
@@ -186,7 +219,7 @@ class DepthSubscription(BinanceSubscription):
     DEFAULT_FREQUENCY = 250
     DEFAULT_LEVEL = 0
 
-    def __init__(self, pair: Pair, level: int = DEFAULT_LEVEL, frequency: int = DEFAULT_FREQUENCY,
+    def __init__(self, pair: Pair = None, symbol: str = None, level: int = DEFAULT_LEVEL, frequency: int = DEFAULT_FREQUENCY,
                  callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -196,7 +229,7 @@ class DepthSubscription(BinanceSubscription):
         if frequency not in [100, 250, 500]:
             raise BinanceException(f"Frequency [{frequency}] must be one of 100, 250 or 500.")
 
-        self.pair = pair
+        self.symbol = get_ws_symbol(pair, symbol)
         self.level = level
         self.frequency = frequency
 
@@ -211,7 +244,7 @@ class DepthSubscription(BinanceSubscription):
         else:
             frequency_str = f"@{self.frequency}ms"
 
-        return f"{map_ws_pair(self.pair)}@depth{level_str}{frequency_str}"
+        return f"{self.symbol}@depth{level_str}{frequency_str}"
 
 
 class BlvtSubscription(BinanceSubscription):
