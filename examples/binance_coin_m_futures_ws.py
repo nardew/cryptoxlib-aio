@@ -37,7 +37,7 @@ async def run():
     api_key = os.environ['APIKEY']
     sec_key = os.environ['SECKEY']
 
-    client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
+    client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
 
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
@@ -49,7 +49,6 @@ async def run():
     # Bundle another subscriptions into a separate websocket
     client.compose_subscriptions([
         AccountSubscription(callbacks = [account_update]),
-        CompositeIndexSubscription(pair = Pair('DEFI', 'USDT'))
     ])
 
     # Execute all websockets asynchronously

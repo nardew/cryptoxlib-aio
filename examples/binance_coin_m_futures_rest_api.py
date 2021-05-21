@@ -20,19 +20,13 @@ async def run():
     client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
 
     print("Ping:")
-    #await client.ping()
+    await client.ping()
 
     print("Server time:")
-    #await client.get_time()
+    await client.get_time()
 
     print("Exchange info:")
-    #await client.get_exchange_info()
-
-    for it in (await client.get_exchange_info())['response']['symbols']:
-        print(it)
-
-    print("Symbols:")
-    print([it['symbol'] for it in (await client.get_exchange_info())['response']])
+    await client.get_exchange_info()
 
     print("Order book:")
     await client.get_orderbook(symbol = 'BTCUSD_PERP', limit = enums.DepthLimit.L_5)
@@ -57,6 +51,16 @@ async def run():
 
     print("Best order book ticker:")
     await client.get_orderbook_ticker(pair = Pair('BTC', 'USD'))
+
+    print("Create limit order:")
+    try:
+        await client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+                                  quantity = "1",
+                                  price = "0",
+                                  time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+                                  new_order_response_type = enums.OrderResponseType.FULL)
+    except BinanceException as e:
+        print(e)
 
     await client.close()
 

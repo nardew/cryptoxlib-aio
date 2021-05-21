@@ -29,16 +29,16 @@ async def run():
     await client.get_exchange_info()
 
     print("Order book:")
-    await client.get_orderbook(pair = Pair('BTC', 'USDT'), limit = enums.DepthLimit.L_5)
+    await client.get_orderbook(symbol = Pair('BTC', 'USDT'), limit = enums.DepthLimit.L_5)
 
     print("Trades:")
-    await client.get_trades(pair=Pair('BTC', 'USDT'), limit = 5)
+    await client.get_trades(symbol=Pair('BTC', 'USDT'), limit = 5)
 
     print("Historical trades:")
-    await client.get_historical_trades(pair=Pair('BTC', 'USDT'), limit = 5)
+    await client.get_historical_trades(symbol=Pair('BTC', 'USDT'), limit = 5)
 
     print("Aggregate trades:")
-    await client.get_aggregate_trades(pair=Pair('BTC', 'USDT'), limit = 5)
+    await client.get_aggregate_trades(symbol=Pair('BTC', 'USDT'), limit = 5)
 
     print("Index price candlesticks:")
     await client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
