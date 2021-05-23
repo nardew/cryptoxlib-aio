@@ -1,4 +1,4 @@
-# cryptoxlib-aio 4.1.0
+# cryptoxlib-aio 5.0.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
 
@@ -106,33 +106,75 @@ bitpanda.compose_subscriptions([
 await bitpanda.start_websockets()
 ```
 
-##### BITFOREX
+##### BINANCE
 ```python
-bitforex = CryptoXLib.create_bitforex_client(api_key, sec_key)
+# SPOT REST API
+
+client = CryptoXLib.create_binance_client(api_key, sec_key)
+
+print("Exchange info:")
+await client.get_exchange_info()
 
 print("Order book:")
-await bitforex.get_order_book(pair = Pair('ETH', 'BTC'), depth = "1")
+await client.get_orderbook(pair = Pair('ETH', 'BTC'), limit = enums.DepthLimit.L_5)
 
-print("Create order:")
-await bitforex.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.SELL, quantity = "1", price = "1")
+print("Create limit order:")
+await client.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+    quantity = "1",
+    price = "0",
+    time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+    new_order_response_type = enums.OrderResponseType.FULL)
 
-# First bundle of subscriptions
-bitforex.compose_subscriptions([
-    OrderBookSubscription(pair = Pair('ETH', 'BTC'), depth = "0", callbacks = [order_book_update]),
-    TradeSubscription(pair = Pair('ETH', 'BTC'), size = "2", callbacks = [trade_update]),
+# SPOT WEBSOCKETS
+
+# Bundle several subscriptions into a single websocket
+client.compose_subscriptions([
+    OrderBookTickerSubscription(callbacks = [orderbook_ticker_update]),
+    OrderBookSymbolTickerSubscription(pair = Pair("BTC", "USDT"), callbacks = [orderbook_ticker_update]),
+    TradeSubscription(pair = Pair('ETH', 'BTC'), callbacks = [trade_update]),
+    CandlestickSubscription(Pair('BTC', 'USDT'), Interval.I_1MIN, callbacks = [candlestick_update])
 ])
 
-# Another bundle of subscriptions
-bitforex.compose_subscriptions([
-    TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.Interval.I_1MIN, callbacks = [ticker_update]),
-    Ticker24hSubscription(pair = Pair('BTC', 'USDT'), callbacks = [ticker24_update])
+# Bundle another subscriptions into a separate websocket
+client.compose_subscriptions([
+    AccountSubscription(callbacks = [account_update])
 ])
 
 # Execute all websockets asynchronously
-await bitforex.start_websockets()
+await client.start_websockets()
+
+# MARGIN REST API
+
+client = CryptoXLib.create_binance_client(api_key, sec_key)
+
+print("All margin assets:")
+await client.get_margin_all_assets()
+
+print("Margin account balance:")
+await client.get_margin_account()
+
+# USDS-M futures REST API
+
+client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
+
+print("Index price candlesticks:")
+await client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+
+print("Index info:")
+await client.get_index_info(pair = Pair('DEFI', 'USDT'))
+
+# COIN-M futures REST API
+
+client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
+
+await client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+    quantity = "1",
+    price = "0",
+    time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+    new_order_response_type = enums.OrderResponseType.FULL)
 ```
 
-Examples for every exchange can be found in the folder `examples`.
+Examples for every exchange and product can be found in the folder `examples`.
 
 ### Contact
 
@@ -147,3 +189,4 @@ If you like the library and you feel like you want to support its further develo
 - donate an arbitrary tip
   * `BTC`: `3GJPT6H6WeuTWR2KwDSEN5qyJq95LEErzf`
   * `ETH`: `0xC7d8673Ee1B01f6F10e40aA416a1b0A746eaBe68`
+  * `Binance Smart Chain tokens`: `xxx`
