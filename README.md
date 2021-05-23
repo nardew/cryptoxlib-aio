@@ -42,6 +42,7 @@ Disclaimer: By no means we are suggesting that existing libraries are inferior t
 - bundling of channels 
 - lean architecture making it straightforward to implement API of a new exchange
 - fully asynchronous design aiming for the best performance
+- ready-made bundled examples for each exchange and product
 
 ### List of supported exchanges
 
@@ -189,4 +190,4 @@ If you like the library and you feel like you want to support its further develo
 - donate an arbitrary tip
   * `BTC`: `3GJPT6H6WeuTWR2KwDSEN5qyJq95LEErzf`
   * `ETH`: `0xC7d8673Ee1B01f6F10e40aA416a1b0A746eaBe68`
-  * `Binance Smart Chain tokens`: `xxx`
+  * `Binance Smart Chain tokens`: `0xe37FaB52ed4c1C9a3d80896f2001Cb3284a1b619`
