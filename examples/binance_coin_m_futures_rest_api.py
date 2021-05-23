@@ -17,7 +17,7 @@ async def run():
     api_key = os.environ['APIKEY']
     sec_key = os.environ['SECKEY']
 
-    client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
+    client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
 
     print("Ping:")
     await client.ping()
@@ -29,47 +29,38 @@ async def run():
     await client.get_exchange_info()
 
     print("Order book:")
-    await client.get_orderbook(symbol = Pair('BTC', 'USDT'), limit = enums.DepthLimit.L_5)
+    await client.get_orderbook(symbol = 'BTCUSD_PERP', limit = enums.DepthLimit.L_5)
 
     print("Trades:")
-    await client.get_trades(symbol=Pair('BTC', 'USDT'), limit = 5)
+    await client.get_trades(symbol = 'BTCUSD_PERP', limit = 5)
 
     print("Historical trades:")
-    await client.get_historical_trades(symbol=Pair('BTC', 'USDT'), limit = 5)
+    await client.get_historical_trades(symbol = 'BTCUSD_PERP', limit = 5)
 
     print("Aggregate trades:")
-    await client.get_aggregate_trades(symbol=Pair('BTC', 'USDT'), limit = 5)
+    await client.get_aggregate_trades(symbol = 'BTCUSD_PERP', limit = 5)
 
     print("Index price candlesticks:")
-    await client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
-
-    print("Index info:")
-    await client.get_index_info(pair = Pair('DEFI', 'USDT'))
+    await client.get_index_price_candlesticks(pair = Pair('BTC', 'USD'), interval = enums.Interval.I_1MIN)
 
     print("24hour price ticker:")
-    await client.get_24h_price_ticker(pair = Pair('BTC', 'USDT'))
+    await client.get_24h_price_ticker(pair = Pair('BTC', 'USD'))
 
     print("Price ticker:")
-    await client.get_price_ticker(pair = Pair('BTC', 'USDT'))
+    await client.get_price_ticker(pair = Pair('BTC', 'USD'))
 
     print("Best order book ticker:")
-    await client.get_orderbook_ticker(pair = Pair('BTC', 'USDT'))
+    await client.get_orderbook_ticker(pair = Pair('BTC', 'USD'))
 
     print("Create limit order:")
     try:
-        await client.create_order(Pair("BTC", "USDT"), side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+        await client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
                                   quantity = "1",
                                   price = "0",
                                   time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
                                   new_order_response_type = enums.OrderResponseType.FULL)
     except BinanceException as e:
         print(e)
-
-    print("Account:")
-    await client.get_account(recv_window_ms = 5000)
-
-    print("Account trades:")
-    await client.get_account_trades(pair = Pair('BTC', 'USDT'))
 
     await client.close()
 

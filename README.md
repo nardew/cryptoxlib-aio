@@ -1,4 +1,4 @@
-# cryptoxlib-aio 4.1.0
+# cryptoxlib-aio 5.0.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
 
@@ -8,15 +8,15 @@
 
 ---
  
-**==>** Binance USDS-M futures and margin endpoints (thank you @davidmcnabnz) now available!
+**==>** Binance COIN-M futures now available!
 
 ---
 
 ### What's been recently added
 
-- proper unsubscription, re-subscription and shutdown of websockets
+- `binance` COIN-M futures endpoints
 - `binance` margin and USDS-M futures endpoints
-- `bitpanda` supports update of orders via streams
+- proper unsubscription, re-subscription and shutdown of websockets
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
@@ -42,6 +42,7 @@ Disclaimer: By no means we are suggesting that existing libraries are inferior t
 - bundling of channels 
 - lean architecture making it straightforward to implement API of a new exchange
 - fully asynchronous design aiming for the best performance
+- ready-made bundled examples for each exchange and product
 
 ### List of supported exchanges
 
@@ -52,7 +53,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/aax.png) | AAX | [API](https://www.aax.com/apidoc/index.html#introduction) |
 | ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
 | ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope | [API](https://github.com/BiboxEurope/API_Docs_en) |
-| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance (spot, margin, USDS-M futures) |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
+| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance (spot, margin, USDS-M futures, COIN-M futures) |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
 | ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
 | ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
 | ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |
@@ -106,33 +107,75 @@ bitpanda.compose_subscriptions([
 await bitpanda.start_websockets()
 ```
 
-##### BITFOREX
+##### BINANCE
 ```python
-bitforex = CryptoXLib.create_bitforex_client(api_key, sec_key)
+# SPOT REST API
+
+client = CryptoXLib.create_binance_client(api_key, sec_key)
+
+print("Exchange info:")
+await client.get_exchange_info()
 
 print("Order book:")
-await bitforex.get_order_book(pair = Pair('ETH', 'BTC'), depth = "1")
+await client.get_orderbook(pair = Pair('ETH', 'BTC'), limit = enums.DepthLimit.L_5)
 
-print("Create order:")
-await bitforex.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.SELL, quantity = "1", price = "1")
+print("Create limit order:")
+await client.create_order(Pair("ETH", "BTC"), side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+    quantity = "1",
+    price = "0",
+    time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+    new_order_response_type = enums.OrderResponseType.FULL)
 
-# First bundle of subscriptions
-bitforex.compose_subscriptions([
-    OrderBookSubscription(pair = Pair('ETH', 'BTC'), depth = "0", callbacks = [order_book_update]),
-    TradeSubscription(pair = Pair('ETH', 'BTC'), size = "2", callbacks = [trade_update]),
+# SPOT WEBSOCKETS
+
+# Bundle several subscriptions into a single websocket
+client.compose_subscriptions([
+    OrderBookTickerSubscription(callbacks = [orderbook_ticker_update]),
+    OrderBookSymbolTickerSubscription(pair = Pair("BTC", "USDT"), callbacks = [orderbook_ticker_update]),
+    TradeSubscription(pair = Pair('ETH', 'BTC'), callbacks = [trade_update]),
+    CandlestickSubscription(Pair('BTC', 'USDT'), Interval.I_1MIN, callbacks = [candlestick_update])
 ])
 
-# Another bundle of subscriptions
-bitforex.compose_subscriptions([
-    TickerSubscription(pair = Pair('BTC', 'USDT'), size = "2", interval = enums.Interval.I_1MIN, callbacks = [ticker_update]),
-    Ticker24hSubscription(pair = Pair('BTC', 'USDT'), callbacks = [ticker24_update])
+# Bundle another subscriptions into a separate websocket
+client.compose_subscriptions([
+    AccountSubscription(callbacks = [account_update])
 ])
 
 # Execute all websockets asynchronously
-await bitforex.start_websockets()
+await client.start_websockets()
+
+# MARGIN REST API
+
+client = CryptoXLib.create_binance_client(api_key, sec_key)
+
+print("All margin assets:")
+await client.get_margin_all_assets()
+
+print("Margin account balance:")
+await client.get_margin_account()
+
+# USDS-M futures REST API
+
+client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
+
+print("Index price candlesticks:")
+await client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+
+print("Index info:")
+await client.get_index_info(pair = Pair('DEFI', 'USDT'))
+
+# COIN-M futures REST API
+
+client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
+
+await client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY, type = enums.OrderType.LIMIT,
+    quantity = "1",
+    price = "0",
+    time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
+    new_order_response_type = enums.OrderResponseType.FULL)
 ```
 
-Examples for every exchange can be found in the folder `examples`.
+Examples for every exchange and product can be found in the folder `examples`.
 
 ### Contact
 
@@ -147,3 +190,4 @@ If you like the library and you feel like you want to support its further develo
 - donate an arbitrary tip
   * `BTC`: `3GJPT6H6WeuTWR2KwDSEN5qyJq95LEErzf`
   * `ETH`: `0xC7d8673Ee1B01f6F10e40aA416a1b0A746eaBe68`
+  * `Binance Smart Chain tokens`: `0xe37FaB52ed4c1C9a3d80896f2001Cb3284a1b619`

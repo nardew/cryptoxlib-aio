@@ -21,14 +21,14 @@ test_api_key = os.environ['BINANCEFUTURESTESTAPIKEY']
 test_sec_key = os.environ['BINANCEFUTURESTESTSECKEY']
 
 
-class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
+class BinanceCOINMFuturesMarketRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
         cls.log_level = logging.DEBUG
 
     async def init_test(self):
-        self.client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
+        self.client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
 
     async def clean_test(self):
         await self.client.close()
@@ -49,107 +49,85 @@ class BinanceUSDSMFuturesMarketRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_order_book(self):
-        response = await self.client.get_orderbook(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_orderbook(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_trades(self):
-        response = await self.client.get_trades(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_trades(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_historical_trades(self):
-        response = await self.client.get_historical_trades(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_historical_trades(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_aggregate_trades(self):
-        response = await self.client.get_aggregate_trades(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_aggregate_trades(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_candlesticks(self):
-        response = await self.client.get_candlesticks(symbol = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+        response = await self.client.get_candlesticks(symbol = 'BTCUSD_PERP', interval = enums.Interval.I_1MIN)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_cont_contract_candlesticks(self):
-        response = await self.client.get_cont_contract_candlesticks(pair = Pair('BTC', 'USDT'),
+        response = await self.client.get_cont_contract_candlesticks(pair = Pair('BTC', 'USD'),
                                                                     interval = enums.Interval.I_1MIN,
                                                                     contract_type = enums.ContractType.PERPETUAL)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_index_price_candlesticks(self):
-        response = await self.client.get_index_price_candlesticks(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+        response = await self.client.get_index_price_candlesticks(pair = Pair('BTC', 'USD'), interval = enums.Interval.I_1MIN)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_mark_price_candlesticks(self):
-        response = await self.client.get_mark_price_candlesticks(symbol = Pair('BTC', 'USDT'), interval = enums.Interval.I_1MIN)
+        response = await self.client.get_mark_price_candlesticks(symbol = 'BTCUSD_PERP', interval = enums.Interval.I_1MIN)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_mark_price(self):
-        response = await self.client.get_mark_price(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_mark_index_price(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_fund_rate_history(self):
-        response = await self.client.get_fund_rate_history(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_fund_rate_history(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_24h_price_ticker(self):
-        response = await self.client.get_24h_price_ticker(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_24h_price_ticker(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_price_ticker(self):
-        response = await self.client.get_price_ticker(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_price_ticker(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_best_orderbook_ticker(self):
-        response = await self.client.get_orderbook_ticker(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_orderbook_ticker(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_open_interest(self):
-        response = await self.client.get_open_interest(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_open_interest(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_open_interest_hist(self):
-        response = await self.client.get_open_interest_hist(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1D)
+        response = await self.client.get_open_interest_hist(pair = Pair('BTC', 'USD'), interval = enums.Interval.I_1D,
+                                                            contract_type = enums.ContractType.PERPETUAL)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_top_long_short_account_ratio(self):
-        response = await self.client.get_top_long_short_account_ratio(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1D)
+        response = await self.client.get_top_long_short_account_ratio(pair = Pair('BTC', 'USD'), interval = enums.Interval.I_1D)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_top_long_short_position_ratio(self):
-        response = await self.client.get_top_long_short_position_ratio(pair = Pair('BTC', 'UP'), interval = enums.Interval.I_1D)
-        self.assertTrue(self.check_positive_response(response))
-
-    async def test_get_global_long_short_account_ratio(self):
-        response = await self.client.get_global_long_short_account_ratio(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1D)
-        self.assertTrue(self.check_positive_response(response))
-
-    async def test_get_taker_long_short_ratio(self):
-        response = await self.client.get_taker_long_short_ratio(pair = Pair('BTC', 'USDT'), interval = enums.Interval.I_1D)
-        self.assertTrue(self.check_positive_response(response))
-
-    async def test_get_blvt_candlesticks(self):
-        response = await self.client.get_blvt_candlesticks(pair = Pair('BTC', 'UP'), interval = enums.Interval.I_1D)
-        self.assertTrue(self.check_positive_response(response))
-
-    async def test_get_index_info(self):
-        response = await self.client.get_index_info(pair = Pair('DEFI', 'USDT'))
-        self.assertTrue(self.check_positive_response(response))
-
-    async def test_listen_key(self):
-        response = await self.client.get_listen_key()
-        self.assertTrue(self.check_positive_response(response))
-
-        response = await self.client.keep_alive_listen_key(response['response']['listenKey'])
+        response = await self.client.get_top_long_short_position_ratio(pair = Pair('BTC', 'USD'), interval = enums.Interval.I_1D)
         self.assertTrue(self.check_positive_response(response))
 
 
-class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
+class BinanceCOINMFuturesAccountRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
         cls.log_level = logging.DEBUG
 
     async def init_test(self):
-        self.client = CryptoXLib.create_binance_usds_m_futures_testnet_client(test_api_key, test_sec_key)
+        self.client = CryptoXLib.create_binance_coin_m_futures_testnet_client(test_api_key, test_sec_key)
 
     async def clean_test(self):
         await self.client.close()
@@ -166,7 +144,7 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
 
     async def test_change_position_type(self):
         # make sure some position exists in order for the change of position to fail
-        await self.client.create_order(symbol = Pair('XRP', 'USDT'), side = enums.OrderSide.BUY,
+        await self.client.create_order(symbol = "BTCUSD_PERP", side = enums.OrderSide.BUY,
                                        type = enums.OrderType.MARKET, quantity = '10')
 
         with self.assertRaises(BinanceRestException) as cm:
@@ -182,7 +160,7 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_all_orders(self):
-        response = await self.client.get_all_orders(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_all_orders(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     # market order
@@ -191,8 +169,8 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
         if current_position_type['response']['dualSidePosition']:
             await self.client.change_position_type(False)
 
-        response = await self.client.create_order(symbol = Pair('BTC', 'USDT'), side = enums.OrderSide.BUY,
-                                                  type = enums.OrderType.MARKET, quantity = '0.001')
+        response = await self.client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY,
+                                                  type = enums.OrderType.MARKET, quantity = '1')
         self.assertTrue(self.check_positive_response(response))
 
     # limit order
@@ -201,27 +179,27 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
         if current_position_type['response']['dualSidePosition']:
             await self.client.change_position_type(False)
 
-        response = await self.client.create_order(symbol = Pair('BTC', 'USDT'), side = enums.OrderSide.BUY,
-                                                  type = enums.OrderType.LIMIT, quantity = '0.1', price = '2000',
+        response = await self.client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY,
+                                                  type = enums.OrderType.LIMIT, quantity = '1', price = '2000',
                                                   time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_order(self):
         with self.assertRaises(BinanceRestException) as cm:
-            await self.client.get_order(symbol = Pair('BTC', 'USDT'), order_id = 1)
+            await self.client.get_order(symbol = 'BTCUSD_PERP', order_id = 1)
         e = cm.exception
 
         self.assertTrue(self.check_error_code(e, '400', '-2013'))
 
     async def test_cancel_order(self):
         with self.assertRaises(BinanceRestException) as cm:
-            await self.client.cancel_order(symbol = Pair('BTC', 'USDT'), order_id = 1)
+            await self.client.cancel_order(symbol = "BTCUSD_PERP", order_id = 1)
         e = cm.exception
 
         self.assertTrue(self.check_error_code(e, '400', '-2011'))
 
     async def test_cancel_all_orders(self):
-        response = await self.client.cancel_all_orders(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.cancel_all_orders(symbol = "BTCUSD_PERP")
         self.assertTrue(self.check_positive_response(response))
 
     @unittest.expectedFailure
@@ -232,13 +210,13 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
 
     async def test_get_open_order(self):
         with self.assertRaises(BinanceRestException) as cm:
-            await self.client.get_open_order(symbol = Pair('BTC', 'USDT'), order_id = 1)
+            await self.client.get_open_order(symbol = 'BTCUSD_PERP', order_id = 1)
         e = cm.exception
 
         self.assertTrue(self.check_error_code(e, '400', '-2013'))
 
     async def test_get_all_open_orders(self):
-        response = await self.client.get_all_open_orders(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_all_open_orders(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_balance(self):
@@ -250,18 +228,18 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_change_init_leverage(self):
-        response = await self.client.change_init_leverage(symbol = Pair('BTC', 'USDT'), leverage = 1)
+        response = await self.client.change_init_leverage(symbol = "BTCUSD_PERP", leverage = 1)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_change_margin_type(self):
-        position = await self.client.get_position(pair = Pair('ETH', 'USDT'))
+        position = await self.client.get_position(pair = Pair('BTC', 'USDT'))
         margin_type = position['response'][0]['marginType']
         if margin_type == 'cross':
             new_margin_type = enums.MarginType.ISOLATED
         else:
             new_margin_type = enums.MarginType.CROSSED
 
-        response = await self.client.change_margin_type(symbol = Pair('ETH', 'USDT'), margin_type = new_margin_type)
+        response = await self.client.change_margin_type(symbol = Pair('BTC', 'USDT'), margin_type = new_margin_type)
         self.assertTrue(self.check_positive_response(response))
 
     async def test_update_isolated_position_margin(self):
@@ -278,7 +256,7 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_position_margin_change_history(self):
-        response = await self.client.get_position_margin_change_history(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_position_margin_change_history(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_position(self):
@@ -286,51 +264,47 @@ class BinanceUSDSMFuturesAccountRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_position2(self):
-        response = await self.client.get_position(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_position(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_account_trades(self):
-        response = await self.client.get_account_trades(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_account_trades(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_income_history(self):
-        response = await self.client.get_income_history(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_income_history(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_notional_and_leverage_brackets(self):
-        response = await self.client.get_notional_and_leverage_brackets(pair = Pair('BTC', 'USDT'))
+    async def test_get_notional_and_leverage_brackets_for_pair(self):
+        response = await self.client.get_notional_and_leverage_brackets_for_pair(pair = Pair('BTC', 'USD'))
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_adl_quantile(self):
-        response = await self.client.get_adl_quantile(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_adl_quantile(symbol = "BTCUSD_PERP")
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_force_orders(self):
-        response = await self.client.get_force_orders(symbol = Pair('BTC', 'USDT'))
-        self.assertTrue(self.check_positive_response(response))
-
-    async def test_get_api_trading_status(self):
-        response = await self.client.get_api_trading_status(pair = Pair('BTC', 'USDT'))
+        response = await self.client.get_force_orders(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_commission_rate(self):
-        response = await self.client.get_commission_rate(symbol = Pair('BTC', 'USDT'))
+        response = await self.client.get_commission_rate(symbol = 'BTCUSD_PERP')
         self.assertTrue(self.check_positive_response(response))
 
 
-class BinanceUSDSMFuturesMarketWs(CryptoXLibTest):
+class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
         cls.log_level = logging.DEBUG
 
     async def init_test(self):
-        self.client = CryptoXLib.create_binance_usds_m_futures_client(api_key, sec_key)
+        self.client = CryptoXLib.create_binance_coin_m_futures_client(api_key, sec_key)
 
     async def test_aggregate_trade(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            AggregateTradeSubscription(Pair("BTC", "USDT"), callbacks = [message_counter.generate_callback(1)])
+            AggregateTradeSubscription(symbol = "BTCUSDT", callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
