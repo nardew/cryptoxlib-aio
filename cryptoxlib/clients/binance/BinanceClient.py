@@ -587,7 +587,7 @@ class BinanceClient(BinanceCommonClient):
                                 iceberg_quantity: Optional[str] = None,
                                 new_order_response_type: Optional[enums.OrderResponseType] = None,
                                 side_effect_type: Optional[enums.SideEffectType] = None,
-                                time_in_force: Optional[enums.TimeInForce] = None,
+                                time_in_force: Optional[enums.TimeInForce] = enums.TimeInForce.GOOD_TILL_CANCELLED,
                                 recv_window_ms: Optional[int] = None):
         """
         Margin Account New Order (TRADE)
