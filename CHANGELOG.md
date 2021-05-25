@@ -10,13 +10,14 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ### Added
 
-- binance leveraged token (BLVT) endpoints 
+- `binance` BSwap (liquidity pools) endpoints
+- `binance` leveraged token (BLVT) endpoints 
 
 ## [5.0.0] - 2021-05-23
 
 ### Added
 
-- binance COIN-M futures
+- `binance` COIN-M futures
 
 ### Changed
 

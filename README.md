@@ -8,6 +8,7 @@
 
 ### What's been recently added
 
+- `binance` BSwap (liquidity pools) endpoints
 - `binance` leveraged token endpoints
 - `binance` COIN-M futures endpoints
 - `binance` margin and USDS-M futures endpoints
@@ -180,6 +181,19 @@ await client.create_order(symbol = 'BTCUSD_PERP', side = enums.OrderSide.BUY, ty
     price = "0",
     time_in_force = enums.TimeInForce.GOOD_TILL_CANCELLED,
     new_order_response_type = enums.OrderResponseType.FULL)
+
+# BinanceSwap REST API
+
+client = CryptoXLib.create_binance_client(api_key, sec_key)
+
+print('Swap pools:')
+await client.get_bswap_pools()
+
+print('Add liquidity:')
+await client.bswap_add_liquidity(0, 'BTC', '10000000')
+
+print('Swap:')
+await client.bswap_swap(Pair('BTC', 'USDT'), '100000000000')
 ```
 
 Examples for every exchange and product can be found in the folder `examples`.

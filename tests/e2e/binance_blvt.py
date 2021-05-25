@@ -1,15 +1,11 @@
 import unittest
 import os
 import logging
-import datetime
 
 from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.clients.binance import enums
-from cryptoxlib.clients.binance.BinanceWebsocket import CandlestickSubscription, DepthSubscription
 from cryptoxlib.clients.binance.exceptions import BinanceRestException
-from cryptoxlib.Pair import Pair
 
-from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
+from CryptoXLibTest import CryptoXLibTest
 
 api_key = os.environ['BINANCEAPIKEY']
 sec_key = os.environ['BINANCESECKEY']

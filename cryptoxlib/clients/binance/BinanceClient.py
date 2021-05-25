@@ -1783,6 +1783,144 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
+    async def get_bswap_pools(self) -> dict:
+        return await self._create_get(
+            "bswap/pools",
+            headers = self._get_header(),
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_bswap_liquidity(self, pool_id: int = None, recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "poolId": pool_id,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_get(
+            "bswap/liquidity",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def bswap_add_liquidity(self, pool_id: int, asset: str, quantity: str, recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "poolId": pool_id,
+            "asset": asset,
+            "quantity": quantity,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_post(
+            "bswap/liquidityAdd",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def bswap_remove_liquidity(self, pool_id: int, asset: str, quantity: str, type: enums.LiquidityRemovalType,
+                                     recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "poolId": pool_id,
+            "asset": asset,
+            "shareAmount": quantity,
+            "type": type.value,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_post(
+            "bswap/liquidityRemove",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_bswap_liquidity_operations(self, pool_id: int = None, operation_id: int = None,
+                                             type: enums.LiquidityOperationType = None, limit: int = None,
+                                             start_tmstmp_ms: int = None, end_tmstmp_ms: int = None,
+                                             recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "poolId": pool_id,
+            "operationId": operation_id,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms,
+            "limit": limit,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        if type is not None:
+            params['operation'] = type.value
+
+        return await self._create_get(
+            "bswap/liquidityOps",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_bswap_quote(self, pair: Pair, qunatity: str,
+                              recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "quoteAsset": pair.quote,
+            "baseAsset": pair.base,
+            "quoteQty": qunatity,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_get(
+            "bswap/quote",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def bswap_swap(self, pair: Pair, qunatity: str,
+                              recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "quoteAsset": pair.quote,
+            "baseAsset": pair.base,
+            "quoteQty": qunatity,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_post(
+            "bswap/swap",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_bswap_swap_history(self, swap_id: int = None,
+                                     status: enums.SwapStatusType = None, limit: int = None,
+                                     start_tmstmp_ms: int = None, end_tmstmp_ms: int = None,
+                                     quote_asset: str = None, base_asset: str = None,
+                                     recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "swapId": swap_id,
+            "quoteAsset": quote_asset,
+            "baseAsset": base_asset,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms,
+            "limit": limit,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        if status is not None:
+            params['status'] = status.value
+
+        return await self._create_get(
+            "bswap/swap",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
 
 class BinanceTestnetClient(BinanceClient):
     REST_API_URI = "https://testnet.binance.vision/"
