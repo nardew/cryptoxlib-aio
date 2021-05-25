@@ -48,7 +48,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/aax.png) | AAX | [API](https://www.aax.com/apidoc/index.html#introduction) |
 | ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
 | ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope | [API](https://github.com/BiboxEurope/API_Docs_en) |
-| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance (spot, margin, USDS-M futures, COIN-M futures) |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
+| ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance (spot, margin, USDS-M futures, COIN-M futures, BLVT, BSwap) |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
 | ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
 | ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
 | ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |
