@@ -126,3 +126,18 @@ class TransferType(enum.Enum):
 class AccountType(enum.Enum):
     ISOLATED_MARGIN = "ISOLATED_MARGIN"
     SPOT = "SPOT"
+
+
+class LiquidityRemovalType(enum.Enum):
+    SINGLE = "SINGLE"
+    COMBINATION = "COMBINATION"
+
+
+class LiquidityOperationType(enum.Enum):
+    ADD = "ADD"
+    REMOVE = "REMOVE"
+
+class SwapStatusType(enum.Enum):
+    PENDING = 0
+    SUCCESS = 1
+    FAILED = 2
