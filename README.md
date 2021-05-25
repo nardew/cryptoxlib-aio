@@ -1,4 +1,4 @@
-# cryptoxlib-aio 5.0.0
+# cryptoxlib-aio 5.1.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
 
@@ -6,17 +6,11 @@
 
 `cryptoxlib-aio` is designed as an asynchronous library utilizing modern features of Python and those of supporting asynchronous libraries (mainly [aiohttp](https://aiohttp.readthedocs.io/en/stable/)).
 
----
- 
-**==>** Binance COIN-M futures now available!
-
----
-
 ### What's been recently added
 
+- `binance` leveraged token endpoints
 - `binance` COIN-M futures endpoints
 - `binance` margin and USDS-M futures endpoints
-- proper unsubscription, re-subscription and shutdown of websockets
 
 For the full history of changes see [CHANGELOG](https://github.com/nardew/cryptoxlib-aio/blob/master/CHANGELOG.md).
 
@@ -143,6 +137,19 @@ client.compose_subscriptions([
 
 # Execute all websockets asynchronously
 await client.start_websockets()
+
+# LEVERAGED TOKENS REST API
+
+client = CryptoXLib.create_binance_client(api_key, sec_key)
+
+print("BLVT symbol info:")
+await client.get_blvt_info()
+
+print("Subscribe BTCUP:")
+await client.blvt_subscribe("BTCUP", "500000000")
+
+print("Redeem BTCUP:")
+await client.blvt_redeem("BTCUP", "500000000")
 
 # MARGIN REST API
 

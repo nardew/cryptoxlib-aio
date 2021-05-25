@@ -355,7 +355,7 @@ class BinanceClient(BinanceCommonClient):
             asset: str,
             amount: str,
             transfer_type: enums.CrossMarginTransferType,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Cross Margin Account Transfer (MARGIN)
 
@@ -391,7 +391,7 @@ class BinanceClient(BinanceCommonClient):
             asset: str,
             amount: str,
             pair: Optional[Pair] = None,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Margin Account Borrow (MARGIN)
 
@@ -434,7 +434,7 @@ class BinanceClient(BinanceCommonClient):
             asset: str,
             amount: str,
             pair: Optional[Pair] = None,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Margin Account Repay (MARGIN)
 
@@ -474,7 +474,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_asset(self, asset: str):
+    async def get_margin_asset(self, asset: str) -> dict:
         """
         Query Margin Asset (MARKET_DATA)
 
@@ -495,7 +495,7 @@ class BinanceClient(BinanceCommonClient):
             params = params,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_pair(self, pair: Pair):
+    async def get_margin_pair(self, pair: Pair) -> dict:
         """
         Query Cross Margin Pair (MARKET_DATA)
 
@@ -516,7 +516,7 @@ class BinanceClient(BinanceCommonClient):
             params = params,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_all_assets(self):
+    async def get_margin_all_assets(self) -> dict:
         """
         Get All Margin Assets (MARKET_DATA)
 
@@ -532,7 +532,7 @@ class BinanceClient(BinanceCommonClient):
             headers = self._get_header(),
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_all_pairs(self):
+    async def get_margin_all_pairs(self) -> dict:
         """
         Get All Cross Margin Pairs (MARKET_DATA)
 
@@ -548,7 +548,7 @@ class BinanceClient(BinanceCommonClient):
             headers = self._get_header(),
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_price_index(self, pair: Pair):
+    async def get_margin_price_index(self, pair: Pair) -> dict:
         """
         Query Margin PriceIndex (MARKET_DATA)
 
@@ -588,7 +588,7 @@ class BinanceClient(BinanceCommonClient):
                                 new_order_response_type: Optional[enums.OrderResponseType] = None,
                                 side_effect_type: Optional[enums.SideEffectType] = None,
                                 time_in_force: Optional[enums.TimeInForce] = enums.TimeInForce.GOOD_TILL_CANCELLED,
-                                recv_window_ms: Optional[int] = None):
+                                recv_window_ms: Optional[int] = None) -> dict:
         """
         Margin Account New Order (TRADE)
 
@@ -659,7 +659,7 @@ class BinanceClient(BinanceCommonClient):
                                   order_id: Optional[str] = None,
                                   orig_client_order_id: Optional[str] = None,
                                   new_client_order_id: Optional[str] = None,
-                                  recv_window_ms: Optional[int] = None):
+                                  recv_window_ms: Optional[int] = None) -> dict:
         """
         Margin Account Cancel Order (TRADE)
 
@@ -703,7 +703,7 @@ class BinanceClient(BinanceCommonClient):
             api_variable_path = BinanceClient.SAPI_V1)
 
     async def cancel_margin_open_orders(self, pair: Pair, is_isolated: Optional[bool] = False,
-                                       recv_window_ms: Optional[int] = None):
+                                       recv_window_ms: Optional[int] = None) -> dict:
         """
         Margin Account Cancel all Open Orders on a Symbol (TRADE)
 
@@ -748,7 +748,7 @@ class BinanceClient(BinanceCommonClient):
             page_num: Optional[int] = None,
             page_size: Optional[int] = None,
             is_archived: Optional[bool] = False,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Get Cross Margin Transfer History (USER_DATA)
 
@@ -807,7 +807,7 @@ class BinanceClient(BinanceCommonClient):
                               page_num: Optional[int] = None,
                               page_size: Optional[int] = None,
                               is_archived: Optional[bool] = False,
-                              recv_window_ms: Optional[int] = None):
+                              recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Loan Record (USER_DATA)
 
@@ -868,7 +868,7 @@ class BinanceClient(BinanceCommonClient):
                                page_num: Optional[int] = None,
                                page_size: Optional[int] = None,
                                is_archived: Optional[bool] = False,
-                               recv_window_ms: Optional[int] = None):
+                               recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Repay Record (USER_DATA)
 
@@ -928,7 +928,7 @@ class BinanceClient(BinanceCommonClient):
                                           page_num: Optional[int] = None,
                                           page_size: Optional[int] = None,
                                           is_archived: Optional[bool] = False,
-                                          recv_window_ms: Optional[int] = None):
+                                          recv_window_ms: Optional[int] = None) -> dict:
         """
         Get Interest History (USER_DATA)
 
@@ -988,7 +988,7 @@ class BinanceClient(BinanceCommonClient):
                                               end_timestamp_ms: Optional[int] = None,
                                               page_num: Optional[int] = None,
                                               page_size: Optional[int] = None,
-                                              recv_window_ms: Optional[int] = None):
+                                              recv_window_ms: Optional[int] = None) -> dict:
         """
         Get Force Liquidation Record (USER_DATA)
 
@@ -1031,7 +1031,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_account(self, recv_window_ms: Optional[int] = None):
+    async def get_margin_account(self, recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Cross Margin Account Details (USER_DATA)
 
@@ -1065,7 +1065,7 @@ class BinanceClient(BinanceCommonClient):
                                is_isolated: Optional[bool] = False,
                                order_id: Optional[str] = None,
                                orig_client_order_id: Optional[str] = None,
-                               recv_window_ms: Optional[int] = None):
+                               recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Margin Account's Order (USER_DATA)
 
@@ -1109,7 +1109,7 @@ class BinanceClient(BinanceCommonClient):
     async def get_margin_open_orders(self,
                                     pair: Optional[Pair] = None,
                                     is_isolated: Optional[bool] = False,
-                                    recv_window_ms: Optional[int] = None):
+                                    recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Margin Account's Open Orders (USER_DATA)
 
@@ -1156,7 +1156,7 @@ class BinanceClient(BinanceCommonClient):
                                    start_timestamp_ms: Optional[int] = None,
                                    end_timestamp_ms: Optional[int] = None,
                                    limit: Optional[int] = None,
-                                   recv_window_ms: Optional[int] = None):
+                                   recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Margin Account's All Orders (USER_DATA)
 
@@ -1211,7 +1211,7 @@ class BinanceClient(BinanceCommonClient):
             end_timestamp_ms: Optional[int] = None,
             from_id: Optional[int] = None,
             limit: Optional[int] = None,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Margin Account's Trade List (USER_DATA)
 
@@ -1256,7 +1256,7 @@ class BinanceClient(BinanceCommonClient):
             api_variable_path = BinanceClient.SAPI_V1)
 
     async def get_margin_max_borrowable(
-            self, asset: str, pair: Optional[Pair] = None, recv_window_ms: Optional[int] = None):
+            self, asset: str, pair: Optional[Pair] = None, recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Max Borrow (USER_DATA)
 
@@ -1298,7 +1298,7 @@ class BinanceClient(BinanceCommonClient):
             self,
             asset: str,
             pair: Optional[Pair] = None,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Max Transfer-Out Amount (USER_DATA)
 
@@ -1335,7 +1335,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def create_isolated_margin_account(self, pair: Pair, recv_window_ms: Optional[int] = None):
+    async def create_isolated_margin_account(self, pair: Pair, recv_window_ms: Optional[int] = None) -> dict:
         """
         Create Isolated Margin Account (MARGIN)
 
@@ -1374,7 +1374,7 @@ class BinanceClient(BinanceCommonClient):
                                             from_account_type: enums.AccountType,
                                             to_account_type: enums.AccountType,
                                             amount: str,
-                                            recv_window_ms: Optional[int] = None):
+                                            recv_window_ms: Optional[int] = None) -> dict:
         """
         Isolated Margin Account Transfer (MARGIN)
 
@@ -1422,7 +1422,7 @@ class BinanceClient(BinanceCommonClient):
                                            end_timestamp_ms: Optional[int] = None,
                                            current: Optional[int] = None,
                                            size: Optional[int] = None,
-                                           recv_window_ms: Optional[int] = None):
+                                           recv_window_ms: Optional[int] = None) -> dict:
         """
         Get Isolated Margin Transfer History (USER_DATA)
 
@@ -1472,7 +1472,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_isolated_account(self, pairs: Optional[List[Pair]], recv_window_ms: Optional[int] = None):
+    async def get_margin_isolated_account(self, pairs: Optional[List[Pair]], recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Isolated Margin Account Info (USER_DATA)
 
@@ -1509,7 +1509,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_isolated_pair(self, pair: Pair, recv_window_ms: Optional[int] = None):
+    async def get_margin_isolated_pair(self, pair: Pair, recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Isolated Margin Symbol (USER_DATA)
 
@@ -1540,7 +1540,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_margin_isolated_all_pairs(self, recv_window_ms: Optional[int] = None):
+    async def get_margin_isolated_all_pairs(self, recv_window_ms: Optional[int] = None) -> dict:
         """
         Get All Isolated Margin Symbol(USER_DATA)
 
@@ -1573,7 +1573,7 @@ class BinanceClient(BinanceCommonClient):
             self,
             spot_bnb_burn: Optional[bool] = False,
             interest_bnb_burn: Optional[bool] = False,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Toggle BNB Burn On Spot Trade And Margin Interest (USER_DATA)
 
@@ -1610,7 +1610,7 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
-    async def get_bnb_burn(self, recv_window_ms: Optional[int] = None):
+    async def get_bnb_burn(self, recv_window_ms: Optional[int] = None) -> dict:
         """
         Get BNB Burn Status (USER_DATA)
 
@@ -1646,7 +1646,7 @@ class BinanceClient(BinanceCommonClient):
             start_timestamp_ms: Optional[int] = None,
             end_timestamp_ms: Optional[int] = None,
             limit: Optional[int] = None,
-            recv_window_ms: Optional[int] = None):
+            recv_window_ms: Optional[int] = None) -> dict:
         """
         Query Margin Interest Rate History (USER_DATA)
 
@@ -1683,6 +1683,101 @@ class BinanceClient(BinanceCommonClient):
 
         return await self._create_get(
             "margin/interestRateHistory",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_blvt_info(self, symbol: str = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "tokenName": symbol
+        })
+
+        return await self._create_get(
+            "blvt/tokenInfo",
+            headers = self._get_header(),
+            params = params,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def blvt_subscribe(self, symbol: str, cost: str, recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "tokenName": symbol,
+            "cost": cost,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_post(
+            "blvt/subscribe",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_blvt_subscribtion_record(self, symbol: str = None, id: int = None, limit: int = None,
+                                           start_tmstmp_ms: int = None, end_tmstmp_ms: int = None,
+                                           recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "tokenName": symbol,
+            "id": id,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms,
+            "limit": limit,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_get(
+            "blvt/subscribe/record",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def blvt_redeem(self, symbol: str, amount: str, recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "tokenName": symbol,
+            "amount": amount,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_post(
+            "blvt/redeem",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_blvt_redemption_record(self, symbol: str = None, id: int = None, limit: int = None,
+                                           start_tmstmp_ms: int = None, end_tmstmp_ms: int = None,
+                                           recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "tokenName": symbol,
+            "id": id,
+            "startTime": start_tmstmp_ms,
+            "endTime": end_tmstmp_ms,
+            "limit": limit,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_get(
+            "blvt/redeem/record",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_blvt_user_info(self, symbol: str = None, recv_window_ms: int = None) -> dict:
+        params = BinanceClient._clean_request_params({
+            "tokenName": symbol,
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+
+        return await self._create_get(
+            "blvt/userLimit",
             headers = self._get_header(),
             params = params,
             signed = True,
