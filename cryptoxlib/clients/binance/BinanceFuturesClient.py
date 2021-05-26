@@ -399,7 +399,7 @@ class BinanceFuturesClient(BinanceCommonClient):
     async def get_listen_key(self):
         return await self._create_post("listenKey", headers = self._get_header(), api_variable_path = self.get_api_v1())
 
-    async def keep_alive_listen_key(self, listen_key: str):
+    async def keep_alive_listen_key(self):
         return await self._create_put("listenKey", headers = self._get_header(), api_variable_path = self.get_api_v1())
 
 

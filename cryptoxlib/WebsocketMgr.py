@@ -269,13 +269,19 @@ class WebsocketMgr(ABC):
         return self.get_full_websocket()
 
     def get_full_websocket(self) -> Websocket:
-        return FullWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
+        uri = self.websocket_uri + self.get_websocket_uri_variable_part()
+        LOG.debug(f"Websocket URI: {uri}")
+
+        return FullWebsocket(websocket_uri = uri,
                       builtin_ping_interval = self.builtin_ping_interval,
                       max_message_size = self.max_message_size,
                       ssl_context = self.ssl_context)
 
     def get_aiohttp_websocket(self) -> Websocket:
-        return AiohttpWebsocket(websocket_uri = self.websocket_uri + self.get_websocket_uri_variable_part(),
+        uri = self.websocket_uri + self.get_websocket_uri_variable_part()
+        LOG.debug(f"Websocket URI: {uri}")
+
+        return AiohttpWebsocket(websocket_uri = uri,
                       builtin_ping_interval = self.builtin_ping_interval,
                       max_message_size = self.max_message_size,
                       ssl_context = self.ssl_context)

@@ -42,8 +42,8 @@ async def run():
     # Bundle several subscriptions into a single websocket
     client.compose_subscriptions([
         OrderBookTickerSubscription(callbacks = [orderbook_ticker_update]),
-        OrderBookSymbolTickerSubscription(symbol = Pair("BTC", "USDT"), callbacks = [orderbook_ticker_update]),
-        CandlestickSubscription(interval = Interval.I_1MIN, symbol = Pair('BTC', 'USDT'), callbacks = [candlestick_update])
+        OrderBookSymbolTickerSubscription(symbol = "BTCUSD_PERP", callbacks = [orderbook_ticker_update]),
+        CandlestickSubscription(interval = Interval.I_1MIN, symbol = "BTCUSD_PERP", callbacks = [candlestick_update])
     ])
 
     # Bundle another subscriptions into a separate websocket

@@ -38,7 +38,7 @@ class BinanceCOINMFuturesWebsocket(BinanceCommonWebsocket):
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
-                         sec_key = sec_key, websocket_uri = BinanceUSDSMFuturesWebsocket.WEBSOCKET_URI,
+                         sec_key = sec_key, websocket_uri = BinanceCOINMFuturesWebsocket.WEBSOCKET_URI,
                          ssl_context = ssl_context)
 
 
@@ -48,7 +48,7 @@ class BinanceCOINMFuturesTestnetWebsocket(BinanceCommonWebsocket):
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
-                         sec_key = sec_key, websocket_uri = BinanceUSDSMFuturesTestnetWebsocket.WEBSOCKET_URI,
+                         sec_key = sec_key, websocket_uri = BinanceCOINMFuturesTestnetWebsocket.WEBSOCKET_URI,
                          ssl_context = ssl_context)
 
 

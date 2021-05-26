@@ -9,7 +9,7 @@ from cryptoxlib.clients.binance.BinanceFuturesWebsocket import AggregateTradeSub
     AllMarketTickersSubscription, MiniTickerSubscription, OrderBookTickerSubscription, \
     OrderBookSymbolTickerSubscription, LiquidationOrdersSubscription, BlvtCandlestickSubscription, \
     BlvtSubscription, CompositeIndexSubscription, DepthSubscription, CandlestickSubscription, \
-    ContContractCandlestickSubscription, TickerSubscription, AccountSubscription
+    ContContractCandlestickSubscription, TickerSubscription
 from cryptoxlib.clients.binance.exceptions import BinanceRestException
 from cryptoxlib.Pair import Pair
 
@@ -137,10 +137,6 @@ class BinanceCOINMFuturesAccountRestApi(CryptoXLibTest):
 
     def check_error_code(self, e: BinanceRestException, status: str, code: str):
         return str(e.status_code) == status and str(e.body['code']) == code
-
-    async def test_get_ping(self):
-        response = await self.client.ping()
-        self.assertTrue(self.check_positive_response(response))
 
     async def test_change_position_type(self):
         # make sure some position exists in order for the change of position to fail
@@ -304,7 +300,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_aggregate_trade(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            AggregateTradeSubscription(symbol = "BTCUSDT", callbacks = [message_counter.generate_callback(1)])
+            AggregateTradeSubscription(symbol = "BTCUSD_PERP", callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -312,7 +308,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_mark_price(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            MarkPriceSubscription(symbol = Pair("BTC", "USDT"), frequency1sec = True, callbacks = [message_counter.generate_callback(1)])
+            MarkPriceSubscription(symbol = "BTCUSD_PERP", frequency1sec = True, callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -328,7 +324,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_candlestick(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            CandlestickSubscription(symbol = Pair("BTC", "USDT"), interval = enums.Interval.I_1MIN, callbacks = [message_counter.generate_callback(1)])
+            CandlestickSubscription(symbol = "BTCUSD_PERP", interval = enums.Interval.I_1MIN, callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -336,7 +332,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_cont_contract_candlestick(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            ContContractCandlestickSubscription(Pair("BTC", "USDT"), enums.Interval.I_1MIN, enums.ContractType.PERPETUAL,
+            ContContractCandlestickSubscription(Pair("BTC", "USD"), enums.Interval.I_1MIN, enums.ContractType.PERPETUAL,
                                                 callbacks = [message_counter.generate_callback(1)])
         ])
 
@@ -353,7 +349,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_mini_ticker(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            MiniTickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+            MiniTickerSubscription(symbol = "BTCUSD_PERP", callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -369,7 +365,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_ticker(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            TickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+            TickerSubscription(symbol = "BTCUSD_PERP", callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -385,20 +381,21 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_best_orderbook_symbol_ticker(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            OrderBookSymbolTickerSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+            OrderBookSymbolTickerSubscription(symbol = "BTCUSD_PERP", callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
 
     # fails since normally there are no liquidation orders
-    async def liquidation_orders(self):
+    async def test_liquidation_orders(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            LiquidationOrdersSubscription(Pair('BTC', 'USDT'), callbacks = [message_counter.generate_callback(1)])
+            LiquidationOrdersSubscription(symbol = "BTCUSD_PERP", callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
 
+    # fails since normally there are no liquidation orders
     async def test_all_liquidation_orders(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
@@ -410,7 +407,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_partial_detph(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            DepthSubscription(symbol = Pair('BTC', 'USDT'), level =  5, frequency = 100, callbacks = [message_counter.generate_callback(1)])
+            DepthSubscription(symbol = "BTCUSD_PERP", level =  5, frequency = 100, callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -418,7 +415,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_partial_detph2(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            DepthSubscription(symbol = Pair('BTC', 'USDT'), level = 5, callbacks = [message_counter.generate_callback(1)])
+            DepthSubscription(symbol = "BTCUSD_PERP", level = 5, callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -426,7 +423,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_detph(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            DepthSubscription(symbol = Pair('BTC', 'USDT'), level = 0, frequency = 100, callbacks = [message_counter.generate_callback(1)])
+            DepthSubscription(symbol = "BTCUSD_PERP", level = 0, frequency = 100, callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
@@ -434,34 +431,7 @@ class BinanceCOINMFuturesMarketWs(CryptoXLibTest):
     async def test_detph2(self):
         message_counter = WsMessageCounter()
         self.client.compose_subscriptions([
-            DepthSubscription(symbol = Pair('BTC', 'USDT'), level = 0, callbacks = [message_counter.generate_callback(1)])
-        ])
-
-        await self.assertWsMessageCount(message_counter)
-
-    async def test_blvt(self):
-        message_counter = WsMessageCounter()
-        self.client.compose_subscriptions([
-            BlvtSubscription(Pair('BTC', 'UP'), callbacks = [message_counter.generate_callback(1)])
-        ])
-
-        await self.assertWsMessageCount(message_counter)
-
-    # typically no data are received
-    async def blvt_candlesticks(self):
-        message_counter = WsMessageCounter()
-        self.client.compose_subscriptions([
-            BlvtCandlestickSubscription(Pair('BTC', 'UP'), enums.Interval.I_1MIN,
-                                        callbacks = [message_counter.generate_callback(1)])
-        ])
-
-        await self.assertWsMessageCount(message_counter, timeout = 60)
-
-    async def test_composite_index(self):
-        message_counter = WsMessageCounter()
-        self.client.compose_subscriptions([
-            CompositeIndexSubscription(Pair('DEFI', 'USDT'),
-                                        callbacks = [message_counter.generate_callback(1)])
+            DepthSubscription(symbol = "BTCUSD_PERP", level = 0, callbacks = [message_counter.generate_callback(1)])
         ])
 
         await self.assertWsMessageCount(message_counter)
