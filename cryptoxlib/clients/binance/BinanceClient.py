@@ -587,7 +587,7 @@ class BinanceClient(BinanceCommonClient):
                                 iceberg_quantity: Optional[str] = None,
                                 new_order_response_type: Optional[enums.OrderResponseType] = None,
                                 side_effect_type: Optional[enums.SideEffectType] = None,
-                                time_in_force: Optional[enums.TimeInForce] = enums.TimeInForce.GOOD_TILL_CANCELLED,
+                                time_in_force: Optional[enums.TimeInForce] = None,
                                 recv_window_ms: Optional[int] = None) -> dict:
         """
         Margin Account New Order (TRADE)
@@ -622,7 +622,7 @@ class BinanceClient(BinanceCommonClient):
         """
         params = {
             "symbol": map_pair(pair),
-            "side": side,
+            "side": side.value,
             "type": order_type.value,
             "quantity": quantity,
             "quoteOrderQty": quote_order_quantity,
@@ -637,6 +637,9 @@ class BinanceClient(BinanceCommonClient):
 
         if time_in_force is not None:
             params['timeInForce'] = time_in_force.value
+        elif order_type in [enums.OrderType.LIMIT, enums.OrderType.STOP_LOSS_LIMIT, enums.OrderType.TAKE_PROFIT_LIMIT]:
+            # default time_in_force for LIMIT orders
+            params['timeInForce'] = enums.TimeInForce.GOOD_TILL_CANCELLED.value
 
         if new_order_response_type is not None:
             params['newOrderRespType'] = new_order_response_type.value
