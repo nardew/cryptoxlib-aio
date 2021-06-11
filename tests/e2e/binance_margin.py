@@ -61,6 +61,21 @@ class BinanceMarginRestApi(CryptoXLibTest):
 
         self.assertTrue(self.check_error_code(e, '400', '-2010')) # insufficient funds
 
+    async def test_isolated_listen_key(self):
+        response = await self.client.get_isolated_margin_listen_key(pair = Pair('BTC', 'USDT'))
+        self.assertTrue(self.check_positive_response(response))
+
+        response = await self.client.keep_alive_isolated_margin_listen_key(pair = Pair('BTC', 'USDT'),
+                                                                           listen_key = response['response']['listenKey'])
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_cross_listen_key(self):
+        response = await self.client.get_cross_margin_listen_key()
+        self.assertTrue(self.check_positive_response(response))
+
+        response = await self.client.keep_alive_cross_margin_listen_key(response['response']['listenKey'])
+        self.assertTrue(self.check_positive_response(response))
+
 
 if __name__ == '__main__':
     unittest.main()

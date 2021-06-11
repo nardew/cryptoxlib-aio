@@ -30,7 +30,10 @@ class BinanceRestApi(CryptoXLibTest):
         return str(response['status_code'])[0] == '2'
 
     async def test_listen_key(self):
-        response = await self.client.get_listen_key()
+        response = await self.client.get_spot_listen_key()
+        self.assertTrue(self.check_positive_response(response))
+
+        response = await self.client.keep_alive_spot_listen_key(response['response']['listenKey'])
         self.assertTrue(self.check_positive_response(response))
 
 

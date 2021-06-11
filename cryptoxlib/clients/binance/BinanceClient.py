@@ -345,8 +345,40 @@ class BinanceClient(BinanceCommonClient):
 
         return await self._create_get("myTrades", params = params, headers = self._get_header(), signed = True, api_variable_path = BinanceClient.API_V3)
 
-    async def get_listen_key(self):
+    async def get_spot_listen_key(self):
         return await self._create_post("userDataStream", headers = self._get_header(), api_variable_path = BinanceClient.API_V3)
+
+    async def keep_alive_spot_listen_key(self, listen_key: str):
+        params = {
+            "listenKey": listen_key
+        }
+
+        return await self._create_put("userDataStream", headers = self._get_header(), params = params, api_variable_path = BinanceClient.API_V3)
+
+    async def get_isolated_margin_listen_key(self, pair: Pair):
+        params = {
+            "symbol": map_pair(pair)
+        }
+
+        return await self._create_post("userDataStream/isolated", headers = self._get_header(), params = params, api_variable_path = BinanceClient.SAPI_V1)
+
+    async def keep_alive_isolated_margin_listen_key(self, listen_key: str, pair: Pair):
+        params = {
+            "listenKey": listen_key,
+            "symbol": map_pair(pair)
+        }
+
+        return await self._create_put("userDataStream/isolated", headers = self._get_header(), params = params, api_variable_path = BinanceClient.SAPI_V1)
+
+    async def get_cross_margin_listen_key(self):
+        return await self._create_post("userDataStream", headers = self._get_header(), api_variable_path = BinanceClient.SAPI_V1)
+
+    async def keep_alive_cross_margin_listen_key(self, listen_key: str):
+        params = {
+            "listenKey": listen_key
+        }
+
+        return await self._create_put("userDataStream", headers = self._get_header(), params = params, api_variable_path = BinanceClient.SAPI_V1)
 
     ## MARGIN ENDPOINTS
 

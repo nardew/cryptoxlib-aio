@@ -97,7 +97,40 @@ class AccountSubscription(BinanceSubscription):
 
     async def initialize(self, **kwargs):
         binance_client = kwargs['binance_client']
-        listen_key_response = await binance_client.get_listen_key()
+        listen_key_response = await binance_client.get_spot_listen_key()
+        self.listen_key = listen_key_response["response"]["listenKey"]
+        LOG.debug(f'Listen key: {self.listen_key}')
+
+    def get_channel_name(self):
+        return self.listen_key
+
+
+class AccountIsolatedMarginSubscription(BinanceSubscription):
+    def __init__(self, pair: Pair, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.pair = pair
+        self.listen_key = None
+
+    async def initialize(self, **kwargs):
+        binance_client = kwargs['binance_client']
+        listen_key_response = await binance_client.get_isolated_margin_listen_key(self.pair)
+        self.listen_key = listen_key_response["response"]["listenKey"]
+        LOG.debug(f'Listen key: {self.listen_key}')
+
+    def get_channel_name(self):
+        return self.listen_key
+
+
+class AccountCrossMarginSubscription(BinanceSubscription):
+    def __init__(self, callbacks: CallbacksType = None):
+        super().__init__(callbacks)
+
+        self.listen_key = None
+
+    async def initialize(self, **kwargs):
+        binance_client = kwargs['binance_client']
+        listen_key_response = await binance_client.get_cross_margin_listen_key()
         self.listen_key = listen_key_response["response"]["listenKey"]
         LOG.debug(f'Listen key: {self.listen_key}')
 
