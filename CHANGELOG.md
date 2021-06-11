@@ -6,6 +6,12 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [5.1.3] - 2021-06-11
+
+### Fixed
+
+- `binance` account websocket implemented for cross and isolated margin account
+
 ## [5.1.2] - 2021-06-08
 
 ### Fixed
@@ -169,7 +175,8 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.2...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.3...HEAD
+[5.1.3]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.2...5.1.3
 [5.1.2]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.1...5.1.2
 [5.1.1]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.0...5.1.1
 [5.1.0]: https://github.com/nardew/cryptoxlib-aio/compare/5.0.0...5.1.0
