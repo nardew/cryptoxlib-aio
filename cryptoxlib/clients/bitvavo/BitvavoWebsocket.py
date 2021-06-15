@@ -94,6 +94,8 @@ class BitvavoWebsocket(WebsocketMgr):
     def _map_event_id_to_subscription_id(event_typ: str):
         if event_typ in ['order', 'fill']:
             return AccountSubscription.get_channel_name()
+        elif event_typ == 'trade':
+            return TradesSubscription.get_channel_name()
         elif event_typ == 'candle':
             return CandlesticksSubscription.get_channel_name()
         else:
