@@ -11,10 +11,12 @@ class BinanceCommonWebsocket(WebsocketMgr):
     SUBSCRIPTION_ID = 0
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
-                 websocket_uri: str = None, ssl_context = None, builtin_ping_interval = None) -> None:
+                 websocket_uri: str = None, builtin_ping_interval: float = None, periodic_timeout_sec: int = None,
+                 ssl_context = None) -> None:
         super().__init__(websocket_uri = websocket_uri,
                          subscriptions = subscriptions,
                          builtin_ping_interval = builtin_ping_interval,
+                         periodic_timeout_sec = periodic_timeout_sec,
                          ssl_context = ssl_context,
                          auto_reconnect = True)
 
@@ -93,3 +95,12 @@ class BinanceSubscription(Subscription):
 
     def construct_subscription_id(self) -> Any:
         return self.get_channel_name()
+
+    def is_authenticated(self) -> bool:
+        return False
+
+    def is_isolated_margin_authenticated(self) -> bool:
+        return False
+
+    def is_cross_margin_authenticated(self) -> bool:
+        return False
