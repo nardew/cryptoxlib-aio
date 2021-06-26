@@ -1,4 +1,4 @@
-# cryptoxlib-aio 5.1.3
+# cryptoxlib-aio 5.1.4
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
 
@@ -8,6 +8,7 @@
 
 ### What's been recently added
 
+- `bitpanda` cancellation of all orders via websockets
 - `binance` BSwap (liquidity pools) endpoints
 - `binance` leveraged token endpoints
 - `binance` COIN-M futures endpoints
