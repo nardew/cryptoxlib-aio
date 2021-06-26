@@ -19,7 +19,7 @@ class BinanceUSDSMFuturesWebsocket(BinanceCommonWebsocket):
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
                          sec_key = sec_key, websocket_uri = BinanceUSDSMFuturesWebsocket.WEBSOCKET_URI,
-                         ssl_context = ssl_context)
+                         ssl_context = ssl_context, builtin_ping_interval = 30)
 
 
 class BinanceUSDSMFuturesTestnetWebsocket(BinanceCommonWebsocket):
@@ -39,7 +39,7 @@ class BinanceCOINMFuturesWebsocket(BinanceCommonWebsocket):
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
                          sec_key = sec_key, websocket_uri = BinanceCOINMFuturesWebsocket.WEBSOCKET_URI,
-                         ssl_context = ssl_context)
+                         ssl_context = ssl_context, builtin_ping_interval = 30)
 
 
 class BinanceCOINMFuturesTestnetWebsocket(BinanceCommonWebsocket):

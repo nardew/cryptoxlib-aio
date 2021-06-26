@@ -11,10 +11,10 @@ class BinanceCommonWebsocket(WebsocketMgr):
     SUBSCRIPTION_ID = 0
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
-                 websocket_uri: str = None, ssl_context = None) -> None:
+                 websocket_uri: str = None, ssl_context = None, builtin_ping_interval = None) -> None:
         super().__init__(websocket_uri = websocket_uri,
                          subscriptions = subscriptions,
-                         builtin_ping_interval = None,
+                         builtin_ping_interval = builtin_ping_interval,
                          ssl_context = ssl_context,
                          auto_reconnect = True)
 
