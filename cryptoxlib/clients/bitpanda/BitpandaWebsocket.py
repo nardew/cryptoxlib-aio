@@ -340,6 +340,50 @@ class CancelOrderMessage(WebsocketOutboundMessage):
         return ret
 
 
+class CancelAllOrdersMessage(WebsocketOutboundMessage):
+    def __init__(self, order_ids: List[str] = None, pair: Pair = None):
+        self.order_ids = order_ids
+        self.pair = pair
+
+    def to_json(self):
+        ret = {
+            "type": "CANCEL_ALL_ORDERS",
+        }
+
+        if self.order_ids is not None:
+            ret['order_ids'] = self.order_ids
+
+        if self.pair is not None:
+            ret['instrument_code'] = map_pair(self.pair)
+
+        return ret
+
+
+class AutoCancelAllOrdersMessage(WebsocketOutboundMessage):
+    def __init__(self, timeout_ms: int):
+        self.timeout_ms = timeout_ms
+
+    def to_json(self):
+        ret = {
+            "type": "CANCEL_ALL_AFTER",
+            "timeout": self.timeout_ms
+        }
+
+        return ret
+
+
+class DeactivateAutoCancelAllOrdersMessage(WebsocketOutboundMessage):
+    def __init__(self):
+        pass
+
+    def to_json(self):
+        ret = {
+            "type": "DEACTIVATE_CANCEL_ALL_AFTER"
+        }
+
+        return ret
+
+
 class UpdateOrderMessage(WebsocketOutboundMessage):
     def __init__(self, amount: str, order_id: str = None, client_id: str = None):
         self.amount = amount
