@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from cryptoxlib.WebsocketMgr import Subscription, CallbacksType
+from cryptoxlib.WebsocketMgr import Subscription, CallbacksType, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.binance.exceptions import BinanceException
 from cryptoxlib.clients.binance.functions import map_ws_pair, extract_ws_symbol
@@ -12,17 +12,45 @@ from cryptoxlib.clients.binance.types import PairSymbolType
 LOG = logging.getLogger(__name__)
 
 
-class BinanceUSDSMFuturesWebsocket(BinanceCommonWebsocket):
+class BinanceFuturesWebsocket(BinanceCommonWebsocket):
+    def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
+                 websocket_uri: str = None, builtin_ping_interval: float = None, periodic_timeout_sec: int = None,
+                 ssl_context = None) -> None:
+        super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
+                         sec_key = sec_key,
+                         websocket_uri = websocket_uri,
+                         builtin_ping_interval = builtin_ping_interval,
+                         periodic_timeout_sec = periodic_timeout_sec,
+                         ssl_context = ssl_context)
+
+    def is_authenticated(self) -> bool:
+        for subscription in self.subscriptions:
+            if subscription.is_authenticated():
+                return True
+
+        return False
+
+    async def _process_periodic(self, websocket: Websocket) -> None:
+        if self.is_authenticated() is True:
+            LOG.info(f"[{self.id}] Refreshing listen key.")
+            await self.binance_client.keep_alive_listen_key()
+
+
+class BinanceUSDSMFuturesWebsocket(BinanceFuturesWebsocket):
     WEBSOCKET_URI = "wss://fstream.binance.com/"
+    BULTIN_PING_INTERVAL_SEC = 30
+    LISTEN_KEY_REFRESH_INTERVAL_SEC = 1800
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
                          sec_key = sec_key, websocket_uri = BinanceUSDSMFuturesWebsocket.WEBSOCKET_URI,
-                         ssl_context = ssl_context, builtin_ping_interval = 30)
+                         builtin_ping_interval = BinanceUSDSMFuturesWebsocket.BULTIN_PING_INTERVAL_SEC,
+                         periodic_timeout_sec = BinanceUSDSMFuturesWebsocket.LISTEN_KEY_REFRESH_INTERVAL_SEC,
+                         ssl_context = ssl_context)
 
 
-class BinanceUSDSMFuturesTestnetWebsocket(BinanceCommonWebsocket):
+class BinanceUSDSMFuturesTestnetWebsocket(BinanceFuturesWebsocket):
     WEBSOCKET_URI = "wss://stream.binancefuture.com/"
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
@@ -32,17 +60,21 @@ class BinanceUSDSMFuturesTestnetWebsocket(BinanceCommonWebsocket):
                          ssl_context = ssl_context)
 
 
-class BinanceCOINMFuturesWebsocket(BinanceCommonWebsocket):
+class BinanceCOINMFuturesWebsocket(BinanceFuturesWebsocket):
     WEBSOCKET_URI = "https://dstream.binance.com/"
+    BULTIN_PING_INTERVAL_SEC = 30
+    LISTEN_KEY_REFRESH_INTERVAL_SEC = 1800
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
                          sec_key = sec_key, websocket_uri = BinanceCOINMFuturesWebsocket.WEBSOCKET_URI,
-                         ssl_context = ssl_context, builtin_ping_interval = 30)
+                         builtin_ping_interval = BinanceCOINMFuturesWebsocket.BULTIN_PING_INTERVAL_SEC,
+                         periodic_timeout_sec = BinanceCOINMFuturesWebsocket.LISTEN_KEY_REFRESH_INTERVAL_SEC,
+                         ssl_context = ssl_context)
 
 
-class BinanceCOINMFuturesTestnetWebsocket(BinanceCommonWebsocket):
+class BinanceCOINMFuturesTestnetWebsocket(BinanceFuturesWebsocket):
     WEBSOCKET_URI = "wss://dstream.binancefuture.com/"
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
@@ -292,3 +324,6 @@ class AccountSubscription(BinanceSubscription):
 
     def get_channel_name(self):
         return self.listen_key
+
+    def is_authenticated(self) -> bool:
+        return True

@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from cryptoxlib.WebsocketMgr import Subscription, CallbacksType
+from cryptoxlib.WebsocketMgr import Subscription, CallbacksType, Websocket
 from cryptoxlib.Pair import Pair
 from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceCommonWebsocket
 from cryptoxlib.clients.binance.BinanceCommonWebsocket import BinanceSubscription
@@ -14,12 +14,29 @@ LOG = logging.getLogger(__name__)
 
 class BinanceWebsocket(BinanceCommonWebsocket):
     WEBSOCKET_URI = "wss://stream.binance.com:9443/"
+    LISTEN_KEY_REFRESH_INTERVAL_SEC = 1800
 
     def __init__(self, subscriptions: List[Subscription], binance_client, api_key: str = None, sec_key: str = None,
                  ssl_context = None) -> None:
         super().__init__(subscriptions = subscriptions, binance_client = binance_client, api_key = api_key,
                          sec_key = sec_key, websocket_uri = BinanceWebsocket.WEBSOCKET_URI,
+                         periodic_timeout_sec = BinanceWebsocket.LISTEN_KEY_REFRESH_INTERVAL_SEC,
                          ssl_context = ssl_context)
+
+    async def _process_periodic(self, websocket: Websocket) -> None:
+        for subscription in self.subscriptions:
+            if subscription.is_authenticated():
+                LOG.info(f"[{self.id}] Refreshing listen key.")
+                await self.binance_client.keep_alive_spot_listen_key(listen_key = subscription.listen_key)
+
+            if subscription.is_cross_margin_authenticated():
+                LOG.info(f"[{self.id}] Refreshing cross margin listen key.")
+                await self.binance_client.keep_alive_cross_margin_listen_key(listen_key = subscription.listen_key)
+
+            if subscription.is_isolated_margin_authenticated():
+                LOG.info(f"[{self.id}] Refreshing isolated margin listen key.")
+                await self.binance_client.keep_alive_isolated_margin_listen_key(listen_key = subscription.listen_key,
+                                                                                pair = subscription.pair)
 
 
 class BinanceTestnetWebsocket(BinanceCommonWebsocket):
@@ -104,6 +121,9 @@ class AccountSubscription(BinanceSubscription):
     def get_channel_name(self):
         return self.listen_key
 
+    def is_authenticated(self) -> bool:
+        return True
+
 
 class AccountIsolatedMarginSubscription(BinanceSubscription):
     def __init__(self, pair: Pair, callbacks: CallbacksType = None):
@@ -121,6 +141,9 @@ class AccountIsolatedMarginSubscription(BinanceSubscription):
     def get_channel_name(self):
         return self.listen_key
 
+    def is_isolated_margin_authenticated(self) -> bool:
+        return True
+
 
 class AccountCrossMarginSubscription(BinanceSubscription):
     def __init__(self, callbacks: CallbacksType = None):
@@ -136,6 +159,9 @@ class AccountCrossMarginSubscription(BinanceSubscription):
 
     def get_channel_name(self):
         return self.listen_key
+
+    def is_cross_margin_authenticated(self) -> bool:
+        return True
 
 
 class DepthSubscription(BinanceSubscription):
