@@ -1,4 +1,4 @@
-# cryptoxlib-aio 5.1.4
+# cryptoxlib-aio 5.1.5
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
 

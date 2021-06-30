@@ -6,6 +6,13 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [5.1.5] - 2021-06-30
+
+### Fixed
+
+- `binance` account websockets renew listen key every 30 minutes
+- `binance` websockets send technical ping every 30 seconds
+
 ## [5.1.4] - 2021-06-26
 
 ### Added
@@ -185,7 +192,8 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.4...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.5...HEAD
+[5.1.5]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.4...5.1.5
 [5.1.4]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.3...5.1.4
 [5.1.3]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.2...5.1.3
 [5.1.2]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.1...5.1.2
