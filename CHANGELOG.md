@@ -6,6 +6,12 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [5.1.6] - 2021-08-23
+
+### Fixed
+
+- `binance` `get_all_open_orders` call for futures can be invoked without any symbol provided
+
 ## [5.1.5] - 2021-06-30
 
 ### Fixed
@@ -192,7 +198,8 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.5...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.6...HEAD
+[5.1.6]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.5...5.1.6
 [5.1.5]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.4...5.1.5
 [5.1.4]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.3...5.1.4
 [5.1.3]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.2...5.1.3
