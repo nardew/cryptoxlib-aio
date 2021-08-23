@@ -71,6 +71,9 @@ async def run():
     print("Account trades:")
     await client.get_account_trades(pair = Pair('BTC', 'USDT'))
 
+    print("All Open Orders:")
+    await client.get_all_open_orders()
+
     await client.close()
 
 if __name__ == "__main__":

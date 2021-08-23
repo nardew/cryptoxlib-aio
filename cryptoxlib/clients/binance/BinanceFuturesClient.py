@@ -578,13 +578,14 @@ class BinanceUSDSMFuturesClient(BinanceFuturesClient):
 
         return await self._create_get("allOrders", params = params, headers = self._get_header(), signed = True, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
-    async def get_all_open_orders(self, pair: Pair, recv_window_ms: int = None) -> dict:
+    async def get_all_open_orders(self, pair: Pair = None, recv_window_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
-            "symbol": map_pair(pair),
             "recvWindow": recv_window_ms,
             "timestamp": self._get_current_timestamp_ms()
         })
 
+        if pair is not None:
+            params['symbol'] = map_pair(pair)
         return await self._create_get("openOrders", params = params, headers = self._get_header(), signed = True, api_variable_path = BinanceUSDSMFuturesClient.FAPI_V1)
 
     async def get_balance(self, recv_window_ms: int = None) -> dict:
