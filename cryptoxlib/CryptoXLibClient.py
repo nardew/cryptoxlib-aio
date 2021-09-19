@@ -96,9 +96,11 @@ class CryptoXLibClient(ABC):
     async def _create_rest_call(self, rest_call_type: RestCallType, resource: str, data: dict = None, params: dict = None, headers: dict = None, signed: bool = False,
                                 api_variable_path: str = None) -> dict:
         with Timer('RestCall'):
-            # ensure headers is always a valid object
+            # ensure headers & params are always valid objects
             if headers is None:
                 headers = {}
+            if params is None:
+                params = {}
 
             # add signature into the parameters
             if signed:
