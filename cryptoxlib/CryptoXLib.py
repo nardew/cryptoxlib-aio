@@ -12,6 +12,7 @@ from cryptoxlib.clients.btse.BtseClient import BtseClient
 from cryptoxlib.clients.aax.AAXClient import AAXClient
 from cryptoxlib.clients.hitbtc.HitbtcClient import HitbtcClient
 from cryptoxlib.clients.eterbase.EterbaseClient import EterbaseClient
+from cryptoxlib.clients.coinmate.CoinmateClient import CoinmateClient
 
 
 class CryptoXLib(object):
@@ -79,3 +80,7 @@ class CryptoXLib(object):
     @staticmethod
     def create_eterbase_client(account_id: str, api_key: str, sec_key: str) -> EterbaseClient:
         return EterbaseClient(account_id, api_key, sec_key)
+
+    @staticmethod
+    def create_coinmate_client(user_id: str, api_key: str, sec_key: str) -> CoinmateClient:
+        return CoinmateClient(user_id, api_key, sec_key)

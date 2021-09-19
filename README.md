@@ -1,4 +1,4 @@
-# cryptoxlib-aio 5.1.6
+# cryptoxlib-aio 5.2.0
 
 ![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
 
@@ -8,6 +8,7 @@
 
 ### What's been recently added
 
+- `coinmate` cryptoexchange added!
 - `bitpanda` cancellation of all orders via websockets
 - `binance` BSwap (liquidity pools) endpoints
 - `binance` leveraged token endpoints
@@ -54,6 +55,7 @@ As mentioned earlier, all exchanges listed below include full support for websoc
 | ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
 | ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |
 | ![btse](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/btse.png) | BTSE | [API](https://www.btse.com/apiexplorer/spot/#btse-spot-api) |
+| ![coinmate](https://user-images.githubusercontent.com/51840849/87460806-1c9f3f00-c616-11ea-8c46-a77018a8f3f4.jpg) | Coinmate | [API](https://coinmate.docs.apiary.io/) |
 | ![eterbase](https://user-images.githubusercontent.com/1294454/82067900-faeb0f80-96d9-11ea-9f22-0071cfcb9871.jpg) | Eterbase | [API](https://developers.eterbase.exchange) |
 | ![hitbtc](https://user-images.githubusercontent.com/1294454/27766555-8eaec20e-5edc-11e7-9c5b-6dc69fc42f5e.jpg) | HitBTC | [API](https://api.hitbtc.com) |
 | ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | Liquid | [API](https://developers.liquid.com) |
