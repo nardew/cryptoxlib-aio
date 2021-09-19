@@ -1956,6 +1956,29 @@ class BinanceClient(BinanceCommonClient):
             signed = True,
             api_variable_path = BinanceClient.SAPI_V1)
 
+    async def get_deposit_history(self, coin: str, start_tmstmp_ms: int = None,
+                                  end_tmstmp_ms: int = None, status: enums.DepositHistoryStatusType = None):
+
+        params = BinanceClient._clean_request_params({
+            "coin": coin,
+            "timestamp": self._get_current_timestamp_ms(),
+        })
+
+        if status is not None:
+            params['status'] = status.value
+        if start_tmstmp_ms is not None:
+            params['startTime'] = start_tmstmp_ms
+        if end_tmstmp_ms is not None:
+            params["endTime"] = end_tmstmp_ms
+
+        return await self._create_get(
+            "capital/deposit/hisrec",
+            headers = self._get_header(),
+            params = params,
+            signed = True,
+            api_variable_path = BinanceClient.SAPI_V1
+        )
+
 
 class BinanceTestnetClient(BinanceClient):
     REST_API_URI = "https://testnet.binance.vision/"

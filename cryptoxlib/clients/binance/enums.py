@@ -141,3 +141,8 @@ class SwapStatusType(enum.Enum):
     PENDING = 0
     SUCCESS = 1
     FAILED = 2
+
+class DepositHistoryStatusType(enum.Enum):
+    PENDING = 0
+    CREDITED_CANNOT_WITHDRAW = 6
+    SUCCESS = 1
