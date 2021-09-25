@@ -35,8 +35,18 @@ class BinanceClient(BinanceCommonClient):
     async def ping(self) -> dict:
         return await self._create_get("ping", api_variable_path = BinanceClient.API_V3)
 
-    async def get_exchange_info(self) -> dict:
-        return await self._create_get("exchangeInfo", api_variable_path = BinanceClient.API_V3)
+    async def get_exchange_info(self, symbol: str = None, symbols: List[str] = None) -> dict:
+        base_path = "exchangeInfo"
+        resource_path = base_path
+
+        if symbol:
+            resource_path = base_path + "?symbol=" + symbol
+        if symbols:
+            wrapped_symbols = [ "\"" + i + "\"" for i in symbols ]
+            symbols_str = "[" + ",".join(wrapped_symbols) + "]"
+            resource_path = base_path + "?symbols=" + symbols_str
+
+        return await self._create_get(resource_path, api_variable_path = BinanceClient.API_V3)
 
     async def get_time(self) -> dict:
         return await self._create_get("time", api_variable_path = BinanceClient.API_V3)
