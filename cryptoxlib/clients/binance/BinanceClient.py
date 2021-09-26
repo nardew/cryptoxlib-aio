@@ -38,6 +38,16 @@ class BinanceClient(BinanceCommonClient):
     async def get_exchange_info(self) -> dict:
         return await self._create_get("exchangeInfo", api_variable_path = BinanceClient.API_V3)
 
+    async def get_symbol_info(self, pair: Pair) -> dict:
+        resource_path = "exchangeInfo?symbol=" + pair.base + pair.quote
+        return await self._create_get(resource_path, api_variable_path = BinanceClient.API_V3)
+
+    async def get_symbols_info(self, pairs: List[Pair]) -> dict:
+        wrapped_symbols = [ "\"" + p.base + p.quote + "\"" for p in pairs ]
+        symbols_str = "[" + ",".join(wrapped_symbols) + "]"
+        resource_path = "exchangeInfo?symbols=" + symbols_str
+        return await self._create_get(resource_path, api_variable_path = BinanceClient.API_V3)
+
     async def get_time(self) -> dict:
         return await self._create_get("time", api_variable_path = BinanceClient.API_V3)
 
