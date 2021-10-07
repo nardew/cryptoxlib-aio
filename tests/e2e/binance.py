@@ -36,6 +36,18 @@ class BinanceRestApi(CryptoXLibTest):
         response = await self.client.keep_alive_spot_listen_key(response['response']['listenKey'])
         self.assertTrue(self.check_positive_response(response))
 
+    async def test_get_exchange_info1(self):
+        response = await self.client.get_exchange_info()
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_exchange_info2(self):
+        response = await self.client.get_exchange_info(pairs = [Pair('BTC', 'USDT')])
+        self.assertTrue(self.check_positive_response(response))
+
+    async def test_get_exchange_info3(self):
+        response = await self.client.get_exchange_info(pairs = [Pair('BTC', 'USDT'), Pair('BNB', 'USDT')])
+        self.assertTrue(self.check_positive_response(response))
+
 
 class BinanceWs(CryptoXLibTest):
     @classmethod

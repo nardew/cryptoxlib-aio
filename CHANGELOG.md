@@ -6,6 +6,12 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [5.2.1] - 2021-10-07
+
+### Added
+
+- `binance`'s `get_exchange_info(...)` method supports requests for a single symbol, multiple symbols and all symbols
+
 ## [5.2.0] - 2021-09-19
 
 ### Added
@@ -204,7 +210,8 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.0...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.1...HEAD
+[5.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.0...5.2.1
 [5.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.6...5.2.0
 [5.1.6]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.5...5.1.6
 [5.1.5]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.4...5.1.5

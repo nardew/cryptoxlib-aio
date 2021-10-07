@@ -36,20 +36,17 @@ class BinanceClient(BinanceCommonClient):
         return await self._create_get("ping", api_variable_path = BinanceClient.API_V3)
 
     async def get_exchange_info(self, pairs: List[Pair] = None) -> dict:
-        base_path = "exchangeInfo"
-        resource_path = base_path
+        resource_path = "exchangeInfo"
 
-        if pairs:
+        if pairs is not None:
             if len(pairs) == 1:
-                symbols = [ map_pair(p) for p in pairs ]
+                symbols = [map_pair(p) for p in pairs]
                 symbols_str = ",".join(symbols)
-                resource_path = base_path + "?symbol=" + symbols_str
-                print(f"DEBUG PATH: {resource_path}")
+                resource_path += "?symbol=" + symbols_str
             else:
-                wrapped_symbols = [ "\"" + map_pair(p) + "\"" for p in pairs ]
+                wrapped_symbols = ["\"" + map_pair(p) + "\"" for p in pairs]
                 symbols_str = ",".join(wrapped_symbols)
-                resource_path = base_path + "?symbols=" + "[" + symbols_str + "]"
-                print(f"DEBUG PATH: {resource_path}")
+                resource_path += "?symbols=" + "[" + symbols_str + "]"
 
         return await self._create_get(resource_path, api_variable_path = BinanceClient.API_V3)
 
