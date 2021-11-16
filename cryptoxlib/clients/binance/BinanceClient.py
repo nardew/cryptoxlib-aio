@@ -224,6 +224,15 @@ class BinanceClient(BinanceCommonClient):
 
         return await self._create_delete("order", params = params, headers = self._get_header(), signed = True, api_variable_path = BinanceClient.API_V3)
 
+    async def cancel_all_open_orders(self, pair: Pair, recv_window_ms: int = None) -> dict:
+        params = CryptoXLibClient._clean_request_params({
+            'symbol': map_pair(pair),
+            "recvWindow": recv_window_ms,
+            "timestamp": self._get_current_timestamp_ms()
+        })
+        return await self._create_delete("openOrders", params = params, headers = self._get_header(),
+                                      signed = True, api_variable_path = BinanceClient.API_V3)
+
     async def get_open_orders(self, pair: Pair = None, recv_window_ms: int = None) -> dict:
         params = CryptoXLibClient._clean_request_params({
             "recvWindow": recv_window_ms,
