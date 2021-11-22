@@ -6,6 +6,12 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [5.2.2] - 2021-11-22
+
+### Added
+
+- `binance`'s `cancel_all_open_orders(...)` added to spot
+
 ## [5.2.1] - 2021-10-07
 
 ### Added
@@ -210,7 +216,8 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.1...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.2...HEAD
+[5.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.1...5.2.2
 [5.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.0...5.2.1
 [5.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.6...5.2.0
 [5.1.6]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.5...5.1.6

@@ -230,6 +230,7 @@ class BinanceClient(BinanceCommonClient):
             "recvWindow": recv_window_ms,
             "timestamp": self._get_current_timestamp_ms()
         })
+        
         return await self._create_delete("openOrders", params = params, headers = self._get_header(),
                                       signed = True, api_variable_path = BinanceClient.API_V3)
 
