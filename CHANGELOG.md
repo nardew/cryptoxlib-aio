@@ -217,7 +217,7 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 The official release of `cryptoxlib-aio`.
 
 [Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.2...HEAD
-[5.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.1...5.2.2
+[5.2.2]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.1...5.2.2
 [5.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.0...5.2.1
 [5.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.6...5.2.0
 [5.1.6]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.5...5.1.6
