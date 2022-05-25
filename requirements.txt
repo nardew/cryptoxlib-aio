@@ -1,4 +1,4 @@
 aiohttp==3.7.4
 websockets==9.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pytz==2019.3
