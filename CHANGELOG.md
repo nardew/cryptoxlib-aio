@@ -6,6 +6,12 @@ The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Pending release]
 
+## [5.2.3] - 2022-05-31
+
+### Fixed
+
+- `PyJWT` version bumped
+
 ## [5.2.2] - 2021-11-22
 
 ### Added
@@ -216,7 +222,8 @@ bitvavo.enums.CandelstickInterval -> bitvavo.enums.CandlestickInterval
 
 The official release of `cryptoxlib-aio`.
 
-[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.2...HEAD
+[Pending release]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.3...HEAD
+[5.2.3]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.2...5.2.3
 [5.2.2]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.1...5.2.2
 [5.2.1]: https://github.com/nardew/cryptoxlib-aio/compare/5.2.0...5.2.1
 [5.2.0]: https://github.com/nardew/cryptoxlib-aio/compare/5.1.6...5.2.0
