@@ -1,6 +1,6 @@
-# cryptoxlib-aio 5.2.3
+# cryptoxlib-aio 5.3.0
 
-![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg)
+![](https://img.shields.io/badge/python-3.6-blue.svg) ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/python-3.8-blue.svg) ![](https://img.shields.io/badge/python-3.9-blue.svg) ![](https://img.shields.io/badge/python-3.10-blue.svg)
 
 `cryptoxlib-aio` is a compact Python library providing access to REST and WEBSOCKET API of selected crypto exchanges.
 
@@ -8,6 +8,7 @@
 
 ### What's been recently added
 
+- python `3.10` supported
 - `coinmate` cryptoexchange added!
 - `bitpanda` cancellation of all orders via websockets
 - `binance` BSwap (liquidity pools) endpoints
