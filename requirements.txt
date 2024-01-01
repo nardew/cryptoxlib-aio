@@ -1,4 +1,4 @@
 aiohttp==3.9.1
 websockets==9.1
 PyJWT==2.4.0
-pytz==2019.3
+pytz==2023.3.post1
