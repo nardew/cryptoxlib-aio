@@ -1,21 +1,21 @@
-import unittest
-import os
-import logging
 import datetime
-
-from cryptoxlib.CryptoXLib import CryptoXLib
-from cryptoxlib.clients.bitpanda import enums
-from cryptoxlib.clients.bitpanda.BitpandaWebsocket import PricesSubscription, AccountSubscription, OrderbookSubscription, \
-    CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription
-from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaRestException
+import logging
+import os
+import unittest
 
 from CryptoXLibTest import CryptoXLibTest, WsMessageCounter
+from cryptoxlib.CryptoXLib import CryptoXLib
+from cryptoxlib.Pair import Pair
+from cryptoxlib.clients.onetrading import enums
+from cryptoxlib.clients.onetrading.OneTradingWebsocket import PricesSubscription, AccountSubscription, \
+    OrderbookSubscription, \
+    CandlesticksSubscription, CandlesticksSubscriptionParams, MarketTickerSubscription
+from cryptoxlib.clients.onetrading.exceptions import OneTradingRestException
 
 api_key = os.environ['BITPANDAAPIKEY']
 
 
-class BitpandaRestApi(CryptoXLibTest):
+class OneTradingRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
@@ -25,7 +25,7 @@ class BitpandaRestApi(CryptoXLibTest):
         return str(response['status_code'])[0] == '2'
 
     async def init_test(self):
-        self.client = CryptoXLib.create_bitpanda_client(api_key)
+        self.client = CryptoXLib.create_onetrading_client(api_key)
 
     async def clean_test(self):
         await self.client.close()
@@ -43,35 +43,35 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_account_order(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.get_account_order("1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 400)
 
     async def test_create_market_order(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.create_market_order(Pair("BTC", "EUR"), enums.OrderSide.BUY, "100000")
         e = cm.exception
 
         self.assertEqual(e.status_code, 422)
 
     async def test_create_limit_order(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.create_limit_order(Pair("BTC", "EUR"), enums.OrderSide.BUY, "10000", "1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 422)
 
     async def test_create_stop_limit_order(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.create_stop_limit_order(Pair("BTC", "EUR"), enums.OrderSide.BUY, "10000", "1", "1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 422)
 
     async def test_get_account_order_trades(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.get_account_order_trades("1")
         e = cm.exception
 
@@ -82,7 +82,7 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_account_trade(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.get_account_trade("1")
         e = cm.exception
 
@@ -141,7 +141,7 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_create_deposit_crypto_address(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.create_deposit_crypto_address("ABC")
         e = cm.exception
 
@@ -157,7 +157,7 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_withdraw_crypto(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.withdraw_crypto('ABC', '1.0', 'ABC')
         e = cm.exception
 
@@ -171,7 +171,7 @@ class BitpandaRestApi(CryptoXLibTest):
     @unittest.skip
     # SERVICE_UNAVAILABLE
     async def test_withdraw_fiat(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.withdraw_fiat('ABC', '1.0', 'ABC')
         e = cm.exception
 
@@ -185,12 +185,12 @@ class BitpandaRestApi(CryptoXLibTest):
         response = await self.client.get_deposits(currency = 'CHF')
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_bitpanda_deposits(self):
-        response = await self.client.get_bitpanda_deposits()
+    async def test_get_onetrading_deposits(self):
+        response = await self.client.get_onetrading_deposits()
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_bitpanda_deposits2(self):
-        response = await self.client.get_bitpanda_deposits(currency = 'CHF')
+    async def test_get_onetrading_deposits2(self):
+        response = await self.client.get_onetrading_deposits(currency ='CHF')
         self.assertTrue(self.check_positive_response(response))
 
     async def test_get_withdrawals(self):
@@ -201,12 +201,12 @@ class BitpandaRestApi(CryptoXLibTest):
         response = await self.client.get_withdrawals(currency = 'CHF')
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_bitpanda_withdrawals(self):
-        response = await self.client.get_bitpanda_withdrawals()
+    async def test_get_onetrading_withdrawals(self):
+        response = await self.client.get_onetrading_withdrawals()
         self.assertTrue(self.check_positive_response(response))
 
-    async def test_get_bitpanda_withdrawals2(self):
-        response = await self.client.get_bitpanda_withdrawals(currency = 'CHF')
+    async def test_get_onetrading_withdrawals2(self):
+        response = await self.client.get_onetrading_withdrawals(currency ='CHF')
         self.assertTrue(self.check_positive_response(response))
 
     @unittest.skip
@@ -216,42 +216,42 @@ class BitpandaRestApi(CryptoXLibTest):
         self.assertTrue(self.check_positive_response(response))
 
     async def test_delete_account_order(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.delete_account_order(order_id = "1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 404)
 
     async def test_delete_account_order2(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.delete_account_order(client_id = "1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 404)
 
     async def test_order_update_order_id(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.update_order(amount = "10", order_id = "1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 404)
 
     async def test_order_update_client_id(self):
-        with self.assertRaises(BitpandaRestException) as cm:
+        with self.assertRaises(OneTradingRestException) as cm:
             await self.client.update_order(amount = "10", client_id = "1")
         e = cm.exception
 
         self.assertEqual(e.status_code, 404)
 
 
-class BitpandaWs(CryptoXLibTest):
+class OneTradingWs(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True
         cls.log_level = logging.DEBUG
 
     async def init_test(self):
-        self.client = CryptoXLib.create_bitpanda_client(api_key)
+        self.client = CryptoXLib.create_onetrading_client(api_key)
 
     async def test_price_subscription(self):
         message_counter = WsMessageCounter()

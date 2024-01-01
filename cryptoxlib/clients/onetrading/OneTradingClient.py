@@ -6,19 +6,19 @@ from multidict import CIMultiDictProxy
 from typing import List, Optional
 
 from cryptoxlib.CryptoXLibClient import CryptoXLibClient, RestCallType
-from cryptoxlib.clients.bitpanda import enums
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaRestException, BitpandaException
-from cryptoxlib.clients.bitpanda.functions import map_pair
+from cryptoxlib.clients.onetrading import enums
+from cryptoxlib.clients.onetrading.exceptions import OneTradingRestException, OneTradingException
+from cryptoxlib.clients.onetrading.functions import map_pair
 from cryptoxlib.Pair import Pair
 from cryptoxlib.WebsocketMgr import WebsocketMgr, Subscription
-from cryptoxlib.clients.bitpanda.BitpandaWebsocket import BitpandaWebsocket
+from cryptoxlib.clients.onetrading.OneTradingWebsocket import OneTradingWebsocket
 
 
 LOG = logging.getLogger(__name__)
 
 
-class BitpandaClient(CryptoXLibClient):
-    REST_API_URI = "https://api.exchange.bitpanda.com/public/v1/"
+class OneTradingClient(CryptoXLibClient):
+    REST_API_URI = "https://api.onetrading.com/public/v1/"
 
     def __init__(self, api_key: str = None, api_trace_log: bool = False,
                  ssl_context: ssl.SSLContext = None) -> None:
@@ -34,12 +34,12 @@ class BitpandaClient(CryptoXLibClient):
 
     def _preprocess_rest_response(self, status_code: int, headers: 'CIMultiDictProxy[str]', body: Optional[dict]) -> None:
         if str(status_code)[0] != '2':
-            raise BitpandaRestException(status_code, body)
+            raise OneTradingRestException(status_code, body)
 
     def _get_websocket_mgr(self, subscriptions: List[Subscription], startup_delay_ms: int = 0,
                            ssl_context = None) -> WebsocketMgr:
-        return BitpandaWebsocket(subscriptions = subscriptions, api_key = self.api_key, ssl_context = ssl_context,
-                                 startup_delay_ms = startup_delay_ms)
+        return OneTradingWebsocket(subscriptions = subscriptions, api_key = self.api_key, ssl_context = ssl_context,
+                                   startup_delay_ms = startup_delay_ms)
 
     async def get_currencies(self) -> dict:
         return await self._create_get("currencies")
@@ -57,7 +57,7 @@ class BitpandaClient(CryptoXLibClient):
                                  pair: Pair = None, with_cancelled_and_rejected: str = None,
                                  with_just_filled_inactive: str = None,
                                  with_just_orders: str = None, max_page_size: str = None, cursor: str = None) -> dict:
-        params = BitpandaClient._clean_request_params({
+        params = OneTradingClient._clean_request_params({
             "with_cancelled_and_rejected": with_cancelled_and_rejected,
             "with_just_filled_inactive": with_just_filled_inactive,
             "with_just_orders": with_just_orders,
@@ -84,7 +84,7 @@ class BitpandaClient(CryptoXLibClient):
 
     async def get_account_trades(self, from_timestamp: datetime.datetime = None, to_timestamp: datetime.datetime = None,
                                  pair: Pair = None, max_page_size: str = None, cursor: str = None) -> dict:
-        params = BitpandaClient._clean_request_params({
+        params = OneTradingClient._clean_request_params({
             "max_page_size": max_page_size,
             "cursor": cursor,
         })
@@ -170,10 +170,10 @@ class BitpandaClient(CryptoXLibClient):
 
     async def delete_account_order(self, order_id: str = None, client_id: str = None) -> dict:
         if order_id is None and client_id is None:
-            raise BitpandaException('One of order_id/client_id has to be provided.')
+            raise OneTradingException('One of order_id/client_id has to be provided.')
 
         if order_id is not None and client_id is not None:
-            raise BitpandaException('Only one of order_id/client_id can be provided.')
+            raise OneTradingException('Only one of order_id/client_id can be provided.')
 
         if order_id is not None:
             return await self._create_delete("account/orders/" + order_id, signed = True)
@@ -182,10 +182,10 @@ class BitpandaClient(CryptoXLibClient):
 
     async def update_order(self, amount: str, order_id: str = None, client_id: str = None) -> dict:
         if order_id is None and client_id is None:
-            raise BitpandaException('One of order_id/client_id has to be provided.')
+            raise OneTradingException('One of order_id/client_id has to be provided.')
 
         if order_id is not None and client_id is not None:
-            raise BitpandaException('Only one of order_id/client_id can be provided.')
+            raise OneTradingException('Only one of order_id/client_id can be provided.')
 
         data = {
             "amount": amount
@@ -211,7 +211,7 @@ class BitpandaClient(CryptoXLibClient):
         return await self._create_get("instruments")
 
     async def get_order_book(self, pair: Pair, level: str = None, depth: str = None) -> dict:
-        params = BitpandaClient._clean_request_params({
+        params = OneTradingClient._clean_request_params({
             "level": level,
             "depth": depth
         })
@@ -295,11 +295,11 @@ class BitpandaClient(CryptoXLibClient):
 
         return await self._create_get("account/deposits", params = params, signed = True)
 
-    async def get_bitpanda_deposits(self, from_timestamp: datetime.datetime = None,
-                           to_timestamp: datetime.datetime = None,
-                           currency: str = None,
-                           max_page_size: int = None,
-                           cursor: int = None) -> dict:
+    async def get_onetrading_deposits(self, from_timestamp: datetime.datetime = None,
+                                      to_timestamp: datetime.datetime = None,
+                                      currency: str = None,
+                                      max_page_size: int = None,
+                                      cursor: int = None) -> dict:
         params = self._clean_request_params({
             'currency_code': currency,
             'max_page_size': max_page_size,
@@ -312,7 +312,7 @@ class BitpandaClient(CryptoXLibClient):
         if to_timestamp is not None:
             params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
 
-        return await self._create_get("account/deposits/bitpanda", params = params, signed = True)
+        return await self._create_get("account/deposits/onetrading", params = params, signed = True)
 
     async def get_withdrawals(self, from_timestamp: datetime.datetime = None,
                            to_timestamp: datetime.datetime = None,
@@ -333,11 +333,11 @@ class BitpandaClient(CryptoXLibClient):
 
         return await self._create_get("account/withdrawals", params = params, signed = True)
 
-    async def get_bitpanda_withdrawals(self, from_timestamp: datetime.datetime = None,
-                           to_timestamp: datetime.datetime = None,
-                           currency: str = None,
-                           max_page_size: int = None,
-                           cursor: int = None) -> dict:
+    async def get_onetrading_withdrawals(self, from_timestamp: datetime.datetime = None,
+                                         to_timestamp: datetime.datetime = None,
+                                         currency: str = None,
+                                         max_page_size: int = None,
+                                         cursor: int = None) -> dict:
         params = self._clean_request_params({
             'currency_code': currency,
             'max_page_size': max_page_size,
@@ -350,7 +350,7 @@ class BitpandaClient(CryptoXLibClient):
         if to_timestamp is not None:
             params['to'] = to_timestamp.astimezone(pytz.utc).isoformat()
 
-        return await self._create_get("account/withdrawals/bitpanda", params = params, signed = True)
+        return await self._create_get("account/withdrawals/onetrading", params = params, signed = True)
 
     async def toggle_best_fee_collection(self, indicator: bool) -> dict:
         data = {

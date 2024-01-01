@@ -2,7 +2,7 @@ from cryptoxlib.clients.bitforex.BitforexClient import BitforexClient
 from cryptoxlib.clients.liquid.LiquidClient import LiquidClient
 from cryptoxlib.clients.bibox.BiboxClient import BiboxClient
 from cryptoxlib.clients.bibox_europe.BiboxEuropeClient import BiboxEuropeClient
-from cryptoxlib.clients.bitpanda.BitpandaClient import BitpandaClient
+from cryptoxlib.clients.onetrading.OneTradingClient import OneTradingClient
 from cryptoxlib.clients.binance.BinanceClient import BinanceClient, BinanceTestnetClient
 from cryptoxlib.clients.binance.BinanceFuturesClient import BinanceUSDSMFuturesClient, BinanceUSDSMFuturesTestnetClient, \
     BinanceCOINMFuturesClient, BinanceCOINMFuturesTestnetClient
@@ -33,8 +33,8 @@ class CryptoXLib(object):
         return BiboxEuropeClient(api_key, sec_key)
 
     @staticmethod
-    def create_bitpanda_client(api_key: str) -> BitpandaClient:
-        return BitpandaClient(api_key)
+    def create_onetrading_client(api_key: str) -> OneTradingClient:
+        return OneTradingClient(api_key)
 
     @staticmethod
     def create_binance_client(api_key: str, sec_key: str,
