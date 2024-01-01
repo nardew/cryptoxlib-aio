@@ -8,9 +8,9 @@
 
 ### What's been recently added
 
+- `onetrading` exchange added!
 - python `3.10` supported
 - `coinmate` cryptoexchange added!
-- `bitpanda` cancellation of all orders via websockets
 - `binance` BSwap (liquidity pools) endpoints
 - `binance` leveraged token endpoints
 - `binance` COIN-M futures endpoints
@@ -46,20 +46,20 @@ Disclaimer: By no means we are suggesting that existing libraries are inferior t
 
 As mentioned earlier, all exchanges listed below include full support for websockets.
 
-| | Name | Docs |
-| --- | --- | --- |
-| ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/aax.png) | AAX | [API](https://www.aax.com/apidoc/index.html#introduction) |
-| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
-| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope | [API](https://github.com/BiboxEurope/API_Docs_en) |
+| | Name                                                                | Docs |
+| --- |---------------------------------------------------------------------| --- |
+| ![aax](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/aax.png) | AAX                                                                 | [API](https://www.aax.com/apidoc/index.html#introduction) |
+| ![bibox](https://user-images.githubusercontent.com/51840849/77257418-3262b000-6c85-11ea-8fb8-20bdf20b3592.jpg) | Bibox                                                               | [API](https://biboxcom.github.io/en/restful_intro.html#t0) |
+| ![bibox_europe](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bibox_europe.png) | BiboxEurope                                                         | [API](https://github.com/BiboxEurope/API_Docs_en) |
 | ![binance](https://user-images.githubusercontent.com/1294454/29604020-d5483cdc-87ee-11e7-94c7-d1a8d9169293.jpg) | Binance (spot, margin, USDS-M futures, COIN-M futures, BLVT, BSwap) |[API](https://binance-docs.github.io/apidocs/spot/en/#change-log) | 
-| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
-| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | Bitpanda Pro | [API](https://developers.bitpanda.com/exchange/) |
-| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo | [API](https://docs.bitvavo.com/#section/Introduction) |
-| ![btse](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/btse.png) | BTSE | [API](https://www.btse.com/apiexplorer/spot/#btse-spot-api) |
-| ![coinmate](https://user-images.githubusercontent.com/51840849/87460806-1c9f3f00-c616-11ea-8c46-a77018a8f3f4.jpg) | Coinmate | [API](https://coinmate.docs.apiary.io/) |
-| ![eterbase](https://user-images.githubusercontent.com/1294454/82067900-faeb0f80-96d9-11ea-9f22-0071cfcb9871.jpg) | Eterbase | [API](https://developers.eterbase.exchange) |
-| ![hitbtc](https://user-images.githubusercontent.com/1294454/27766555-8eaec20e-5edc-11e7-9c5b-6dc69fc42f5e.jpg) | HitBTC | [API](https://api.hitbtc.com) |
-| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | Liquid | [API](https://developers.liquid.com) |
+| ![bitforex](https://user-images.githubusercontent.com/1294454/44310033-69e9e600-a3d8-11e8-873d-54d74d1bc4e4.jpg) | Bitforex                                                            | [API](https://github.com/githubdev2020/API_Doc_en/wiki) |
+| ![bitpanda](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitpanda.png) | OneTrading                                                      | [API](https://docs.onetrading.com/) |
+| ![bitvavo](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/bitvavo.png) | Bitvavo                                                             | [API](https://docs.bitvavo.com/#section/Introduction) |
+| ![btse](https://raw.githubusercontent.com/nardew/cryptoxlib-aio/master/images/btse.png) | BTSE                                                                | [API](https://www.btse.com/apiexplorer/spot/#btse-spot-api) |
+| ![coinmate](https://user-images.githubusercontent.com/51840849/87460806-1c9f3f00-c616-11ea-8c46-a77018a8f3f4.jpg) | Coinmate                                                            | [API](https://coinmate.docs.apiary.io/) |
+| ![eterbase](https://user-images.githubusercontent.com/1294454/82067900-faeb0f80-96d9-11ea-9f22-0071cfcb9871.jpg) | Eterbase                                                            | [API](https://developers.eterbase.exchange) |
+| ![hitbtc](https://user-images.githubusercontent.com/1294454/27766555-8eaec20e-5edc-11e7-9c5b-6dc69fc42f5e.jpg) | HitBTC                                                              | [API](https://api.hitbtc.com) |
+| ![liquid](https://user-images.githubusercontent.com/1294454/45798859-1a872600-bcb4-11e8-8746-69291ce87b04.jpg) | Liquid                                                              | [API](https://developers.liquid.com) |
 
 Unlike REST API which is rather uniform across crypto exchanges websockets are often very exchange-specific and hence very time consuming to implement (which is the reason why they are not offered so broadly). Therefore `cryptoxlib-aio` comes at the cost of the number of exchanges it covers. This is in line with our ideology quality over quantity.
 
@@ -75,36 +75,6 @@ pip install git+https://github.com/nardew/cryptoxlib-aio.git@master
 ```
 
 ### Examples
-##### BITPANDA
-```python
-bitpanda = CryptoXLib.create_bitpanda_client(api_key)
-
-print("Account balance:")
-await bitpanda.get_account_balances()
-
-print("Order book:")
-await bitpanda.get_order_book(Pair("BTC", "EUR"))
-
-print("Create limit order:")
-await bitpanda.create_limit_order(Pair("BTC", "EUR"), OrderSide.BUY, "10000", "1")
-
-# Create first bundle of subscriptions
-bitpanda.compose_subscriptions([
-    AccountSubscription(),
-    PricesSubscription([Pair("BTC", "EUR")]),
-    OrderbookSubscription([Pair("BTC", "EUR")], "50", callbacks = [order_book_update]),
-    CandlesticksSubscription([CandlesticksSubscriptionParams(Pair("BTC", "EUR"), TimeUnit.MINUTES, 1)]),
-    MarketTickerSubscription([Pair("BTC", "EUR")])
-])
-
-# Bundle another subscriptions into a separate websocket
-bitpanda.compose_subscriptions([
-    OrderbookSubscription([Pair("ETH", "EUR")], "3", callbacks = [order_book_update]),
-])
-
-# Execute all websockets asynchronously
-await bitpanda.start_websockets()
-```
 
 ##### BINANCE
 ```python

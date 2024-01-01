@@ -14,7 +14,7 @@ api_key = os.environ['AAXAPIKEY']
 sec_key = os.environ['AAXSECKEY']
 
 
-class BitpandaRestApi(CryptoXLibTest):
+class AAXRestApi(CryptoXLibTest):
     @classmethod
     def initialize(cls) -> None:
         cls.print_logs = True

@@ -2,25 +2,25 @@ import json
 import logging
 from typing import List, Any
 
+from cryptoxlib.Pair import Pair
 from cryptoxlib.WebsocketMgr import Subscription, WebsocketMgr, WebsocketMessage, Websocket, CallbacksType, \
     ClientWebsocketHandle, WebsocketOutboundMessage
-from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitpanda.functions import map_pair, map_multiple_pairs
-from cryptoxlib.clients.bitpanda import enums
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
+from cryptoxlib.clients.onetrading import enums
+from cryptoxlib.clients.onetrading.exceptions import OneTradingException
+from cryptoxlib.clients.onetrading.functions import map_pair, map_multiple_pairs
 from cryptoxlib.exceptions import WebsocketReconnectionException
 
 LOG = logging.getLogger(__name__)
 
 
-class BitpandaWebsocket(WebsocketMgr):
-    WEBSOCKET_URI = "wss://streams.exchange.bitpanda.com"
+class OneTradingWebsocket(WebsocketMgr):
+    WEBSOCKET_URI = "wss://streams.onetrading.com"
     MAX_MESSAGE_SIZE = 3 * 1024 * 1024  # 3MB
 
     def __init__(self, subscriptions: List[Subscription], api_key: str = None, ssl_context = None,
                  startup_delay_ms: int = 0) -> None:
         super().__init__(websocket_uri = self.WEBSOCKET_URI, subscriptions = subscriptions,
-                         max_message_size = BitpandaWebsocket.MAX_MESSAGE_SIZE,
+                         max_message_size = OneTradingWebsocket.MAX_MESSAGE_SIZE,
                          ssl_context = ssl_context,
                          auto_reconnect = True,
                          startup_delay_ms = startup_delay_ms)
@@ -53,7 +53,7 @@ class BitpandaWebsocket(WebsocketMgr):
             if 'type' in message and message['type'] == 'AUTHENTICATED':
                 LOG.info(f"Websocket authenticated successfully.")
             else:
-                raise BitpandaException(f"Authentication error. Response [{message}]")
+                raise OneTradingException(f"Authentication error. Response [{message}]")
 
     def _get_subscription_message(self, subscriptions: List[Subscription]):
         return {
@@ -88,7 +88,7 @@ class BitpandaWebsocket(WebsocketMgr):
 
         # subscription negative response
         if "error" in message or message['type'] == "ERROR":
-            raise BitpandaException(
+            raise OneTradingException(
                 f"Subscription error. Request [{json.dumps(self._get_subscription_message())}] Response [{json.dumps(message)}]")
 
         # subscription positive response
@@ -123,7 +123,7 @@ class BitpandaWebsocket(WebsocketMgr):
             ))
 
 
-class BitpandaSubscription(Subscription):
+class OneTradingSubscription(Subscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -138,7 +138,7 @@ class BitpandaSubscription(Subscription):
         return False
 
 
-class AccountSubscription(BitpandaSubscription):
+class AccountSubscription(OneTradingSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -155,7 +155,7 @@ class AccountSubscription(BitpandaSubscription):
         return True
 
 
-class PricesSubscription(BitpandaSubscription):
+class PricesSubscription(OneTradingSubscription):
     def __init__(self, pairs: List[Pair], callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -172,7 +172,7 @@ class PricesSubscription(BitpandaSubscription):
         }
 
 
-class OrderbookSubscription(BitpandaSubscription):
+class OrderbookSubscription(OneTradingSubscription):
     def __init__(self, pairs: List[Pair], depth: str, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -198,7 +198,7 @@ class CandlesticksSubscriptionParams(object):
         self.period = period
 
 
-class CandlesticksSubscription(BitpandaSubscription):
+class CandlesticksSubscription(OneTradingSubscription):
     def __init__(self, subscription_params: List[CandlesticksSubscriptionParams], callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -221,7 +221,7 @@ class CandlesticksSubscription(BitpandaSubscription):
         }
 
 
-class MarketTickerSubscription(BitpandaSubscription):
+class MarketTickerSubscription(OneTradingSubscription):
     def __init__(self, pairs: List[Pair], price_points_mode: enums.PricePointsMode = None, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -244,7 +244,7 @@ class MarketTickerSubscription(BitpandaSubscription):
         return msg
 
 
-class TradingSubscription(BitpandaSubscription):
+class TradingSubscription(OneTradingSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 
@@ -261,7 +261,7 @@ class TradingSubscription(BitpandaSubscription):
         return True
 
 
-class OrdersSubscription(BitpandaSubscription):
+class OrdersSubscription(OneTradingSubscription):
     def __init__(self, callbacks: CallbacksType = None):
         super().__init__(callbacks)
 

@@ -1,11 +1,8 @@
 import logging
-import datetime
 import os
 
 from cryptoxlib.CryptoXLib import CryptoXLib
 from cryptoxlib.Pair import Pair
-from cryptoxlib.clients.bitpanda.exceptions import BitpandaException
-from cryptoxlib.clients.bitpanda.enums import OrderSide, TimeUnit
 from cryptoxlib.version_conversions import async_run
 
 LOG = logging.getLogger("cryptoxlib")
@@ -19,7 +16,7 @@ async def order_book_update(response: dict) -> None:
     print(f"Callback order_book_update: [{response}]")
 
 async def run():
-    api_key = os.environ['BITPANDAAPIKEY']
+    api_key = os.environ['COINMATEAPIKEY']
 
     client = CryptoXLib.create_coinmate_client(api_key, "", "")
 
