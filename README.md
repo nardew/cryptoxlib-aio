@@ -71,7 +71,7 @@ pip install cryptoxlib-aio
 ```
 In case you want to install the latest version from the repo, use
 ```bash
-pip install git+https://github.com/nardew/cryptoxlib-aio.git@master
+pip install git+https://github.com/nardew/cryptoxlib-aio.git@main
 ```
 
 ### Examples
